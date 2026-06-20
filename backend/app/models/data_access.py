@@ -1,8 +1,5 @@
 """
 DataAccessScope model — what data and systems a vendor can access.
-
-One-to-one with Vendor. Used by the access_subscore calculation:
-  base=20 + 40*(pii) + 30*(financial) + 10*(broad_system_access).
 """
 import uuid
 from datetime import datetime
@@ -10,7 +7,6 @@ from typing import Optional
 
 from sqlalchemy import Boolean, String, DateTime, ForeignKey, JSON, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
 
@@ -19,14 +15,14 @@ class DataAccessScope(Base):
     __tablename__ = "data_access_scopes"
 
     id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False),
+        String(36),
         ForeignKey("vendors.id", ondelete="CASCADE"),
         nullable=False,
-        unique=True,  # One-to-one with Vendor
+        unique=True,
         index=True,
     )
 
@@ -38,15 +34,11 @@ class DataAccessScope(Base):
     # Named systems (list of strings stored as JSON array)
     systems: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
 
-    # Free-text notes (from contract extraction or manual entry)
+    # Free-text notes
     scope_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relationship
     vendor: Mapped["Vendor"] = relationship("Vendor", back_populates="data_access_scope")

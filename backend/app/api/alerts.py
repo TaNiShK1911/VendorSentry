@@ -8,22 +8,27 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models import Alert, Vendor, AlertType, AlertSeverity
-from app.schemas import AlertResponse, AlertSummary, AlertResolve, PaginatedResponse
 
 router = APIRouter()
 
 
-@router.get("", response_model=PaginatedResponse)
+@router.get("/alerts")
 def list_alerts(
     status_filter: str = Query("open", alias="status"),
-    severity: Optional[AlertSeverity] = None,
-    vendor_id: Optional[UUID] = None,
-    type: Optional[AlertType] = None,
+    severity: Optional[str] = None,
+    vendor_id: Optional[str] = None,
+    type: Optional[str] = None,
+    alert_type: Optional[str] = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(25, ge=1, le=100),
+    per_page: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     """List/filter alerts"""
+    actual_page_size = per_page or page_size
+    # Accept both 'type' and 'alert_type'
+    type_filter = type or alert_type
+
     query = db.query(Alert).join(Vendor)
 
     # Apply status filter
@@ -39,122 +44,162 @@ def list_alerts(
 
     # Apply other filters
     if severity:
-        query = query.filter(Alert.severity == severity)
+        query = query.filter(Alert.severity == severity.upper())
 
     if vendor_id:
         query = query.filter(Alert.vendor_id == vendor_id)
 
-    if type:
-        query = query.filter(Alert.type == type)
+    if type_filter:
+        query = query.filter(Alert.type == type_filter)
 
     # Get total count
     total_items = query.count()
 
     # Pagination
-    offset = (page - 1) * page_size
-    alerts = query.order_by(Alert.created_at.desc()).offset(offset).limit(page_size).all()
+    offset = (page - 1) * actual_page_size
+    alerts = query.order_by(Alert.created_at.desc()).offset(offset).limit(actual_page_size).all()
 
-    # Build response items
+    # Build response items matching frontend Alert interface
     items = []
     for alert in alerts:
         vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
-        items.append(AlertResponse(
-            id=alert.id,
-            vendor_id=alert.vendor_id,
-            vendor_name=vendor.name if vendor else "Unknown",
-            type=alert.type,
-            severity=alert.severity,
-            message=alert.message,
-            created_at=alert.created_at,
-            acknowledged_at=alert.acknowledged_at,
-            resolved_at=alert.resolved_at
-        ))
 
-    total_pages = (total_items + page_size - 1) // page_size
+        # Derive status from timestamps
+        if alert.resolved_at:
+            alert_status = "resolved"
+        elif alert.acknowledged_at:
+            alert_status = "acknowledged"
+        else:
+            alert_status = "open"
 
-    return PaginatedResponse(
-        items=items,
-        page=page,
-        page_size=page_size,
-        total_items=total_items,
-        total_pages=total_pages
-    )
+        items.append({
+            "id": alert.id,
+            "vendor_id": alert.vendor_id,
+            "vendor_name": vendor.name if vendor else "Unknown",
+            "alert_type": alert.type,
+            "severity": alert.severity.lower() if alert.severity else "medium",
+            "status": alert_status,
+            "title": alert.message[:80] if alert.message else "",
+            "message": alert.message,
+            "metadata": {},
+            "created_at": alert.created_at.isoformat() if alert.created_at else None,
+            "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
+            "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
+        })
+
+    total_pages = (total_items + actual_page_size - 1) // actual_page_size
+
+    # Return in frontend's expected format
+    return {
+        "alerts": items,
+        "pagination": {
+            "page": page,
+            "per_page": actual_page_size,
+            "total": total_items,
+            "total_pages": total_pages,
+        }
+    }
 
 
-@router.post("/{alert_id}/acknowledge", response_model=AlertResponse)
-def acknowledge_alert(alert_id: UUID, db: Session = Depends(get_db)):
+@router.post("/alerts/{alert_id}/acknowledge")
+def acknowledge_alert(alert_id: str, db: Session = Depends(get_db)):
     """Acknowledge an alert"""
     alert = db.query(Alert).filter(Alert.id == alert_id).first()
     if not alert:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
 
     alert.acknowledged_at = datetime.utcnow()
-    db.commit()
-    db.refresh(alert)
+    db.flush()
 
     vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
 
-    return AlertResponse(
-        id=alert.id,
-        vendor_id=alert.vendor_id,
-        vendor_name=vendor.name if vendor else "Unknown",
-        type=alert.type,
-        severity=alert.severity,
-        message=alert.message,
-        created_at=alert.created_at,
-        acknowledged_at=alert.acknowledged_at,
-        resolved_at=alert.resolved_at
-    )
+    return {
+        "id": alert.id,
+        "vendor_id": alert.vendor_id,
+        "vendor_name": vendor.name if vendor else "Unknown",
+        "alert_type": alert.type,
+        "severity": alert.severity.lower() if alert.severity else "medium",
+        "status": "acknowledged",
+        "title": alert.message[:80] if alert.message else "",
+        "message": alert.message,
+        "metadata": {},
+        "created_at": alert.created_at.isoformat() if alert.created_at else None,
+        "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
+        "resolved_at": None,
+    }
 
 
-@router.post("/{alert_id}/resolve", response_model=AlertResponse)
-def resolve_alert(alert_id: UUID, data: AlertResolve, db: Session = Depends(get_db)):
-    """Resolve an alert"""
+@router.post("/alerts/{alert_id}/resolve")
+def resolve_alert(alert_id: str, db: Session = Depends(get_db)):
+    """Resolve an alert — body is optional"""
     alert = db.query(Alert).filter(Alert.id == alert_id).first()
     if not alert:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
 
     alert.resolved_at = datetime.utcnow()
-    if data.resolution_note:
-        alert.resolution_note = data.resolution_note
-
-    db.commit()
-    db.refresh(alert)
+    db.flush()
 
     vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
 
-    return AlertResponse(
-        id=alert.id,
-        vendor_id=alert.vendor_id,
-        vendor_name=vendor.name if vendor else "Unknown",
-        type=alert.type,
-        severity=alert.severity,
-        message=alert.message,
-        created_at=alert.created_at,
-        acknowledged_at=alert.acknowledged_at,
-        resolved_at=alert.resolved_at
-    )
+    return {
+        "id": alert.id,
+        "vendor_id": alert.vendor_id,
+        "vendor_name": vendor.name if vendor else "Unknown",
+        "alert_type": alert.type,
+        "severity": alert.severity.lower() if alert.severity else "medium",
+        "status": "resolved",
+        "title": alert.message[:80] if alert.message else "",
+        "message": alert.message,
+        "metadata": {},
+        "created_at": alert.created_at.isoformat() if alert.created_at else None,
+        "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
+        "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
+    }
 
 
-@router.get("/summary", response_model=AlertSummary)
+@router.get("/alerts/summary")
 def get_alert_summary(db: Session = Depends(get_db)):
-    """Badge/counter widget for nav bar"""
+    """Badge/counter widget for nav bar — returns full summary matching frontend AlertSummary type"""
+    # Count by severity
     open_critical = db.query(Alert).filter(
         Alert.resolved_at.is_(None),
-        Alert.severity == AlertSeverity.CRITICAL
+        Alert.severity == "CRITICAL"
     ).count()
 
     open_high = db.query(Alert).filter(
         Alert.resolved_at.is_(None),
-        Alert.severity == AlertSeverity.HIGH
+        Alert.severity == "HIGH"
     ).count()
 
-    open_total = db.query(Alert).filter(
-        Alert.resolved_at.is_(None)
+    open_medium = db.query(Alert).filter(
+        Alert.resolved_at.is_(None),
+        Alert.severity == "MEDIUM"
     ).count()
 
-    return AlertSummary(
-        open_critical=open_critical,
-        open_high=open_high,
-        open_total=open_total
-    )
+    open_low = db.query(Alert).filter(
+        Alert.resolved_at.is_(None),
+        Alert.severity == "LOW"
+    ).count()
+
+    open_total = open_critical + open_high + open_medium + open_low
+
+    # Count by type
+    by_type = {}
+    for at in ["CERT_EXPIRING", "CONTRACT_EXPIRING", "ASSESSMENT_OVERDUE", "NEW_BREACH", "SCORE_TIER_CHANGED"]:
+        by_type[at] = db.query(Alert).filter(
+            Alert.resolved_at.is_(None),
+            Alert.type == at
+        ).count()
+
+    return {
+        "total_open": open_total,
+        "by_severity": {
+            "critical": open_critical,
+            "high": open_high,
+            "medium": open_medium,
+            "low": open_low,
+        },
+        "by_type": by_type,
+        "recent_alerts": open_total,
+        "trend": "stable",
+    }

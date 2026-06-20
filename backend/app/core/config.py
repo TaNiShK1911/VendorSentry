@@ -18,16 +18,20 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Database
-    database_url: str = "postgresql://vendorsentry:vendorsentry@localhost:5432/vendorsentry"
+    # Database — defaults to SQLite for zero-setup local dev
+    database_url: str = "sqlite:///./vendorsentry.db"
 
-    # Redis / Celery
+    # Redis / Celery (optional for local dev)
     redis_url: str = "redis://localhost:6379/0"
 
-    # LLM — Anthropic primary, OpenRouter as fallback
+    # LLM — Anthropic primary, OpenRouter or Groq as fallback
     llm_api_key: str = ""
     llm_model: str = "claude-3-5-sonnet-20241022"
     openrouter_api_key: str = ""
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash"
 
     # Auth
     secret_key: str = "change-me-in-production"
@@ -50,6 +54,10 @@ class Settings(BaseSettings):
     cert_alert_days_medium: int = 60
     contract_alert_days: int = 60
     assessment_overdue_days: int = 365  # 12 months
+
+    @property
+    def is_sqlite(self) -> bool:
+        return self.database_url.startswith("sqlite")
 
     @property
     def weights_valid(self) -> bool:

@@ -8,9 +8,8 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-from sqlalchemy import String, DateTime, ForeignKey, Enum as SAEnum, Text, func
+from sqlalchemy import String, DateTime, ForeignKey, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
 
@@ -36,35 +35,31 @@ class Alert(Base):
     __tablename__ = "alerts"
 
     id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("vendors.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36), ForeignKey("vendors.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
-    type: Mapped[str] = mapped_column(
-        SAEnum(AlertType, name="alert_type_enum"), nullable=False
-    )
+    type: Mapped[str] = mapped_column(String(50), nullable=False)
 
-    severity: Mapped[str] = mapped_column(
-        SAEnum(AlertSeverity, name="alert_severity_enum"), nullable=False
-    )
+    severity: Mapped[str] = mapped_column(String(20), nullable=False)
 
     message: Mapped[str] = mapped_column(Text, nullable=False)
 
     dedup_key: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime, server_default=func.now(), nullable=False
     )
 
     acknowledged_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
+        DateTime, nullable=True
     )
 
     resolved_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
+        DateTime, nullable=True
     )
 
     resolution_note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

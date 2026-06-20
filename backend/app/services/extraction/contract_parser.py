@@ -89,7 +89,8 @@ def extract_contract(
     try:
         # Step 2 — Build prompt
         existing_data = _build_existing_vendor_data(vendor)
-        user_prompt = build_user_prompt(document_type, document_text, existing_data)
+        # Truncate text to fit comfortably within Groq's strict 8000 TPM limits
+        user_prompt = build_user_prompt(document_type, document_text[:5000], existing_data)
 
         # Step 3 — Call LLM
         client = get_llm_client()

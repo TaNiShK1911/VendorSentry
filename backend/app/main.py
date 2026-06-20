@@ -43,6 +43,18 @@ app.add_middleware(
 )
 
 
+# ── Startup: auto-create tables for SQLite dev mode ─────────────────────────
+@app.on_event("startup")
+def on_startup():
+    """Create all tables on startup (SQLite dev mode — no Alembic needed)."""
+    from app.models.base import Base
+    from app.core.database import engine
+    # Import all models so Base.metadata knows about them
+    import app.models  # noqa: F401
+    Base.metadata.create_all(bind=engine)
+    logging.getLogger("vendorsentry").info("Database tables created/verified.")
+
+
 # ── Health check (available immediately for Dev B to test) ──────────────────
 @app.get("/health", tags=["infra"])
 def health() -> dict:
@@ -50,11 +62,12 @@ def health() -> dict:
 
 
 # ── API routers ─────────────────────────────────────────────────────────────
-from app.api import vendors, scoring, alerts, reports, extraction, auth
+from app.api import vendors, scoring, alerts, reports, extraction, auth, evaluation
 
 app.include_router(vendors.router,    prefix="/api/v1", tags=["vendors"])
 app.include_router(scoring.router,    prefix="/api/v1", tags=["scoring"])
 app.include_router(alerts.router,     prefix="/api/v1", tags=["alerts"])
 app.include_router(reports.router,    prefix="/api/v1", tags=["reports"])
 app.include_router(extraction.router, prefix="/api/v1", tags=["extraction"])
-app.include_router(auth.router,       prefix="/api/v1", tags=["auth"])
+app.include_router(auth.router,       prefix="/api/v1/auth", tags=["auth"])
+app.include_router(evaluation.router, prefix="/api/v1", tags=["evaluation"])

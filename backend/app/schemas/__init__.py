@@ -12,7 +12,7 @@ from app.schemas.extraction import (
     ConflictRecord, EvidenceSignalOut
 )
 from app.schemas.alert import AlertOut, AlertSummary, AlertResolveRequest
-from app.schemas.common import PaginatedResponse, LoginRequest, LoginResponse, TokenData
+from app.schemas.common import PaginatedResponse, LoginRequest, SignupRequest, LoginResponse, TokenData
 
 # Aliases for backward compatibility with Part B API naming
 AlertResponse = AlertOut
@@ -37,5 +37,5 @@ __all__ = [
     "ExtractionJobCreate", "ExtractionJobOut", "ExtractionJobResponse", "StructuredExtractionOutput",
     "ConflictRecord", "EvidenceSignalOut", "EvidenceSignalResponse",
     "AlertOut", "AlertResponse", "AlertSummary", "AlertResolveRequest", "AlertResolve",
-    "PaginatedResponse", "LoginRequest", "LoginResponse", "TokenData",
+    "PaginatedResponse", "LoginRequest", "SignupRequest", "LoginResponse", "TokenData",
 ]

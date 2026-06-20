@@ -9,9 +9,8 @@ import uuid
 from datetime import datetime, date
 from typing import Optional
 
-from sqlalchemy import String, Numeric, Date, DateTime, Enum as SAEnum, JSON, func
+from sqlalchemy import String, Numeric, Date, DateTime, JSON, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
 
@@ -35,15 +34,15 @@ FINANCIAL_HEALTH_SOURCES = ("public_records_enrichment", "manual", "unknown")
 class Vendor(Base):
     __tablename__ = "vendors"
 
-    # Primary key
+    # Primary key — String(36) for SQLite + PostgreSQL compatibility
     id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
 
     # Identity
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     vendor_type: Mapped[str] = mapped_column(
-        SAEnum(*VENDOR_TYPES, name="vendor_type_enum"),
+        String(50),
         nullable=False,
         default="other",
     )
@@ -58,17 +57,17 @@ class Vendor(Base):
     contract_start: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     contract_end: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     contract_status: Mapped[Optional[str]] = mapped_column(
-        SAEnum(*CONTRACT_STATUSES, name="contract_status_enum"), nullable=True
+        String(50), nullable=True
     )
 
     # Financial health (derived from enrichment adapter)
     financial_health_signal: Mapped[str] = mapped_column(
-        SAEnum(*FINANCIAL_HEALTH_SIGNALS, name="financial_health_signal_enum"),
+        String(50),
         nullable=False,
         default="unknown",
     )
     financial_health_source: Mapped[str] = mapped_column(
-        SAEnum(*FINANCIAL_HEALTH_SOURCES, name="financial_health_source_enum"),
+        String(50),
         nullable=False,
         default="unknown",
     )
@@ -77,17 +76,17 @@ class Vendor(Base):
     under_investigation: Mapped[bool] = mapped_column(default=False)
 
     # Assessment tracking
-    last_assessed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_assessed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Soft-delete: excluded from default queries when set
-    archived_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    archived_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Audit timestamps
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime, server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime, server_default=func.now(), onupdate=func.now()
     )
 
     # Relationships (lazy-loaded by default; eager-load in queries as needed)
@@ -113,6 +112,19 @@ class Vendor(Base):
     alerts: Mapped[list["Alert"]] = relationship(
         "Alert", back_populates="vendor", cascade="all, delete-orphan"
     )
+
+    # Convenience properties for accessing contact fields
+    @property
+    def contact_name(self) -> Optional[str]:
+        if self.contact and isinstance(self.contact, dict):
+            return self.contact.get("liaison_name")
+        return None
+
+    @property
+    def contact_email(self) -> Optional[str]:
+        if self.contact and isinstance(self.contact, dict):
+            return self.contact.get("email")
+        return None
 
     def __repr__(self) -> str:
         return f"<Vendor id={self.id!r} name={self.name!r}>"

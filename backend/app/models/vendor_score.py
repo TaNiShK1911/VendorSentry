@@ -12,40 +12,28 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, Float, Integer, DateTime, ForeignKey, JSON, Enum as SAEnum, func, Text
+from sqlalchemy import String, Float, DateTime, ForeignKey, JSON, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
-
-TIERS = ("CRITICAL", "HIGH", "MEDIUM", "LOW", "CLEAR")
-STATUS_COLORS = ("RED", "YELLOW", "GREEN")
-TRIGGER_SOURCES = (
-    "manual",
-    "extraction_complete",
-    "breach_detected",
-    "cert_status_change",
-    "financial_signal_change",
-    "scheduled_sweep",
-)
 
 
 class VendorScore(Base):
     __tablename__ = "vendor_scores"
 
     id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4())
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("vendors.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36), ForeignKey("vendors.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
     computed_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime, server_default=func.now(), nullable=False
     )
 
-    # Four sub-scores (0–100 each), exactly as specified in IMPLEMENTATION_PLAN.md §4
+    # Four sub-scores (0–100 each)
     breach_subscore: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     access_subscore: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     compliance_subscore: Mapped[float] = mapped_column(Float, nullable=False, default=100.0)
@@ -55,29 +43,23 @@ class VendorScore(Base):
     composite_score: Mapped[float] = mapped_column(Float, nullable=False)
 
     # Tier and status color — always derived deterministically, never set by LLM
-    tier: Mapped[str] = mapped_column(
-        SAEnum(*TIERS, name="risk_tier_enum"), nullable=False
-    )
-    status_color: Mapped[str] = mapped_column(
-        SAEnum(*STATUS_COLORS, name="status_color_enum"), nullable=False
-    )
+    tier: Mapped[str] = mapped_column(String(20), nullable=False)
+    status_color: Mapped[str] = mapped_column(String(10), nullable=False)
 
-    # Anomaly types detected during this scoring event (maps to PRD taxonomy)
+    # Anomaly types detected during this scoring event
     anomaly_types: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
 
-    # LLM-generated plain-English rationale — produced AFTER scoring, grounded in subscores only
+    # LLM-generated plain-English rationale
     rationale: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # What caused this recompute
     triggered_by: Mapped[str] = mapped_column(
-        SAEnum(*TRIGGER_SOURCES, name="trigger_source_enum"),
-        nullable=False,
-        default="manual",
+        String(50), nullable=False, default="manual",
     )
 
-    # Link to the immediately preceding score (enables delta/trend calculation)
+    # Link to the immediately preceding score
     previous_score_id: Mapped[Optional[str]] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("vendor_scores.id"), nullable=True
+        String(36), ForeignKey("vendor_scores.id"), nullable=True
     )
 
     # Relationships

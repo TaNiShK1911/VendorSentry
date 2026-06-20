@@ -19,18 +19,28 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
 class LoginRequest(BaseModel):
     """Login credentials"""
-    username: str
+    email: str
     password: str
 
 
-class LoginResponse(BaseModel):
-    """JWT token response"""
-    access_token: str
-    token_type: str
+class SignupRequest(BaseModel):
+    """User registration data"""
+    email: str
+    password: str
+    first_name: str
+    last_name: str
     role: str
+
+
+class LoginResponse(BaseModel):
+    """JWT token response with user data"""
+    access_token: str
+    token_type: str = "bearer"
+    role: str
+    user: dict  # Contains: id, email, first_name, last_name, role
 
 
 class TokenData(BaseModel):
     """Decoded JWT token data"""
-    username: str
+    email: str
     role: str

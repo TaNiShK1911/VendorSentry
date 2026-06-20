@@ -1,6 +1,401 @@
 vendor_name,is_anomaly,anomaly_type,severity,expired_certifications,explanation
-Acme Cloud Storage,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE2,SOC 2 Type II certification expired four months ago but vendor still has PII access
-SecureAuth Services,false,,,,"Current certifications, good security posture"
-DataPro Analytics,false,,,,"Low risk contractor, no sensitive data access"
-PaymentHub Inc,false,,,,"Current PCI-DSS compliance, strong financial health"
-CloudBackup Solutions,true,ELEVATED_RISK_VENDOR,LOW,,"Elevated risk due to recent company acquisition but no immediate concerns"
+Acme Cloud Storage,false,,,,
+BlueShield Analytics,false,,,,
+ClearPath Networks,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,ClearPath Networks has expired certification(s).
+DataVault Systems,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,DataVault Systems has expired certification(s) and accesses sensitive data.
+EdgeSecure Ltd,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,EdgeSecure Ltd has expired certification(s) and accesses sensitive data.
+FortKnox Payments,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,FortKnox Payments has expired certification(s) and accesses sensitive data.
+GlobalMesh MSS,false,,,,
+HealthBridge IT,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,HealthBridge IT has expired certification(s).
+IntelliGuard Software,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,IntelliGuard Software had a security breach within the last 12 months.
+JetStream Infrastructure,false,,,,
+KeyLock Security,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,KeyLock Security had a breach within 12 months and has sensitive data access.
+LibertyData Corp,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE1,LibertyData Corp has expired certification(s).
+MegaScale Hosting,false,,,,
+NetSafe Solutions,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,NetSafe Solutions has expired certification(s).
+OmniCloud Services,false,,,,
+PrecisionPay Ltd,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,PrecisionPay Ltd had a breach within 12 months and has sensitive data access.
+QuantumRisk Analytics,false,,,,
+RapidDeploy Systems,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,RapidDeploy Systems had a security breach within the last 12 months.
+SecureHarbor Inc,false,,,,
+TrustFrame Technologies,true,EXPIRED_CERTIFICATION,MEDIUM,"SOC2_TYPE1,HIPAA,PCI_DSS",TrustFrame Technologies has expired certification(s).
+UltraSecure MSS,false,,,,
+VaultMaster Corp,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,VaultMaster Corp has expired certification(s).
+WebArmor Ltd,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE1,WebArmor Ltd has expired certification(s).
+XcelData Solutions,false,,,,
+YieldSecure Analytics,false,,,,
+ZenCloud Systems,true,EXPIRED_CERTIFICATION,HIGH,ISO_27001,ZenCloud Systems has expired certification(s) and accesses sensitive data.
+Acme Cloud Storage 2,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,Acme Cloud Storage 2 had a security breach within the last 12 months.
+BlueShield Analytics 2,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,BlueShield Analytics 2 has expired certification(s).
+ClearPath Networks 2,false,,,,
+DataVault Systems 2,false,,,,
+EdgeSecure Ltd 2,false,,,,
+FortKnox Payments 2,true,RECENTLY_BREACHED_VENDOR,MEDIUM,HIPAA,FortKnox Payments 2 had a security breach within the last 12 months.
+GlobalMesh MSS 2,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,"PCI_DSS,ISO_27001",GlobalMesh MSS 2 had a breach within 12 months and has sensitive data access.
+HealthBridge IT 2,false,,,,
+IntelliGuard Software 2,false,,,,
+JetStream Infrastructure 2,true,RECENTLY_BREACHED_VENDOR,MEDIUM,HIPAA,JetStream Infrastructure 2 had a security breach within the last 12 months.
+KeyLock Security 2,false,,,,
+LibertyData Corp 2,false,,,,
+MegaScale Hosting 2,false,,,,
+NetSafe Solutions 2,false,,,,
+OmniCloud Services 2,true,EXPIRED_CERTIFICATION,MEDIUM,"ISO_27001,HIPAA",OmniCloud Services 2 has expired certification(s).
+PrecisionPay Ltd 2,false,,,,
+QuantumRisk Analytics 2,false,,,,
+RapidDeploy Systems 2,false,,,,
+SecureHarbor Inc 2,true,RECENTLY_BREACHED_VENDOR,MEDIUM,HIPAA,SecureHarbor Inc 2 had a security breach within the last 12 months.
+TrustFrame Technologies 2,false,,,,
+UltraSecure MSS 2,false,,,,
+VaultMaster Corp 2,false,,,,
+WebArmor Ltd 2,false,,,,
+XcelData Solutions 2,false,,,,
+YieldSecure Analytics 2,false,,,,
+ZenCloud Systems 2,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE1,ZenCloud Systems 2 has expired certification(s).
+Acme Cloud Storage 3,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,SOC2_TYPE1,Acme Cloud Storage 3 had a breach within 12 months and has sensitive data access.
+BlueShield Analytics 3,false,,,,
+ClearPath Networks 3,false,,,,
+DataVault Systems 3,true,EXPIRED_CERTIFICATION,HIGH,ISO_27001,DataVault Systems 3 has expired certification(s) and accesses sensitive data.
+EdgeSecure Ltd 3,false,,,,
+FortKnox Payments 3,false,,,,
+GlobalMesh MSS 3,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,GlobalMesh MSS 3 had a security breach within the last 12 months.
+HealthBridge IT 3,false,,,,
+IntelliGuard Software 3,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE2,IntelliGuard Software 3 has expired certification(s).
+JetStream Infrastructure 3,false,,,,
+KeyLock Security 3,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,KeyLock Security 3 has expired certification(s) and accesses sensitive data.
+LibertyData Corp 3,false,,,,
+MegaScale Hosting 3,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,MegaScale Hosting 3 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 3,false,,,,
+OmniCloud Services 3,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,OmniCloud Services 3 has expired certification(s).
+PrecisionPay Ltd 3,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,PrecisionPay Ltd 3 has expired certification(s) and accesses sensitive data.
+QuantumRisk Analytics 3,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,QuantumRisk Analytics 3 has expired certification(s) and accesses sensitive data.
+RapidDeploy Systems 3,false,,,,
+SecureHarbor Inc 3,false,,,,
+TrustFrame Technologies 3,false,,,,
+UltraSecure MSS 3,false,,,,
+VaultMaster Corp 3,false,,,,
+WebArmor Ltd 3,true,EXPIRED_CERTIFICATION,MEDIUM,"PCI_DSS,SOC2_TYPE1",WebArmor Ltd 3 has expired certification(s).
+XcelData Solutions 3,false,,,,
+YieldSecure Analytics 3,false,,,,
+ZenCloud Systems 3,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,ISO_27001,ZenCloud Systems 3 had a breach within 12 months and has sensitive data access.
+Acme Cloud Storage 4,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,Acme Cloud Storage 4 has expired certification(s).
+BlueShield Analytics 4,false,,,,
+ClearPath Networks 4,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE2,ClearPath Networks 4 has expired certification(s) and accesses sensitive data.
+DataVault Systems 4,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,SOC2_TYPE2,DataVault Systems 4 had a breach within 12 months and has sensitive data access.
+EdgeSecure Ltd 4,false,,,,
+FortKnox Payments 4,false,,,,
+GlobalMesh MSS 4,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,GlobalMesh MSS 4 has expired certification(s).
+HealthBridge IT 4,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,HealthBridge IT 4 had a security breach within the last 12 months.
+IntelliGuard Software 4,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,HIPAA,IntelliGuard Software 4 had a breach within 12 months and has sensitive data access.
+JetStream Infrastructure 4,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,ISO_27001,JetStream Infrastructure 4 is currently under regulatory investigation.
+KeyLock Security 4,false,,,,
+LibertyData Corp 4,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,LibertyData Corp 4 had a security breach within the last 12 months.
+MegaScale Hosting 4,false,,,,
+NetSafe Solutions 4,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,NetSafe Solutions 4 has expired certification(s).
+OmniCloud Services 4,false,,,,
+PrecisionPay Ltd 4,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,SOC2_TYPE1,PrecisionPay Ltd 4 had a breach within 12 months and has sensitive data access.
+QuantumRisk Analytics 4,false,,,,
+RapidDeploy Systems 4,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE2,RapidDeploy Systems 4 has expired certification(s).
+SecureHarbor Inc 4,false,,,,
+TrustFrame Technologies 4,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,TrustFrame Technologies 4 has expired certification(s).
+UltraSecure MSS 4,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,UltraSecure MSS 4 has expired certification(s) and accesses sensitive data.
+VaultMaster Corp 4,true,EXPIRED_CERTIFICATION,MEDIUM,"HIPAA,ISO_27001",VaultMaster Corp 4 has expired certification(s).
+WebArmor Ltd 4,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,PCI_DSS,WebArmor Ltd 4 had a breach within 12 months and has sensitive data access.
+XcelData Solutions 4,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,XcelData Solutions 4 had a breach within 12 months and has sensitive data access.
+YieldSecure Analytics 4,false,,,,
+ZenCloud Systems 4,false,,,,
+Acme Cloud Storage 5,false,,,,
+BlueShield Analytics 5,true,RECENTLY_BREACHED_VENDOR,MEDIUM,"HIPAA,ISO_27001",BlueShield Analytics 5 had a security breach within the last 12 months.
+ClearPath Networks 5,false,,,,
+DataVault Systems 5,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,DataVault Systems 5 has expired certification(s) and accesses sensitive data.
+EdgeSecure Ltd 5,false,,,,
+FortKnox Payments 5,false,,,,
+GlobalMesh MSS 5,false,,,,
+HealthBridge IT 5,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,HealthBridge IT 5 had a breach within 12 months and has sensitive data access.
+IntelliGuard Software 5,true,RECENTLY_BREACHED_VENDOR,MEDIUM,PCI_DSS,IntelliGuard Software 5 had a security breach within the last 12 months.
+JetStream Infrastructure 5,false,,,,
+KeyLock Security 5,false,,,,
+LibertyData Corp 5,false,,,,
+MegaScale Hosting 5,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,MegaScale Hosting 5 has expired certification(s).
+NetSafe Solutions 5,false,,,,
+OmniCloud Services 5,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,OmniCloud Services 5 has expired certification(s) and accesses sensitive data.
+PrecisionPay Ltd 5,false,,,,
+QuantumRisk Analytics 5,false,,,,
+RapidDeploy Systems 5,false,,,,
+SecureHarbor Inc 5,false,,,,
+TrustFrame Technologies 5,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,TrustFrame Technologies 5 has expired certification(s).
+UltraSecure MSS 5,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,UltraSecure MSS 5 had a breach within 12 months and has sensitive data access.
+VaultMaster Corp 5,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,VaultMaster Corp 5 had a breach within 12 months and has sensitive data access.
+WebArmor Ltd 5,false,,,,
+XcelData Solutions 5,false,,,,
+YieldSecure Analytics 5,false,,,,
+ZenCloud Systems 5,false,,,,
+Acme Cloud Storage 6,false,,,,
+BlueShield Analytics 6,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,BlueShield Analytics 6 has expired certification(s).
+ClearPath Networks 6,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE1,ClearPath Networks 6 has expired certification(s).
+DataVault Systems 6,false,,,,
+EdgeSecure Ltd 6,false,,,,
+FortKnox Payments 6,false,,,,
+GlobalMesh MSS 6,false,,,,
+HealthBridge IT 6,false,,,,
+IntelliGuard Software 6,true,EXPIRED_CERTIFICATION,MEDIUM,"SOC2_TYPE1,ISO_27001",IntelliGuard Software 6 has expired certification(s).
+JetStream Infrastructure 6,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,JetStream Infrastructure 6 had a breach within 12 months and has sensitive data access.
+KeyLock Security 6,true,RECENTLY_BREACHED_VENDOR,MEDIUM,"PCI_DSS,SOC2_TYPE1",KeyLock Security 6 had a security breach within the last 12 months.
+LibertyData Corp 6,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,LibertyData Corp 6 had a breach within 12 months and has sensitive data access.
+MegaScale Hosting 6,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,MegaScale Hosting 6 has expired certification(s) and accesses sensitive data.
+NetSafe Solutions 6,false,,,,
+OmniCloud Services 6,false,,,,
+PrecisionPay Ltd 6,false,,,,
+QuantumRisk Analytics 6,true,RECENTLY_BREACHED_VENDOR,MEDIUM,SOC2_TYPE1,QuantumRisk Analytics 6 had a security breach within the last 12 months.
+RapidDeploy Systems 6,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,PCI_DSS,RapidDeploy Systems 6 had a breach within 12 months and has sensitive data access.
+SecureHarbor Inc 6,true,EXPIRED_CERTIFICATION,MEDIUM,"PCI_DSS,SOC2_TYPE2,ISO_27001",SecureHarbor Inc 6 has expired certification(s).
+TrustFrame Technologies 6,false,,,,
+UltraSecure MSS 6,true,EXPIRED_CERTIFICATION,HIGH,ISO_27001,UltraSecure MSS 6 has expired certification(s) and accesses sensitive data.
+VaultMaster Corp 6,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE2,VaultMaster Corp 6 has expired certification(s) and accesses sensitive data.
+WebArmor Ltd 6,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,WebArmor Ltd 6 has expired certification(s) and accesses sensitive data.
+XcelData Solutions 6,true,EXPIRED_CERTIFICATION,HIGH,"HIPAA,SOC2_TYPE1",XcelData Solutions 6 has expired certification(s) and accesses sensitive data.
+YieldSecure Analytics 6,false,,,,
+ZenCloud Systems 6,false,,,,
+Acme Cloud Storage 7,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,Acme Cloud Storage 7 had a breach within 12 months and has sensitive data access.
+BlueShield Analytics 7,false,,,,
+ClearPath Networks 7,false,,,,
+DataVault Systems 7,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,DataVault Systems 7 had a security breach within the last 12 months.
+EdgeSecure Ltd 7,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,EdgeSecure Ltd 7 has expired certification(s).
+FortKnox Payments 7,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,,FortKnox Payments 7 is currently under regulatory investigation.
+GlobalMesh MSS 7,false,,,,
+HealthBridge IT 7,false,,,,
+IntelliGuard Software 7,false,,,,
+JetStream Infrastructure 7,false,,,,
+KeyLock Security 7,false,,,,
+LibertyData Corp 7,false,,,,
+MegaScale Hosting 7,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,MegaScale Hosting 7 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 7,true,EXPIRED_CERTIFICATION,HIGH,"ISO_27001,PCI_DSS",NetSafe Solutions 7 has expired certification(s) and accesses sensitive data.
+OmniCloud Services 7,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,OmniCloud Services 7 has expired certification(s).
+PrecisionPay Ltd 7,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,PrecisionPay Ltd 7 had a security breach within the last 12 months.
+QuantumRisk Analytics 7,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,QuantumRisk Analytics 7 had a breach within 12 months and has sensitive data access.
+RapidDeploy Systems 7,false,,,,
+SecureHarbor Inc 7,false,,,,
+TrustFrame Technologies 7,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,TrustFrame Technologies 7 had a breach within 12 months and has sensitive data access.
+UltraSecure MSS 7,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,UltraSecure MSS 7 has expired certification(s).
+VaultMaster Corp 7,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,"ISO_27001,SOC2_TYPE2",VaultMaster Corp 7 had a breach within 12 months and has sensitive data access.
+WebArmor Ltd 7,false,,,,
+XcelData Solutions 7,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,XcelData Solutions 7 had a breach within 12 months and has sensitive data access.
+YieldSecure Analytics 7,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE1,YieldSecure Analytics 7 has expired certification(s).
+ZenCloud Systems 7,true,EXPIRED_CERTIFICATION,HIGH,"PCI_DSS,HIPAA",ZenCloud Systems 7 has expired certification(s) and accesses sensitive data.
+Acme Cloud Storage 8,false,,,,
+BlueShield Analytics 8,true,EXPIRED_CERTIFICATION,HIGH,"ISO_27001,HIPAA",BlueShield Analytics 8 has expired certification(s) and accesses sensitive data.
+ClearPath Networks 8,false,,,,
+DataVault Systems 8,false,,,,
+EdgeSecure Ltd 8,false,,,,
+FortKnox Payments 8,false,,,,
+GlobalMesh MSS 8,false,,,,
+HealthBridge IT 8,true,EXPIRED_CERTIFICATION,MEDIUM,"ISO_27001,HIPAA",HealthBridge IT 8 has expired certification(s).
+IntelliGuard Software 8,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,IntelliGuard Software 8 had a breach within 12 months and has sensitive data access.
+JetStream Infrastructure 8,false,,,,
+KeyLock Security 8,true,EXPIRED_CERTIFICATION,MEDIUM,"ISO_27001,HIPAA",KeyLock Security 8 has expired certification(s).
+LibertyData Corp 8,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,LibertyData Corp 8 has expired certification(s).
+MegaScale Hosting 8,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,HIPAA,MegaScale Hosting 8 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 8,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE2,NetSafe Solutions 8 has expired certification(s).
+OmniCloud Services 8,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,OmniCloud Services 8 has expired certification(s) and accesses sensitive data.
+PrecisionPay Ltd 8,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,PrecisionPay Ltd 8 had a breach within 12 months and has sensitive data access.
+QuantumRisk Analytics 8,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,"PCI_DSS,SOC2_TYPE2",QuantumRisk Analytics 8 had a breach within 12 months and has sensitive data access.
+RapidDeploy Systems 8,false,,,,
+SecureHarbor Inc 8,false,,,,
+TrustFrame Technologies 8,false,,,,
+UltraSecure MSS 8,false,,,,
+VaultMaster Corp 8,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,VaultMaster Corp 8 has expired certification(s) and accesses sensitive data.
+WebArmor Ltd 8,false,,,,
+XcelData Solutions 8,false,,,,
+YieldSecure Analytics 8,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,YieldSecure Analytics 8 had a breach within 12 months and has sensitive data access.
+ZenCloud Systems 8,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,ZenCloud Systems 8 had a breach within 12 months and has sensitive data access.
+Acme Cloud Storage 9,true,EXPIRED_CERTIFICATION,HIGH,ISO_27001,Acme Cloud Storage 9 has expired certification(s) and accesses sensitive data.
+BlueShield Analytics 9,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,BlueShield Analytics 9 has expired certification(s).
+ClearPath Networks 9,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,ClearPath Networks 9 has expired certification(s).
+DataVault Systems 9,false,,,,
+EdgeSecure Ltd 9,false,,,,
+FortKnox Payments 9,false,,,,
+GlobalMesh MSS 9,false,,,,
+HealthBridge IT 9,false,,,,
+IntelliGuard Software 9,true,EXPIRED_CERTIFICATION,MEDIUM,"PCI_DSS,HIPAA",IntelliGuard Software 9 has expired certification(s).
+JetStream Infrastructure 9,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,JetStream Infrastructure 9 had a breach within 12 months and has sensitive data access.
+KeyLock Security 9,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,KeyLock Security 9 has expired certification(s).
+LibertyData Corp 9,false,,,,
+MegaScale Hosting 9,false,,,,
+NetSafe Solutions 9,false,,,,
+OmniCloud Services 9,false,,,,
+PrecisionPay Ltd 9,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,PrecisionPay Ltd 9 has expired certification(s) and accesses sensitive data.
+QuantumRisk Analytics 9,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,QuantumRisk Analytics 9 has expired certification(s).
+RapidDeploy Systems 9,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,RapidDeploy Systems 9 has expired certification(s) and accesses sensitive data.
+SecureHarbor Inc 9,false,,,,
+TrustFrame Technologies 9,false,,,,
+UltraSecure MSS 9,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,,UltraSecure MSS 9 is currently under regulatory investigation.
+VaultMaster Corp 9,false,,,,
+WebArmor Ltd 9,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,WebArmor Ltd 9 had a security breach within the last 12 months.
+XcelData Solutions 9,false,,,,
+YieldSecure Analytics 9,false,,,,
+ZenCloud Systems 9,false,,,,
+Acme Cloud Storage 10,false,,,,
+BlueShield Analytics 10,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,BlueShield Analytics 10 has expired certification(s) and accesses sensitive data.
+ClearPath Networks 10,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,HIPAA,ClearPath Networks 10 had a breach within 12 months and has sensitive data access.
+DataVault Systems 10,false,,,,
+EdgeSecure Ltd 10,false,,,,
+FortKnox Payments 10,false,,,,
+GlobalMesh MSS 10,false,,,,
+HealthBridge IT 10,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE2,HealthBridge IT 10 has expired certification(s) and accesses sensitive data.
+IntelliGuard Software 10,false,,,,
+JetStream Infrastructure 10,false,,,,
+KeyLock Security 10,false,,,,
+LibertyData Corp 10,false,,,,
+MegaScale Hosting 10,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,MegaScale Hosting 10 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 10,false,,,,
+OmniCloud Services 10,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,"SOC2_TYPE1,PCI_DSS",OmniCloud Services 10 had a breach within 12 months and has sensitive data access.
+PrecisionPay Ltd 10,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,PrecisionPay Ltd 10 has expired certification(s) and accesses sensitive data.
+QuantumRisk Analytics 10,false,,,,
+RapidDeploy Systems 10,false,,,,
+SecureHarbor Inc 10,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,SecureHarbor Inc 10 had a breach within 12 months and has sensitive data access.
+TrustFrame Technologies 10,false,,,,
+UltraSecure MSS 10,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,UltraSecure MSS 10 had a security breach within the last 12 months.
+VaultMaster Corp 10,false,,,,
+WebArmor Ltd 10,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,WebArmor Ltd 10 had a breach within 12 months and has sensitive data access.
+XcelData Solutions 10,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,XcelData Solutions 10 has expired certification(s).
+YieldSecure Analytics 10,false,,,,
+ZenCloud Systems 10,true,EXPIRED_CERTIFICATION,MEDIUM,"HIPAA,PCI_DSS",ZenCloud Systems 10 has expired certification(s).
+Acme Cloud Storage 11,false,,,,
+BlueShield Analytics 11,false,,,,
+ClearPath Networks 11,false,,,,
+DataVault Systems 11,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,DataVault Systems 11 had a breach within 12 months and has sensitive data access.
+EdgeSecure Ltd 11,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,EdgeSecure Ltd 11 has expired certification(s) and accesses sensitive data.
+FortKnox Payments 11,false,,,,
+GlobalMesh MSS 11,false,,,,
+HealthBridge IT 11,false,,,,
+IntelliGuard Software 11,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,IntelliGuard Software 11 had a breach within 12 months and has sensitive data access.
+JetStream Infrastructure 11,false,,,,
+KeyLock Security 11,false,,,,
+LibertyData Corp 11,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,HIPAA,LibertyData Corp 11 had a breach within 12 months and has sensitive data access.
+MegaScale Hosting 11,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,MegaScale Hosting 11 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 11,false,,,,
+OmniCloud Services 11,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,OmniCloud Services 11 has expired certification(s) and accesses sensitive data.
+PrecisionPay Ltd 11,false,,,,
+QuantumRisk Analytics 11,true,EXPIRED_CERTIFICATION,HIGH,"HIPAA,SOC2_TYPE2",QuantumRisk Analytics 11 has expired certification(s) and accesses sensitive data.
+RapidDeploy Systems 11,false,,,,
+SecureHarbor Inc 11,false,,,,
+TrustFrame Technologies 11,false,,,,
+UltraSecure MSS 11,false,,,,
+VaultMaster Corp 11,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,VaultMaster Corp 11 had a breach within 12 months and has sensitive data access.
+WebArmor Ltd 11,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,WebArmor Ltd 11 has expired certification(s).
+XcelData Solutions 11,false,,,,
+YieldSecure Analytics 11,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,YieldSecure Analytics 11 has expired certification(s).
+ZenCloud Systems 11,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,,ZenCloud Systems 11 is currently under regulatory investigation.
+Acme Cloud Storage 12,false,,,,
+BlueShield Analytics 12,false,,,,
+ClearPath Networks 12,true,EXPIRED_CERTIFICATION,MEDIUM,"HIPAA,SOC2_TYPE1",ClearPath Networks 12 has expired certification(s).
+DataVault Systems 12,false,,,,
+EdgeSecure Ltd 12,true,RECENTLY_BREACHED_VENDOR,MEDIUM,SOC2_TYPE1,EdgeSecure Ltd 12 had a security breach within the last 12 months.
+FortKnox Payments 12,false,,,,
+GlobalMesh MSS 12,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE1,GlobalMesh MSS 12 has expired certification(s).
+HealthBridge IT 12,false,,,,
+IntelliGuard Software 12,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,IntelliGuard Software 12 had a breach within 12 months and has sensitive data access.
+JetStream Infrastructure 12,true,RECENTLY_BREACHED_VENDOR,MEDIUM,SOC2_TYPE2,JetStream Infrastructure 12 had a security breach within the last 12 months.
+KeyLock Security 12,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,KeyLock Security 12 has expired certification(s) and accesses sensitive data.
+LibertyData Corp 12,false,,,,
+MegaScale Hosting 12,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,MegaScale Hosting 12 has expired certification(s) and accesses sensitive data.
+NetSafe Solutions 12,false,,,,
+OmniCloud Services 12,false,,,,
+PrecisionPay Ltd 12,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,PrecisionPay Ltd 12 has expired certification(s).
+QuantumRisk Analytics 12,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,QuantumRisk Analytics 12 has expired certification(s).
+RapidDeploy Systems 12,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,RapidDeploy Systems 12 had a security breach within the last 12 months.
+SecureHarbor Inc 12,false,,,,
+TrustFrame Technologies 12,true,EXPIRED_CERTIFICATION,MEDIUM,ISO_27001,TrustFrame Technologies 12 has expired certification(s).
+UltraSecure MSS 12,false,,,,
+VaultMaster Corp 12,false,,,,
+WebArmor Ltd 12,false,,,,
+XcelData Solutions 12,false,,,,
+YieldSecure Analytics 12,false,,,,
+ZenCloud Systems 12,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE2,ZenCloud Systems 12 has expired certification(s) and accesses sensitive data.
+Acme Cloud Storage 13,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,Acme Cloud Storage 13 has expired certification(s) and accesses sensitive data.
+BlueShield Analytics 13,false,,,,
+ClearPath Networks 13,true,EXPIRED_CERTIFICATION,HIGH,"SOC2_TYPE2,ISO_27001",ClearPath Networks 13 has expired certification(s) and accesses sensitive data.
+DataVault Systems 13,false,,,,
+EdgeSecure Ltd 13,false,,,,
+FortKnox Payments 13,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,FortKnox Payments 13 had a breach within 12 months and has sensitive data access.
+GlobalMesh MSS 13,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE2,GlobalMesh MSS 13 has expired certification(s).
+HealthBridge IT 13,true,EXPIRED_CERTIFICATION,HIGH,ISO_27001,HealthBridge IT 13 has expired certification(s) and accesses sensitive data.
+IntelliGuard Software 13,false,,,,
+JetStream Infrastructure 13,false,,,,
+KeyLock Security 13,false,,,,
+LibertyData Corp 13,false,,,,
+MegaScale Hosting 13,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,MegaScale Hosting 13 has expired certification(s).
+NetSafe Solutions 13,false,,,,
+OmniCloud Services 13,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,OmniCloud Services 13 had a security breach within the last 12 months.
+PrecisionPay Ltd 13,false,,,,
+QuantumRisk Analytics 13,false,,,,
+RapidDeploy Systems 13,true,EXPIRED_CERTIFICATION,HIGH,HIPAA,RapidDeploy Systems 13 has expired certification(s) and accesses sensitive data.
+SecureHarbor Inc 13,true,EXPIRED_CERTIFICATION,HIGH,"HIPAA,SOC2_TYPE1",SecureHarbor Inc 13 has expired certification(s) and accesses sensitive data.
+TrustFrame Technologies 13,false,,,,
+UltraSecure MSS 13,false,,,,
+VaultMaster Corp 13,false,,,,
+WebArmor Ltd 13,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,WebArmor Ltd 13 has expired certification(s).
+XcelData Solutions 13,false,,,,
+YieldSecure Analytics 13,false,,,,
+ZenCloud Systems 13,false,,,,
+Acme Cloud Storage 14,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,Acme Cloud Storage 14 has expired certification(s).
+BlueShield Analytics 14,true,EXPIRED_CERTIFICATION,MEDIUM,"PCI_DSS,SOC2_TYPE1",BlueShield Analytics 14 has expired certification(s).
+ClearPath Networks 14,false,,,,
+DataVault Systems 14,false,,,,
+EdgeSecure Ltd 14,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,EdgeSecure Ltd 14 has expired certification(s) and accesses sensitive data.
+FortKnox Payments 14,false,,,,
+GlobalMesh MSS 14,false,,,,
+HealthBridge IT 14,false,,,,
+IntelliGuard Software 14,false,,,,
+JetStream Infrastructure 14,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,ISO_27001,JetStream Infrastructure 14 had a breach within 12 months and has sensitive data access.
+KeyLock Security 14,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,,KeyLock Security 14 is currently under regulatory investigation.
+LibertyData Corp 14,false,,,,
+MegaScale Hosting 14,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,MegaScale Hosting 14 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 14,true,EXPIRED_CERTIFICATION,HIGH,"SOC2_TYPE1,SOC2_TYPE2",NetSafe Solutions 14 has expired certification(s) and accesses sensitive data.
+OmniCloud Services 14,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,,OmniCloud Services 14 is currently under regulatory investigation.
+PrecisionPay Ltd 14,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE1,PrecisionPay Ltd 14 has expired certification(s) and accesses sensitive data.
+QuantumRisk Analytics 14,false,,,,
+RapidDeploy Systems 14,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,RapidDeploy Systems 14 had a security breach within the last 12 months.
+SecureHarbor Inc 14,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,SOC2_TYPE1,SecureHarbor Inc 14 had a breach within 12 months and has sensitive data access.
+TrustFrame Technologies 14,false,,,,
+UltraSecure MSS 14,false,,,,
+VaultMaster Corp 14,false,,,,
+WebArmor Ltd 14,false,,,,
+XcelData Solutions 14,false,,,,
+YieldSecure Analytics 14,false,,,,
+ZenCloud Systems 14,true,RECENTLY_BREACHED_VENDOR,MEDIUM,SOC2_TYPE1,ZenCloud Systems 14 had a security breach within the last 12 months.
+Acme Cloud Storage 15,false,,,,
+BlueShield Analytics 15,true,VENDOR_UNDER_INVESTIGATION,CRITICAL,,BlueShield Analytics 15 is currently under regulatory investigation.
+ClearPath Networks 15,false,,,,
+DataVault Systems 15,false,,,,
+EdgeSecure Ltd 15,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,EdgeSecure Ltd 15 had a security breach within the last 12 months.
+FortKnox Payments 15,true,EXPIRED_CERTIFICATION,MEDIUM,PCI_DSS,FortKnox Payments 15 has expired certification(s).
+GlobalMesh MSS 15,false,,,,
+HealthBridge IT 15,false,,,,
+IntelliGuard Software 15,false,,,,
+JetStream Infrastructure 15,false,,,,
+KeyLock Security 15,false,,,,
+LibertyData Corp 15,false,,,,
+MegaScale Hosting 15,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,MegaScale Hosting 15 had a breach within 12 months and has sensitive data access.
+NetSafe Solutions 15,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,,NetSafe Solutions 15 had a breach within 12 months and has sensitive data access.
+OmniCloud Services 15,false,,,,
+PrecisionPay Ltd 15,false,,,,
+QuantumRisk Analytics 15,false,,,,
+RapidDeploy Systems 15,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,SOC2_TYPE2,RapidDeploy Systems 15 had a breach within 12 months and has sensitive data access.
+SecureHarbor Inc 15,true,EXPIRED_CERTIFICATION,HIGH,ISO_27001,SecureHarbor Inc 15 has expired certification(s) and accesses sensitive data.
+TrustFrame Technologies 15,false,,,,
+UltraSecure MSS 15,false,,,,
+VaultMaster Corp 15,true,BREACHED_VENDOR_HIGH_ACCESS,CRITICAL,"ISO_27001,PCI_DSS",VaultMaster Corp 15 had a breach within 12 months and has sensitive data access.
+WebArmor Ltd 15,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE2,WebArmor Ltd 15 has expired certification(s).
+XcelData Solutions 15,false,,,,
+YieldSecure Analytics 15,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,YieldSecure Analytics 15 had a security breach within the last 12 months.
+ZenCloud Systems 15,true,RECENTLY_BREACHED_VENDOR,MEDIUM,,ZenCloud Systems 15 had a security breach within the last 12 months.
+Acme Cloud Storage 16,false,,,,
+BlueShield Analytics 16,false,,,,
+ClearPath Networks 16,false,,,,
+DataVault Systems 16,true,EXPIRED_CERTIFICATION,MEDIUM,SOC2_TYPE2,DataVault Systems 16 has expired certification(s).
+EdgeSecure Ltd 16,false,,,,
+FortKnox Payments 16,false,,,,
+GlobalMesh MSS 16,false,,,,
+HealthBridge IT 16,true,EXPIRED_CERTIFICATION,HIGH,PCI_DSS,HealthBridge IT 16 has expired certification(s) and accesses sensitive data.
+IntelliGuard Software 16,false,,,,
+JetStream Infrastructure 16,true,EXPIRED_CERTIFICATION,MEDIUM,HIPAA,JetStream Infrastructure 16 has expired certification(s).
