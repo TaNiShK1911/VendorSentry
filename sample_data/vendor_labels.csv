@@ -1,0 +1,6 @@
+vendor_name,is_anomaly,anomaly_type,severity,expired_certifications,explanation
+Acme Cloud Storage,true,EXPIRED_CERTIFICATION,HIGH,SOC2_TYPE2,SOC 2 Type II certification expired four months ago but vendor still has PII access
+SecureAuth Services,false,,,,"Current certifications, good security posture"
+DataPro Analytics,false,,,,"Low risk contractor, no sensitive data access"
+PaymentHub Inc,false,,,,"Current PCI-DSS compliance, strong financial health"
+CloudBackup Solutions,true,ELEVATED_RISK_VENDOR,LOW,,"Elevated risk due to recent company acquisition but no immediate concerns"

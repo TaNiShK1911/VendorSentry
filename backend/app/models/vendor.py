@@ -110,6 +110,10 @@ class Vendor(Base):
     evidence_signals: Mapped[list["EvidenceSignal"]] = relationship(
         "EvidenceSignal", back_populates="vendor", cascade="all, delete-orphan"
     )
+    alerts: Mapped[list["Alert"]] = relationship(
+        "Alert", back_populates="vendor", cascade="all, delete-orphan"
+    )
+
 
     def __repr__(self) -> str:
         return f"<Vendor id={self.id!r} name={self.name!r}>"

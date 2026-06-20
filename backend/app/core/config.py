@@ -24,13 +24,15 @@ class Settings(BaseSettings):
     # Redis / Celery
     redis_url: str = "redis://localhost:6379/0"
 
-    # LLM — Anthropic primary, OpenRouter as fallback
+    # LLM — Anthropic primary, Groq as fallback
     llm_api_key: str = ""
     llm_model: str = "claude-3-5-sonnet-20241022"
-    openrouter_api_key: str = ""
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
 
     # Auth
     secret_key: str = "change-me-in-production"
+    algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 8  # 8 hours for hackathon
 
     # App

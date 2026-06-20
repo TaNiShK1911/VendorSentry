@@ -1,9 +1,5 @@
 """
 VendorSentry FastAPI application factory.
-
-Dev A provides the app skeleton here; Dev B fills in the routers.
-The app itself is wired, CORS is set, and the health endpoint is live
-so Dev B can test the container from hour 1.
 """
 from __future__ import annotations
 
@@ -33,7 +29,7 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# CORS — allow the frontend dev server during the hackathon
+# CORS -- allow the frontend dev server during the hackathon
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],   # tighten before any real deployment
@@ -43,17 +39,18 @@ app.add_middleware(
 )
 
 
-# ── Health check (available immediately for Dev B to test) ──────────────────
+# -- Health check -------------------------------------------------------------
 @app.get("/health", tags=["infra"])
 def health() -> dict:
     return {"status": "ok", "service": "vendorsentry-api"}
 
 
-# ── Dev B will register routers here ────────────────────────────────────────
-# from app.api import vendors, scoring, alerts, reports, extraction, auth
-# app.include_router(vendors.router,    prefix="/api/v1")
-# app.include_router(scoring.router,    prefix="/api/v1")
-# app.include_router(alerts.router,     prefix="/api/v1")
-# app.include_router(reports.router,    prefix="/api/v1")
-# app.include_router(extraction.router, prefix="/api/v1")
-# app.include_router(auth.router,       prefix="/api/v1")
+# -- API routers (registered by Dev B) ---------------------------------------
+from app.api import vendors, scoring, alerts, reports, extraction, auth
+
+app.include_router(vendors.router,    prefix="/api/v1", tags=["vendors"])
+app.include_router(scoring.router,    prefix="/api/v1", tags=["scoring"])
+app.include_router(alerts.router,     prefix="/api/v1", tags=["alerts"])
+app.include_router(reports.router,    prefix="/api/v1", tags=["reports"])
+app.include_router(extraction.router, prefix="/api/v1", tags=["extraction"])
+app.include_router(auth.router,       prefix="/api/v1", tags=["auth"])

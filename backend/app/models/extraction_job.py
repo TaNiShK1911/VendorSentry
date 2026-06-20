@@ -14,6 +14,7 @@ The LLM only outputs data_access, compliance_claims, sla_terms, and conflicts.
 import uuid
 from datetime import datetime
 from typing import Optional
+from enum import Enum
 
 from sqlalchemy import String, DateTime, ForeignKey, JSON, Enum as SAEnum, Text, Float, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -30,6 +31,24 @@ SOURCE_TYPES = (
 )
 
 JOB_STATUSES = ("pending", "processing", "done", "failed")
+
+
+class DocumentType(str, Enum):
+    """Document type enumeration for extraction jobs"""
+    CSV_ROW = "csv_row"
+    CONTRACT_PDF = "contract_pdf"
+    SECURITY_ASSESSMENT = "security_assessment"
+    AUDIT_REPORT = "audit_report"
+    MANUAL_NOTE = "manual_note"
+
+
+class ExtractionStatus(str, Enum):
+    """Extraction job status enumeration"""
+    PENDING = "pending"
+    PROCESSING = "processing"
+    DONE = "done"
+    FAILED = "failed"
+
 
 
 class ExtractionJob(Base):

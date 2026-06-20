@@ -7,10 +7,12 @@ from app.models.vendor_score import VendorScore
 from app.models.certification import Certification
 from app.models.breach import BreachEvent
 from app.models.data_access import DataAccessScope
-from app.models.extraction_job import ExtractionJob
+from app.models.extraction_job import ExtractionJob, DocumentType, ExtractionStatus
 from app.models.evidence_signal import EvidenceSignal
 from app.models.audit_log import AuditLogEntry
 from app.models.ground_truth import GroundTruth
+from app.models.alert import Alert, AlertType, AlertSeverity
+from app.models.enums import RiskTier, StatusColor
 
 __all__ = [
     "Vendor",
@@ -19,7 +21,14 @@ __all__ = [
     "BreachEvent",
     "DataAccessScope",
     "ExtractionJob",
+    "DocumentType",
+    "ExtractionStatus",
     "EvidenceSignal",
     "AuditLogEntry",
     "GroundTruth",
+    "Alert",
+    "AlertType",
+    "AlertSeverity",
+    "RiskTier",
+    "StatusColor",
 ]

@@ -173,6 +173,19 @@ def score_vendor_stub(vendor: Vendor) -> VendorScoreResult:
 # DB-backed scoring path (loads data, calls score_vendor, persists result)
 # --------------------------------------------------------------------------- #
 
+def get_latest_score(vendor_id: str, db: Session) -> Optional[VendorScore]:
+    """
+    Get the most recent score for a vendor.
+
+    Returns:
+        The latest VendorScore row, or None if no scores exist.
+    """
+    return db.query(VendorScore).filter(
+        VendorScore.vendor_id == vendor_id
+    ).order_by(VendorScore.computed_at.desc()).first()
+
+
+
 def score_vendor_from_db(
     vendor_id: str,
     db: Session,
