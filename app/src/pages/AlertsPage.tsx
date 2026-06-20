@@ -194,6 +194,7 @@ export default function AlertsPage() {
       ...(statusFilter && { status: statusFilter }),
       ...(severityFilter && { severity: severityFilter }),
     }),
+    refetchInterval: 5000,
   });
 
   return (

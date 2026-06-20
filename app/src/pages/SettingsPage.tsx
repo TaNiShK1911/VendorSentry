@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import {
-  User, Bell, Monitor, KeyRound, ShieldCheck,
+  User, Bell, Monitor, KeyRound,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -22,6 +22,20 @@ export default function SettingsPage() {
   });
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
+  const [darkMode, setDarkMode] = useState(() => {
+    return document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
+  });
+
+  const handleDarkModeToggle = (enabled: boolean) => {
+    setDarkMode(enabled);
+    if (enabled) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   return (
     <div className="p-8">
@@ -58,7 +72,7 @@ export default function SettingsPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+              className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
             >
               <h2 className="text-lg font-semibold text-sg-text-primary">Profile</h2>
               <div className="mt-4 flex items-center gap-4">
@@ -85,7 +99,7 @@ export default function SettingsPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+              className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
             >
               <h2 className="text-lg font-semibold text-sg-text-primary">Notification Preferences</h2>
               <div className="mt-4 space-y-4">
@@ -121,21 +135,26 @@ export default function SettingsPage() {
               animate={{ opacity: 1 }}
               className="space-y-4"
             >
-              <div className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card">
+              <div className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card">
                 <h2 className="text-lg font-semibold text-sg-text-primary">Theme</h2>
-                <div className="mt-4 flex gap-3">
-                  <div className="flex items-center gap-3 rounded-lg border border-vs-accent-blue bg-sg-surface-dim px-4 py-3">
-                    <div className="h-6 w-6 rounded-full bg-sg-surface-muted border border-sg-border-subtle" />
-                    <div>
-                      <p className="text-sm font-medium text-sg-text-primary">Dark Mode</p>
-                      <p className="text-xs text-sg-text-secondary">Default and recommended</p>
-                    </div>
-                    <ShieldCheck className="ml-3 h-5 w-5 text-sg-primary" />
+                <div className="mt-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-sg-text-primary">Dark Mode</p>
+                    <p className="text-xs text-sg-text-secondary">Switch to a premium dark-themed interface</p>
                   </div>
+                  <label className="relative inline-flex cursor-pointer items-center">
+                    <input
+                      type="checkbox"
+                      checked={darkMode}
+                      onChange={(e) => handleDarkModeToggle(e.target.checked)}
+                      className="peer sr-only"
+                    />
+                    <div className="h-6 w-11 rounded-full bg-sg-surface-muted border border-sg-border-subtle after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:bg-sg-primary peer-checked:after:translate-x-full" />
+                  </label>
                 </div>
               </div>
 
-              <div className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card">
+              <div className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card">
                 <h2 className="text-lg font-semibold text-sg-text-primary">Density</h2>
                 <div className="mt-4 flex gap-3">
                   {(['compact', 'comfortable'] as const).map((d) => (
@@ -161,7 +180,7 @@ export default function SettingsPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+              className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
             >
               <h2 className="text-lg font-semibold text-sg-text-primary">API Keys</h2>
               <div className="mt-4">

@@ -43,7 +43,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex h-screen w-full bg-sg-surface-muted">
       {/* Sidebar */}
-      <aside className="flex h-full w-sidebar flex-shrink-0 flex-col border-r border-sg-border-subtle bg-white">
+      <aside className="flex h-full w-sidebar flex-shrink-0 flex-col border-r border-sg-border-subtle bg-sg-surface">
         {/* Logo */}
         <div className="flex items-center gap-2 px-4 py-4">
           <ShieldCheck className="h-5 w-5 text-sg-secondary" />
@@ -80,7 +80,7 @@ export default function DashboardLayout() {
         </nav>
 
         {/* User section */}
-        <div className="border-t border-sg-border-subtle px-3 py-4 bg-white">
+        <div className="border-t border-sg-border-subtle px-3 py-4 bg-sg-surface">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center bg-sg-surface-dim text-xs font-bold text-sg-text-primary">
               {user?.name?.split(' ').map((n) => n[0]).join('') || 'U'}

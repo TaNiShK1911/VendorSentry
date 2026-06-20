@@ -57,7 +57,7 @@ function MetricCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
-      className="rounded-card border border-sg-border-subtle bg-white p-4 shadow-card transition-all hover:-translate-y-0.5 hover:border-sg-border-focus hover:shadow-lift"
+      className="rounded-card border border-sg-border-subtle bg-sg-surface p-4 shadow-card transition-all hover:-translate-y-0.5 hover:border-sg-border-focus hover:shadow-lift"
     >
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
@@ -87,7 +87,7 @@ function RiskDistributionChart({ data }: { data: { name: string; value: number; 
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
-      className="rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+      className="rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
     >
       <h3 className="font-display text-base font-bold uppercase tracking-wider text-sg-text-primary">Risk Distribution</h3>
       <div className="mt-4">
@@ -111,10 +111,10 @@ function RiskDistributionChart({ data }: { data: { name: string; value: number; 
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             {/* Center label */}
-            <text x="50%" y="45%" textAnchor="middle" fill="#1a1c1c" fontSize={24} fontWeight={600}>
+            <text x="50%" y="45%" textAnchor="middle" fill="var(--sg-text-primary)" fontSize={24} fontWeight={600}>
               {total}
             </text>
-            <text x="50%" y="58%" textAnchor="middle" fill="#5A5E72" fontSize={12}>
+            <text x="50%" y="58%" textAnchor="middle" fill="var(--sg-text-secondary)" fontSize={12}>
               vendors
             </text>
           </PieChart>
@@ -141,35 +141,35 @@ function PortfolioTrendChart({ data }: { data: Array<{ date: string; avgScore: n
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.4 }}
-      className="rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+      className="rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
     >
       <h3 className="font-display text-base font-bold uppercase tracking-wider text-sg-text-primary">Portfolio Risk Trend (90 Days)</h3>
       <div className="mt-4">
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e2e2" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--sg-border-subtle)" />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#5A5E72', fontSize: 11 }}
-              axisLine={{ stroke: '#BDBDBD' }}
+              tick={{ fill: 'var(--sg-text-secondary)', fontSize: 11 }}
+              axisLine={{ stroke: 'var(--sg-border)' }}
               tickFormatter={(value) => {
                 const d = new Date(value);
                 return `${d.toLocaleString('en', { month: 'short' })} ${d.getDate()}`;
               }}
             />
             <YAxis
-              tick={{ fill: '#5A5E72', fontSize: 11 }}
-              axisLine={{ stroke: '#BDBDBD' }}
+              tick={{ fill: 'var(--sg-text-secondary)', fontSize: 11 }}
+              axisLine={{ stroke: 'var(--sg-border)' }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Line
               type="monotone"
               dataKey="avgScore"
               name="Average Score"
-              stroke="#1a1c1c"
+              stroke="var(--sg-text-primary)"
               strokeWidth={2}
               dot={false}
-              activeDot={{ r: 5, fill: '#1a1c1c' }}
+              activeDot={{ r: 5, fill: 'var(--sg-text-primary)' }}
               animationDuration={1000}
             />
             <Line
@@ -224,7 +224,7 @@ function TopRiskVendorsTable({ vendors }: { vendors: Array<{ id: string; name: s
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.35 }}
-      className="rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+      className="rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
     >
       <div className="flex items-center justify-between">
         <h3 className="font-display text-base font-bold uppercase tracking-wider text-sg-text-primary">Highest Risk Vendors</h3>
@@ -366,7 +366,6 @@ export default function DashboardPage() {
           value={distribution?.total_vendors || 0}
           icon={Users}
           color="#1a1c1c"
-          trend="+12 this month"
           delay={0}
         />
         <MetricCard

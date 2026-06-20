@@ -137,7 +137,7 @@ export default function ExtractionPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(`/vendors/${vendorId}`)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-sg-border-subtle bg-white text-sg-text-secondary transition-colors hover:bg-sg-surface-muted hover:text-sg-text-primary"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-sg-border-subtle bg-sg-surface text-sg-text-secondary transition-colors hover:bg-sg-surface-muted hover:text-sg-text-primary"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -166,7 +166,7 @@ export default function ExtractionPage() {
                 className={`cursor-pointer rounded-card border-2 border-dashed p-8 text-center transition-all ${
                   isDragging
                     ? 'border-sg-primary bg-sg-surface-muted'
-                    : 'border-sg-border-subtle bg-white hover:border-sg-border-focus'
+                    : 'border-sg-border-subtle bg-sg-surface hover:border-sg-border-focus'
                 }`}
               >
                 <input
@@ -200,7 +200,7 @@ export default function ExtractionPage() {
                         className={`flex flex-col items-center gap-2 rounded-card border p-4 transition-all ${
                           docType === opt.value
                             ? 'border-sg-primary bg-sg-surface-muted text-sg-text-primary'
-                            : 'border-sg-border-subtle bg-white text-sg-text-secondary hover:border-sg-border-focus hover:text-sg-text-primary'
+                            : 'border-sg-border-subtle bg-sg-surface text-sg-text-secondary hover:border-sg-border-focus hover:text-sg-text-primary'
                         }`}
                       >
                         <OptIcon className="h-5 w-5" />
@@ -232,7 +232,7 @@ export default function ExtractionPage() {
             </div>
 
             {/* Instructions */}
-            <div className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card lg:col-span-3">
+            <div className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card lg:col-span-3">
               <h3 className="font-display text-base font-bold uppercase tracking-wider text-sg-text-primary">How It Works</h3>
               <div className="mt-4 space-y-4">
                 {[
@@ -298,7 +298,7 @@ export default function ExtractionPage() {
               </div>
               <button
                 onClick={handleReset}
-                className="ml-auto rounded-button border border-sg-border-subtle bg-white px-4 py-2 text-sm font-semibold text-sg-text-secondary hover:text-sg-text-primary hover:border-sg-border-focus"
+                className="ml-auto rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2 text-sm font-semibold text-sg-text-secondary hover:text-sg-text-primary hover:border-sg-border-focus"
               >
                 Process Another
               </button>
@@ -357,7 +357,7 @@ export default function ExtractionPage() {
             )}
 
             {/* Extracted Data */}
-            <div className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card">
+            <div className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card">
               <h3 className="font-display text-base font-bold uppercase text-sg-text-primary">Extracted Data</h3>
               <div className="mt-4 overflow-x-auto rounded border border-sg-border-subtle bg-sg-surface-muted p-4">
                 <pre className="text-xs leading-relaxed" style={{ fontFamily: 'JetBrains Mono' }}>

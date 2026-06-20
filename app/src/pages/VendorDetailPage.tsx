@@ -20,7 +20,7 @@ function EvidenceCard({ source }: { source: EvidenceSource }) {
   const hasConflict = source.matched === false;
 
   return (
-    <div className={`rounded-card border p-4 ${hasConflict ? 'border-vs-risk-red/20 bg-sg-risk-red-bg' : 'border-sg-border-subtle bg-white'}`}>
+    <div className={`rounded-card border p-4 ${hasConflict ? 'border-vs-risk-red/20 bg-sg-risk-red-bg' : 'border-sg-border-subtle bg-sg-surface'}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="font-display text-sm font-bold text-sg-text-primary">
@@ -172,7 +172,7 @@ export default function VendorDetailPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(`/vendors/${vendorId}/extract`)}
-            className="flex items-center gap-2 rounded-button border border-sg-border-subtle bg-white px-4 py-2.5 text-sm font-medium text-sg-text-secondary transition-all hover:border-sg-border-focus hover:text-sg-text-primary"
+            className="flex items-center gap-2 rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2.5 text-sm font-medium text-sg-text-secondary transition-all hover:border-sg-border-focus hover:text-sg-text-primary"
           >
             <UploadCloud className="h-4 w-4" />
             Extract Document
@@ -180,7 +180,7 @@ export default function VendorDetailPage() {
           {canEdit && (
             <button
               onClick={() => setEditOpen(true)}
-              className="flex items-center gap-2 rounded-button border border-sg-border-subtle bg-white px-4 py-2.5 text-sm font-medium text-sg-text-secondary transition-all hover:border-sg-border-focus hover:text-sg-text-primary"
+              className="flex items-center gap-2 rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2.5 text-sm font-medium text-sg-text-secondary transition-all hover:border-sg-border-focus hover:text-sg-text-primary"
             >
               <Edit3 className="h-4 w-4" />
               Edit
@@ -207,7 +207,7 @@ export default function VendorDetailPage() {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
       >
         {/* Name + Tier + Score */}
         <div className="flex flex-wrap items-center gap-4">
@@ -268,7 +268,7 @@ export default function VendorDetailPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+          className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
         >
           <div className="flex flex-wrap items-center gap-8">
             {/* Score circle */}
@@ -316,7 +316,7 @@ export default function VendorDetailPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+          className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
         >
           <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Risk Score Breakdown</h2>
 
@@ -404,7 +404,7 @@ export default function VendorDetailPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
-        className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
       >
         <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Certifications</h2>
         {certifications?.certifications.length === 0 ? (
@@ -455,7 +455,7 @@ export default function VendorDetailPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
       >
         <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Breach History</h2>
         {breaches?.breaches.length === 0 ? (
@@ -502,7 +502,7 @@ export default function VendorDetailPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
       >
         <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Data Access Scope</h2>
         <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -582,7 +582,7 @@ export default function VendorDetailPage() {
             </div>
           )}
 
-          <div className="rounded-card border border-sg-border-subtle bg-white p-6 shadow-card">
+          <div className="rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card">
             <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Evidence Sources</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
               <EvidenceCard source={evidence.evidence_sources.breach_db} />
@@ -599,7 +599,7 @@ export default function VendorDetailPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
-          className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+          className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
         >
           <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Risk Score History</h2>
           <div className="mt-4">
@@ -643,7 +643,7 @@ export default function VendorDetailPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-6 rounded-card border border-sg-border-subtle bg-white p-6 shadow-card"
+          className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
         >
           <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Score Changes</h2>
           <div className="mt-4 overflow-x-auto">

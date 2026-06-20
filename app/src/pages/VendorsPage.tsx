@@ -53,7 +53,7 @@ function VendorCard({ vendor, index }: { vendor: Vendor; index: number }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
       onClick={() => navigate(`/vendors/${vendor.id}`)}
-      className="cursor-pointer rounded-card border border-sg-border-subtle bg-white p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-sg-border-focus hover:shadow-lift"
+      className="cursor-pointer rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-sg-border-focus hover:shadow-lift"
     >
       {/* Header */}
       <div className="flex items-start justify-between">
@@ -222,7 +222,7 @@ export default function VendorsPage() {
             className={`flex items-center gap-2 rounded-button border px-4 py-2.5 text-sm font-medium transition-all ${
               showFilters || hasActiveFilters
                 ? 'border-sg-primary bg-sg-surface-muted text-sg-primary'
-                : 'border-sg-border-subtle bg-white text-sg-text-secondary hover:text-sg-text-primary hover:border-sg-border-focus'
+                : 'border-sg-border-subtle bg-sg-surface text-sg-text-secondary hover:text-sg-text-primary hover:border-sg-border-focus'
             }`}
           >
             <Filter className="h-4 w-4" />
@@ -235,7 +235,7 @@ export default function VendorsPage() {
           </button>
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 rounded-button border border-sg-border-subtle bg-white px-4 py-2.5 text-sm font-medium text-sg-text-secondary transition-all hover:text-sg-text-primary hover:border-sg-border-focus"
+            className="flex items-center gap-2 rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2.5 text-sm font-medium text-sg-text-secondary transition-all hover:text-sg-text-primary hover:border-sg-border-focus"
           >
             <Download className="h-4 w-4" />
             Export CSV
@@ -258,7 +258,7 @@ export default function VendorsPage() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="mt-4 rounded-card border border-sg-border-subtle bg-white p-4"
+          className="mt-4 rounded-card border border-sg-border-subtle bg-sg-surface p-4"
         >
           <div className="flex flex-wrap items-end gap-4">
             {/* Search */}
@@ -273,7 +273,7 @@ export default function VendorsPage() {
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                   placeholder="Search vendors..."
-                  className="w-full rounded-input border border-sg-border-subtle bg-white py-2.5 pl-10 pr-4 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:border-sg-border-focus"
+                  className="w-full rounded-input border border-sg-border-subtle bg-sg-surface py-2.5 pl-10 pr-4 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:border-sg-border-focus"
                 />
               </div>
             </div>
@@ -295,7 +295,7 @@ export default function VendorsPage() {
                         : tier === 'MEDIUM' ? 'bg-sg-surface-dim text-sg-text-primary ring-1 ring-vs-accent-blue/30'
                         : tier === 'LOW' ? 'bg-sg-risk-green-bg text-sg-risk-green ring-1 ring-vs-risk-green/30'
                         : 'bg-sg-risk-clear-bg text-sg-risk-clear ring-1 ring-sg-risk-clear/30'
-                        : 'bg-white border border-sg-border-subtle text-sg-text-secondary hover:text-sg-text-primary'
+                        : 'bg-sg-surface border border-sg-border-subtle text-sg-text-secondary hover:text-sg-text-primary'
                     }`}
                   >
                     {tier}
@@ -312,7 +312,7 @@ export default function VendorsPage() {
               <select
                 value={selectedType}
                 onChange={(e) => { setSelectedType(e.target.value); setPage(1); }}
-                className="w-full rounded-input border border-sg-border-subtle bg-white px-3 py-2.5 text-sm text-sg-text-primary outline-none transition-all focus:border-sg-border-focus"
+                className="w-full rounded-input border border-sg-border-subtle bg-sg-surface px-3 py-2.5 text-sm text-sg-text-primary outline-none transition-all focus:border-sg-border-focus"
               >
                 <option value="">All Types</option>
                 {VENDOR_TYPES.map((t) => (
@@ -334,7 +334,7 @@ export default function VendorsPage() {
                   placeholder="0"
                   min={0}
                   max={100}
-                  className="w-20 rounded-input border border-sg-border-subtle bg-white px-3 py-2.5 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:border-sg-border-focus"
+                  className="w-20 rounded-input border border-sg-border-subtle bg-sg-surface px-3 py-2.5 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:border-sg-border-focus"
                 />
               </div>
               <div>
@@ -348,7 +348,7 @@ export default function VendorsPage() {
                   placeholder="100"
                   min={0}
                   max={100}
-                  className="w-20 rounded-input border border-sg-border-subtle bg-white px-3 py-2.5 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:border-sg-border-focus"
+                  className="w-20 rounded-input border border-sg-border-subtle bg-sg-surface px-3 py-2.5 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:border-sg-border-focus"
                 />
               </div>
             </div>
@@ -359,7 +359,7 @@ export default function VendorsPage() {
                 type="checkbox"
                 checked={hasPii}
                 onChange={(e) => { setHasPii(e.target.checked); setPage(1); }}
-                className="h-4 w-4 rounded border-sg-border-subtle bg-white accent-sg-primary"
+                className="h-4 w-4 rounded border-sg-border-subtle bg-sg-surface accent-sg-primary"
               />
               <span className="text-sm text-sg-text-secondary">Has PII Access</span>
             </label>
@@ -372,7 +372,7 @@ export default function VendorsPage() {
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                className="w-full rounded-input border border-sg-border-subtle bg-white px-3 py-2.5 text-sm text-sg-text-primary outline-none transition-all focus:border-sg-border-focus"
+                className="w-full rounded-input border border-sg-border-subtle bg-sg-surface px-3 py-2.5 text-sm text-sg-text-primary outline-none transition-all focus:border-sg-border-focus"
               >
                 {VENDOR_SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -408,7 +408,7 @@ export default function VendorsPage() {
       {isLoading ? (
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-[260px] rounded-card border border-sg-border-subtle bg-white p-5">
+            <div key={i} className="h-[260px] rounded-card border border-sg-border-subtle bg-sg-surface p-5">
               <div className="skeleton-shimmer h-full w-full rounded-lg" />
             </div>
           ))}
@@ -437,7 +437,7 @@ export default function VendorsPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="flex items-center gap-1 rounded-button border border-sg-border-subtle bg-white px-4 py-2 text-sm font-semibold text-sg-text-secondary transition-all hover:text-sg-text-primary hover:border-sg-border-focus disabled:opacity-30"
+            className="flex items-center gap-1 rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2 text-sm font-semibold text-sg-text-secondary transition-all hover:text-sg-text-primary hover:border-sg-border-focus disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
@@ -448,7 +448,7 @@ export default function VendorsPage() {
           <button
             onClick={() => setPage((p) => Math.min(data.pagination.total_pages, p + 1))}
             disabled={page === data.pagination.total_pages}
-            className="flex items-center gap-1 rounded-button border border-sg-border-subtle bg-white px-4 py-2 text-sm font-semibold text-sg-text-secondary transition-all hover:text-sg-text-primary hover:border-sg-border-focus disabled:opacity-30"
+            className="flex items-center gap-1 rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2 text-sm font-semibold text-sg-text-secondary transition-all hover:text-sg-text-primary hover:border-sg-border-focus disabled:opacity-30"
           >
             Next
             <ChevronRight className="h-4 w-4" />

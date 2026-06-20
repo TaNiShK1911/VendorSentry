@@ -80,7 +80,7 @@ export default function ReportsPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0 }}
-          className="rounded-card border border-sg-border-subtle bg-white p-8 shadow-card"
+          className="rounded-card border border-sg-border-subtle bg-sg-surface p-8 shadow-card"
         >
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-sg-surface-dim">
             <FileText className="h-7 w-7 text-sg-primary" />
@@ -125,7 +125,7 @@ export default function ReportsPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-card border border-sg-border-subtle bg-white p-8 shadow-card"
+          className="rounded-card border border-sg-border-subtle bg-sg-surface p-8 shadow-card"
         >
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-sg-surface-dim">
             <BarChart3 className="h-7 w-7 text-sg-primary" />
