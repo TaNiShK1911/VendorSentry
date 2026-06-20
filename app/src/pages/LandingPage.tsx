@@ -6,12 +6,12 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-sg-surface font-sans text-sg-text-primary">
+    <div className="min-h-screen bg-sg-surface-muted font-sans text-sg-text-primary">
       {/* Header */}
-      <header className="flex h-20 items-center justify-between border-b border-sg-border-subtle bg-white px-8">
+      <header className="flex h-20 items-center justify-between border-b border-sg-border-subtle bg-sg-surface px-8">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center bg-sg-secondary">
-            <ShieldCheck className="h-6 w-6 text-white" />
+            <ShieldCheck className="h-6 w-6 text-sg-text-inverse" />
           </div>
           <span className="font-display text-xl font-bold tracking-tight text-sg-text-primary uppercase">
             VendorSentry
@@ -26,7 +26,7 @@ export default function LandingPage() {
           </a>
           <button
             onClick={() => navigate('/login')}
-            className="flex items-center gap-2 rounded bg-sg-primary px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-sg-primary-hover"
+            className="flex items-center gap-2 rounded bg-sg-primary px-6 py-2.5 text-sm font-semibold text-sg-text-inverse transition-all hover:bg-sg-primary-hover"
           >
             Client Login
             <ArrowRight className="h-4 w-4" />
@@ -36,8 +36,8 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main>
-        <section className="relative flex min-h-[80vh] flex-col justify-center overflow-hidden border-b border-sg-border-subtle bg-white px-8 py-20">
-          <div className="absolute top-0 right-0 h-[600px] w-[600px] -translate-y-1/4 translate-x-1/4 bg-sg-surface-muted"></div>
+        <section className="relative flex min-h-[80vh] flex-col justify-center overflow-hidden border-b border-sg-border-subtle bg-sg-surface px-8 py-20">
+          <div className="absolute top-0 right-0 h-[600px] w-[600px] -translate-y-1/4 translate-x-1/4 bg-sg-surface-muted opacity-50"></div>
           <div className="absolute bottom-0 left-0 h-4 w-1/3 bg-sg-primary"></div>
           
           <div className="relative z-10 mx-auto max-w-6xl">
@@ -62,7 +62,7 @@ export default function LandingPage() {
               <div className="mt-12 flex gap-4">
                 <button
                   onClick={() => navigate('/login')}
-                  className="rounded bg-sg-primary px-8 py-4 text-base font-bold uppercase tracking-wider text-white transition-all hover:bg-sg-primary-hover shadow-lift"
+                  className="rounded bg-sg-primary px-8 py-4 text-base font-bold uppercase tracking-wider text-sg-text-inverse transition-all hover:bg-sg-primary-hover shadow-lift"
                 >
                   Access Platform
                 </button>
@@ -87,8 +87,8 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               {/* Feature Block 1 */}
-              <div className="group border border-sg-border-subtle bg-white p-8 transition-all hover:border-sg-border-focus hover:shadow-lift">
-                <div className="mb-6 flex h-12 w-12 items-center justify-center bg-sg-surface-muted group-hover:bg-sg-primary group-hover:text-white transition-colors">
+              <div className="group border border-sg-border-subtle bg-sg-surface p-8 transition-all hover:border-sg-border-focus hover:shadow-lift">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center bg-sg-surface-muted group-hover:bg-sg-primary group-hover:text-sg-text-inverse transition-colors">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-sg-text-primary">Vendor Intelligence</h3>
@@ -98,8 +98,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature Block 2 */}
-              <div className="group border border-sg-border-subtle bg-white p-8 transition-all hover:border-sg-border-focus hover:shadow-lift">
-                <div className="mb-6 flex h-12 w-12 items-center justify-center bg-sg-surface-muted group-hover:bg-sg-secondary group-hover:text-white transition-colors">
+              <div className="group border border-sg-border-subtle bg-sg-surface p-8 transition-all hover:border-sg-border-focus hover:shadow-lift">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center bg-sg-surface-muted group-hover:bg-sg-secondary group-hover:text-sg-text-inverse transition-colors">
                   <Activity className="h-6 w-6" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-sg-text-primary">AI Contract Analysis</h3>
@@ -109,8 +109,8 @@ export default function LandingPage() {
               </div>
 
               {/* Feature Block 3 */}
-              <div className="group border border-sg-border-subtle bg-white p-8 transition-all hover:border-sg-border-focus hover:shadow-lift">
-                <div className="mb-6 flex h-12 w-12 items-center justify-center bg-sg-surface-muted group-hover:bg-sg-primary group-hover:text-white transition-colors">
+              <div className="group border border-sg-border-subtle bg-sg-surface p-8 transition-all hover:border-sg-border-focus hover:shadow-lift">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center bg-sg-surface-muted group-hover:bg-sg-primary group-hover:text-sg-text-inverse transition-colors">
                   <Lock className="h-6 w-6" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-sg-text-primary">Conflict Resolution</h3>
@@ -123,15 +123,15 @@ export default function LandingPage() {
         </section>
 
         {/* Call to Action */}
-        <section className="bg-sg-secondary px-8 py-24 text-white">
+        <section className="bg-sg-secondary px-8 py-24 text-sg-text-inverse">
           <div className="mx-auto max-w-6xl text-center">
-            <h2 className="font-display text-4xl font-bold">Ready to secure your vendor ecosystem?</h2>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-sg-surface-dim">
+            <h2 className="font-display text-4xl font-bold text-sg-text-inverse">Ready to secure your vendor ecosystem?</h2>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-sg-text-secondary">
               Join leading financial institutions leveraging VendorSentry for uncompromising third-party risk management.
             </p>
             <button
               onClick={() => navigate('/login')}
-              className="mt-10 rounded bg-sg-primary px-10 py-4 text-lg font-bold uppercase tracking-wider text-white transition-all hover:bg-white hover:text-sg-primary"
+              className="mt-10 rounded bg-sg-primary px-10 py-4 text-lg font-bold uppercase tracking-wider text-sg-text-inverse transition-all hover:bg-sg-surface hover:text-sg-primary"
             >
               Sign In to Dashboard
             </button>
@@ -140,10 +140,10 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-sg-border-subtle bg-white px-8 py-12">
+      <footer className="border-t border-sg-border-subtle bg-sg-surface px-8 py-12">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-sg-secondary" />
+            <ShieldCheck className="h-5 w-5 text-sg-primary" />
             <span className="font-display font-bold uppercase tracking-tight text-sg-text-primary">VendorSentry</span>
           </div>
           <p className="text-sm font-semibold uppercase text-sg-text-secondary">

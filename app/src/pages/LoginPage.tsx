@@ -35,12 +35,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white font-sans text-sg-text-primary">
+    <div className="flex min-h-screen flex-col bg-sg-surface font-sans text-sg-text-primary">
       {/* Header */}
-      <header className="flex h-20 items-center justify-between border-b border-sg-border-subtle bg-white px-8">
+      <header className="flex h-20 items-center justify-between border-b border-sg-border-subtle bg-sg-surface px-8">
         <Link to="/" className="flex items-center gap-3 hover:opacity-90">
           <div className="flex h-10 w-10 items-center justify-center bg-sg-secondary">
-            <ShieldCheck className="h-6 w-6 text-white" />
+            <ShieldCheck className="h-6 w-6 text-sg-text-inverse" />
           </div>
           <span className="font-display text-xl font-bold uppercase tracking-tight text-sg-text-primary">
             VendorSentry
@@ -50,15 +50,15 @@ export default function LoginPage() {
 
       {/* Main Content */}
       <main className="flex flex-1">
-        {/* Left column - Discovery (SG inspired, but VendorSentry features) */}
-        <div className="hidden w-1/3 flex-col bg-[#F2F2F2] lg:flex">
+        {/* Left column - Discovery */}
+        <div className="hidden w-1/3 flex-col bg-sg-surface-muted lg:flex border-r border-sg-border-subtle">
           <div className="mt-32 px-12">
-            <div className="mb-8 h-1 w-8 bg-black"></div>
-            <h1 className="max-w-xs font-display text-4xl font-bold leading-tight text-black">
+            <div className="mb-8 h-1 w-8 bg-sg-secondary"></div>
+            <h1 className="max-w-xs font-display text-4xl font-bold leading-tight text-sg-text-primary">
               Discover more on VendorSentry
             </h1>
             
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-[#5A5A5A]">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-sg-text-secondary">
               AI-powered third-party risk monitoring, document intelligence, and compliance scoring — all in one platform.
             </p>
           </div>
@@ -67,7 +67,7 @@ export default function LoginPage() {
         {/* Right column - Login panel */}
         <div className="flex flex-1 items-start justify-center pt-20 lg:pt-24">
           <div className="w-full max-w-[440px] px-6">
-            <h2 className="mb-8 font-display text-3xl font-bold tracking-tight text-black">
+            <h2 className="mb-8 font-display text-3xl font-bold tracking-tight text-sg-text-primary">
               Sign in to VendorSentry
             </h2>
 
@@ -79,7 +79,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
-                  className="w-full bg-[#EAEAEA] px-4 py-3.5 text-sm text-black placeholder-[#808080] outline-none transition-all focus:ring-2 focus:ring-black/5"
+                  className="w-full bg-sg-surface-muted border border-sg-border-subtle px-4 py-3.5 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:ring-2 focus:ring-sg-primary/10 focus:border-sg-border-focus"
                   required
                 />
               </div>
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full bg-[#EAEAEA] px-4 py-3.5 text-sm text-black placeholder-[#808080] outline-none transition-all focus:ring-2 focus:ring-black/5"
+                  className="w-full bg-sg-surface-muted border border-sg-border-subtle px-4 py-3.5 text-sm text-sg-text-primary placeholder-sg-text-secondary outline-none transition-all focus:ring-2 focus:ring-sg-primary/10 focus:border-sg-border-focus"
                   required
                 />
               </div>
@@ -100,9 +100,9 @@ export default function LoginPage() {
                 {/* Extras removed */}
               </div>
 
-              {/* Role selector (Original Functionality Restored in SG Style) */}
+              {/* Role selector */}
               <div className="pt-6">
-                <label className="text-[11px] font-semibold uppercase tracking-wider text-[#5A5A5A]">
+                <label className="text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
                   Demo Login Roles
                 </label>
                 <div className="mt-3 grid grid-cols-3 gap-2">
@@ -116,8 +116,8 @@ export default function LoginPage() {
                         onClick={() => handleRoleSelect(role.id)}
                         className={`flex flex-col items-center gap-2 border p-4 transition-all ${
                           isSelected
-                            ? 'border-sg-primary bg-[#F9F9F9] text-black'
-                            : 'border-[#EAEAEA] bg-white text-[#808080] hover:border-[#A0A0A0]'
+                            ? 'border-sg-primary bg-sg-surface-dim text-sg-text-primary'
+                            : 'border-sg-border-subtle bg-sg-surface text-sg-text-secondary hover:border-sg-border-focus'
                         }`}
                       >
                         <RoleIcon className={`h-5 w-5 ${isSelected ? 'text-sg-primary' : ''}`} />
@@ -139,7 +139,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loginLoading}
-                className="mt-8 flex w-full items-center justify-center bg-[#949494] py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#808080] disabled:opacity-50"
+                className="mt-8 flex w-full items-center justify-center bg-sg-primary py-3.5 text-sm font-semibold text-sg-text-inverse transition-all hover:bg-sg-primary-hover disabled:opacity-50"
               >
                 {loginLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Sign in'}
               </button>

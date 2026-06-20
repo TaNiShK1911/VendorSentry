@@ -35,7 +35,7 @@ function MetricCard({ label, value, icon: Icon, color, delay }: {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
-      className="rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+      className="rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
     >
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
@@ -46,7 +46,7 @@ function MetricCard({ label, value, icon: Icon, color, delay }: {
       <div className="mt-3">
         <CountUp end={value * 100} duration={2} decimals={1} suffix="%" className="text-[28px] font-bold text-sg-text-primary" />
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sg-surface/[0.06]">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value * 100}%` }}
@@ -113,15 +113,15 @@ export default function EvaluationPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+          className="rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
         >
           <h3 className="text-base font-semibold text-sg-text-primary">Score Distribution</h3>
           <div className="mt-4">
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={scoreDistData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.04)" />
-                <XAxis dataKey="bin" tick={{ fill: '#5A5E72', fontSize: 10 }} axisLine={{ stroke: 'rgba(255, 255, 255, 0.06)' }} />
-                <YAxis tick={{ fill: '#5A5E72', fontSize: 11 }} axisLine={{ stroke: 'rgba(255, 255, 255, 0.06)' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--sg-border-subtle)" />
+                <XAxis dataKey="bin" tick={{ fill: 'var(--sg-text-secondary)', fontSize: 10 }} axisLine={{ stroke: 'var(--sg-border)' }} />
+                <YAxis tick={{ fill: 'var(--sg-text-secondary)', fontSize: 11 }} axisLine={{ stroke: 'var(--sg-border)' }} />
                 <Tooltip content={<ChartTooltip />} />
                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <Bar dataKey="Predicted" fill="#365DE5" radius={[4, 4, 0, 0]} />
@@ -136,7 +136,7 @@ export default function EvaluationPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+          className="rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
         >
           <h3 className="text-base font-semibold text-sg-text-primary">Confusion Matrix</h3>
           <div className="mt-4">
@@ -187,7 +187,7 @@ export default function EvaluationPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="mt-6 rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
       >
         <h3 className="text-base font-semibold text-sg-text-primary">Metrics by Severity Tier</h3>
         <div className="mt-4 overflow-x-auto">
@@ -233,7 +233,7 @@ export default function EvaluationPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="mt-6 rounded-card border border-sg-border-subtle bg-white p-5 shadow-card"
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-5 shadow-card"
       >
         <h3 className="text-base font-semibold text-sg-text-primary">Dataset Information</h3>
         <div className="mt-4 grid grid-cols-3 gap-4">

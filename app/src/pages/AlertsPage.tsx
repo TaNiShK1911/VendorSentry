@@ -84,7 +84,7 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className={`rounded-card border bg-white p-5 shadow-card transition-all hover:bg-white/[0.02] ${
+      className={`rounded-card border bg-sg-surface p-5 shadow-card transition-all hover:bg-sg-surface/[0.02] ${
         isResolved ? 'border-sg-border-subtle opacity-60' : 'border-sg-border-subtle'
       }`}
       style={!isResolved && !isAcknowledged ? { borderLeft: `3px solid ${sevConfig.color}` } : { borderLeft: `3px solid rgba(255,255,255,0.06)` }}
@@ -152,7 +152,7 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
               <button
                 onClick={() => acknowledgeMutation.mutate()}
                 disabled={acknowledgeMutation.isPending}
-                className="rounded-button border border-sg-border-subtle px-3 py-1.5 text-xs font-medium text-sg-text-secondary transition-all hover:bg-white/[0.04] hover:text-sg-text-primary disabled:opacity-50"
+                className="rounded-button border border-sg-border-subtle px-3 py-1.5 text-xs font-medium text-sg-text-secondary transition-all hover:bg-sg-surface/[0.04] hover:text-sg-text-primary disabled:opacity-50"
               >
                 Acknowledge
               </button>
@@ -218,7 +218,7 @@ export default function AlertsPage() {
             className={`rounded-card border p-4 text-left transition-all hover:-translate-y-0.5 ${
               severityFilter === item.severity
                 ? 'border-vs-accent-blue bg-sg-surface-dim'
-                : 'border-sg-border-subtle bg-white'
+                : 'border-sg-border-subtle bg-sg-surface'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -253,7 +253,7 @@ export default function AlertsPage() {
       <div className="mt-4 space-y-3">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-card border border-sg-border-subtle bg-white">
+            <div key={i} className="h-24 rounded-card border border-sg-border-subtle bg-sg-surface">
               <div className="skeleton-shimmer h-full w-full rounded-lg" />
             </div>
           ))
@@ -276,7 +276,7 @@ export default function AlertsPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="rounded-button border border-sg-border-subtle bg-white px-4 py-2 text-sm text-sg-text-secondary disabled:opacity-30"
+            className="rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2 text-sm text-sg-text-secondary disabled:opacity-30"
           >
             Previous
           </button>
@@ -286,7 +286,7 @@ export default function AlertsPage() {
           <button
             onClick={() => setPage((p) => Math.min(data.pagination.total_pages, p + 1))}
             disabled={page === data.pagination.total_pages}
-            className="rounded-button border border-sg-border-subtle bg-white px-4 py-2 text-sm text-sg-text-secondary disabled:opacity-30"
+            className="rounded-button border border-sg-border-subtle bg-sg-surface px-4 py-2 text-sm text-sg-text-secondary disabled:opacity-30"
           >
             Next
           </button>
