@@ -38,41 +38,15 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
 
   const acknowledgeMutation = useMutation({
     mutationFn: () => alertsApi.acknowledge(alert.id),
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['alerts'] });
-      const prev = queryClient.getQueryData(['alerts']);
-      queryClient.setQueryData(['alerts'], (old: any) => ({
-        ...old,
-        alerts: old.alerts.map((a: Alert) => a.id === alert.id ? { ...a, status: 'acknowledged' as AlertStatus } : a),
-      }));
-      return { prev };
-    },
-    onError: (_err, _vars, context) => {
-      queryClient.setQueryData(['alerts'], context?.prev);
-    },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
-      queryClient.invalidateQueries({ queryKey: ['alerts', 'summary'] });
     },
   });
 
   const resolveMutation = useMutation({
     mutationFn: () => alertsApi.resolve(alert.id),
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['alerts'] });
-      const prev = queryClient.getQueryData(['alerts']);
-      queryClient.setQueryData(['alerts'], (old: any) => ({
-        ...old,
-        alerts: old.alerts.map((a: Alert) => a.id === alert.id ? { ...a, status: 'resolved' as AlertStatus } : a),
-      }));
-      return { prev };
-    },
-    onError: (_err, _vars, context) => {
-      queryClient.setQueryData(['alerts'], context?.prev);
-    },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
-      queryClient.invalidateQueries({ queryKey: ['alerts', 'summary'] });
     },
   });
 
