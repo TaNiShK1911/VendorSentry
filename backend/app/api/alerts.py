@@ -109,7 +109,7 @@ def acknowledge_alert(alert_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
 
     alert.acknowledged_at = datetime.utcnow()
-    db.flush()
+    db.commit()
 
     vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
 
@@ -137,7 +137,7 @@ def resolve_alert(alert_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
 
     alert.resolved_at = datetime.utcnow()
-    db.flush()
+    db.commit()
 
     vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
 

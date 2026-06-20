@@ -56,18 +56,18 @@ class LLMClient:
                 base_url="https://openrouter.ai/api/v1",
             )
             logger.info("LLM client initialised with OpenRouter fallback")
-        elif settings.gemini_api_key:
-            self._gemini = OpenAI(
-                api_key=settings.gemini_api_key,
-                base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-            )
-            logger.info("LLM client initialised with Gemini API")
         elif settings.groq_api_key:
             self._groq = OpenAI(
                 api_key=settings.groq_api_key,
                 base_url="https://api.groq.com/openai/v1",
             )
             logger.info("LLM client initialised with Groq fallback")
+        elif settings.gemini_api_key:
+            self._gemini = OpenAI(
+                api_key=settings.gemini_api_key,
+                base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+            )
+            logger.info("LLM client initialised with Gemini API")
         else:
             logger.warning(
                 "No LLM API key configured. Extraction will return empty results. "
@@ -120,30 +120,92 @@ class LLMClient:
     def complete_json(self, system_prompt: str, user_prompt: str) -> dict[str, Any]:
         """
         Like complete() but parses and returns the JSON dict.
-        Falls back to a mock valid JSON response on rate limits or parse errors.
+        Includes a multi-step repair pipeline for common LLM JSON mistakes.
         """
+        raw = self.complete(system_prompt, user_prompt)
+        result = self._try_parse_json(raw)
+        if result is not None:
+            return result
+
+        # Last resort: ask the LLM to fix its own broken JSON
+        logger.warning("JSON repair failed locally. Asking LLM to fix its own output...")
+        fix_prompt = (
+            "The following text was supposed to be valid JSON but has syntax errors. "
+            "Return ONLY the corrected, valid JSON object — no explanation, no markdown fences, no comments:\n\n"
+            + raw[:4000]
+        )
         try:
-            raw = self.complete(system_prompt, user_prompt)
+            retry_raw = self.complete("You are a JSON repair assistant. Return ONLY valid JSON.", fix_prompt)
+            result = self._try_parse_json(retry_raw)
+            if result is not None:
+                return result
+        except Exception:
+            pass
+
+        logger.error("LLM JSON parsing failed even after repair and retry.")
+        logger.debug("Raw LLM response (first 1000 chars): %s", raw[:1000])
+        raise RuntimeError(f"Failed to parse LLM response as JSON after all repair attempts")
+
+    def _try_parse_json(self, raw: str) -> dict[str, Any] | None:
+        """Attempt to parse raw text as JSON with progressive repair steps."""
+        raw = raw.strip()
+
+        # Step 1 — Strip markdown code fences
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[-1]
+            if "```" in raw:
+                raw = raw[: raw.rfind("```")]
             raw = raw.strip()
-            
-            # More robust JSON extraction: find the first { and last }
-            start_idx = raw.find('{')
-            end_idx = raw.rfind('}')
-            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-                raw = raw[start_idx:end_idx + 1]
-            elif raw.startswith("```"):
-                raw = raw.split("\n", 1)[-1]
-                if raw.endswith("```"):
-                    raw = raw[: raw.rfind("```")]
+
+        # Step 2 — Extract the outermost JSON object
+        start_idx = raw.find('{')
+        end_idx = raw.rfind('}')
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            raw = raw[start_idx:end_idx + 1]
+
+        # Step 3 — Try parsing as-is first
+        try:
             return json.loads(raw)
-        except Exception as e:
-            logger.error("LLM JSON parsing or API failed, returning mock extraction. Error: %s", e)
-            return {
-                "data_access": {"pii": "Yes", "financial": "No", "systems": ["CRM"]},
-                "compliance_claims": [{"type": "SOC2 Type II", "claimed_status": "Valid"}, {"type": "ISO 27001", "claimed_status": "Valid"}],
-                "sla_terms": {"uptime_pct": 99.9, "breach_notification_hours": 24, "other": {}},
-                "conflicts": [{"field": "compliance", "severity": "MEDIUM", "description": "Mock conflict: claimed SOC2 but DB says expired."}]
-            }
+        except json.JSONDecodeError:
+            pass
+
+        # Step 4 — Attempt automated repairs for common LLM mistakes
+        repaired = self._repair_json(raw)
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError:
+            return None
+
+    @staticmethod
+    def _repair_json(text: str) -> str:
+        """
+        Best-effort repair of common JSON errors from LLMs:
+        - JavaScript-style comments (// and /* */)
+        - Trailing commas before } or ]
+        - Single-quoted strings → double-quoted
+        - Unquoted property names
+        - Newlines inside string values
+        """
+        import re
+
+        # Remove single-line comments (// ...)
+        text = re.sub(r'//[^\n]*', '', text)
+
+        # Remove multi-line comments (/* ... */)
+        text = re.sub(r'/\*.*?\*/', '', text, flags=re.DOTALL)
+
+        # Remove trailing commas before closing braces/brackets
+        text = re.sub(r',\s*([\]}])', r'\1', text)
+
+        # Fix unquoted property names:  { key: "value" } → { "key": "value" }
+        text = re.sub(r'(?<=[\{,])\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:', r' "\1":', text)
+
+        # Replace single-quoted strings with double-quoted (simple heuristic)
+        # Only do this if there are no double-quoted strings at all
+        if '"' not in text and "'" in text:
+            text = text.replace("'", '"')
+
+        return text
 
     # ── Private helpers ──────────────────────────────────────────────────────
 

@@ -6,15 +6,23 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
+broker_url = settings.redis_url
+backend_url = settings.redis_url
+if broker_url.startswith("sqla+"):
+    backend_url = broker_url.replace("sqla+", "db+")
+
 celery_app = Celery(
     "vendorsentry",
-    broker=settings.redis_url,
-    backend=settings.redis_url,
+    broker=broker_url,
+    backend=backend_url,
     include=[
         "app.services.monitoring.cert_watcher",
         "app.services.monitoring.breach_watcher",
         "app.services.monitoring.contract_watcher",
         "app.services.monitoring.assessment_watcher",
+        "app.services.enrichment.public_records",
+        "app.services.integrations.status_api",
+        "app.services.extraction.tasks",
     ]
 )
 
@@ -43,5 +51,13 @@ celery_app.conf.beat_schedule = {
     "breach-db-poll": {
         "task": "app.services.monitoring.breach_watcher.poll_breach_db",
         "schedule": crontab(hour="*/6", minute=0),  # Every 6 hours
+    },
+    "public-records-enrichment": {
+        "task": "app.services.enrichment.public_records.check_public_records",
+        "schedule": crontab(hour=7, minute=0),
+    },
+    "status-api-check": {
+        "task": "app.services.integrations.status_api.check_live_cert_status",
+        "schedule": crontab(hour=7, minute=15),
     },
 }

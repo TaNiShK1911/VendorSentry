@@ -51,6 +51,7 @@ def _build_existing_vendor_data(vendor: Vendor) -> dict:
 
 def extract_contract(
     vendor: Vendor,
+    job: ExtractionJob,
     document_text: str,
     db: Session,
     document_type: str = "contract",
@@ -59,15 +60,15 @@ def extract_contract(
     Run LLM extraction on a vendor document (contract / assessment / audit report).
 
     Steps:
-    1. Create a pending ExtractionJob row immediately (so the API can return 202).
-    2. Build prompt with existing vendor context for conflict detection.
-    3. Call the LLM.
-    4. Parse JSON output.
-    5. Run conflict checker against stored DB fields.
-    6. Persist structured_output + flagged_conflicts on the job row.
+    1. Build prompt with existing vendor context for conflict detection.
+    2. Call the LLM.
+    3. Parse JSON output.
+    4. Run conflict checker against stored DB fields.
+    5. Persist structured_output + flagged_conflicts on the job row.
 
     Args:
         vendor:        The Vendor ORM object (with relationships loaded).
+        job:           The pending ExtractionJob row already persisted.
         document_text: Raw text content of the uploaded document.
         db:            SQLAlchemy session.
         document_type: "contract" | "security_assessment" | "audit_report".
@@ -75,16 +76,6 @@ def extract_contract(
     Returns:
         ExtractionJob ORM object (persisted, status="done" or "failed").
     """
-    # Step 1 — Create the job row immediately so the caller gets a job_id to poll
-    job = ExtractionJob(
-        id=str(uuid.uuid4()),
-        vendor_id=vendor.id,
-        source_type=_map_document_type(document_type),
-        raw_text=document_text[:50_000],  # Truncate very large docs for storage
-        status="processing",
-    )
-    db.add(job)
-    db.flush()  # get the id without committing
 
     try:
         # Step 2 — Build prompt
@@ -115,8 +106,35 @@ def extract_contract(
         job.status = "done"
         job.completed_at = datetime.utcnow()
 
+        # Step 7 — Merge extracted facts into vendor record.
+        # When conflicts exist, we merge only the non-conflicting fields.
+        conflicted_fields = {c.get("field", "") for c in all_conflicts}
+        _merge_extracted_facts(vendor, raw_output, db, conflicted_fields)
+
+        # Step 8 — Always rescore after extraction so dashboard/alerts update
+        from app.services.scoring.engine import score_vendor_from_db
+        from app.services.extraction.narrative import generate_rationale
+
+        # Flush so the updated facts are saved before scoring
+        db.flush()
+
+        score = score_vendor_from_db(vendor.id, db, triggered_by="extraction_complete")
+
+        rationale = generate_rationale(
+            vendor_name=vendor.name,
+            composite_score=score.composite_score,
+            tier=score.tier,
+            breach_subscore=score.breach_subscore,
+            access_subscore=score.access_subscore,
+            compliance_subscore=score.compliance_subscore,
+            financial_subscore=score.financial_subscore,
+            anomaly_types=score.anomaly_types
+        )
+        score.rationale = rationale
+        db.flush()
+
         logger.info(
-            "ExtractionJob %s completed: vendor=%s type=%s conflicts=%d",
+            "ExtractionJob %s completed: vendor=%s type=%s conflicts=%d — rescore triggered",
             job.id, vendor.id, document_type, len(all_conflicts),
         )
 
@@ -137,6 +155,63 @@ def _map_document_type(document_type: str) -> str:
         "audit_report": "audit_report",
     }
     return mapping.get(document_type, "contract_pdf")
+
+
+def _merge_extracted_facts(vendor: Vendor, extracted: dict, db: Session, conflicted_fields: set[str] | None = None) -> None:
+    """Merge extracted facts into the vendor's record, taking the latest document as the source of truth."""
+    from datetime import datetime
+
+    # 1. Update data access scope (always overwrite with latest)
+    if "data_access" in extracted:
+        da = extracted["data_access"]
+        if not vendor.data_access_scope:
+            from app.models.data_access import DataAccessScope
+            vendor.data_access_scope = DataAccessScope(vendor_id=vendor.id)
+            db.add(vendor.data_access_scope)
+            
+        scope = vendor.data_access_scope
+        if da.get("pii") is not None:
+            val = str(da["pii"]).lower()
+            scope.pii_access = val in ["true", "yes"]
+        if da.get("financial") is not None:
+            val = str(da["financial"]).lower()
+            scope.financial_access = val in ["true", "yes"]
+        if da.get("systems"):
+            scope.systems = da["systems"]
+
+    # 2. Update certifications (always overwrite/add based on latest)
+    if "compliance_claims" in extracted:
+        from app.models.certification import Certification
+        for claim in extracted["compliance_claims"]:
+            cert_type = claim.get("type", "")
+
+            # Check if it already exists to update it
+            existing = next((c for c in (vendor.certifications or []) if c.cert_type == cert_type), None)
+            
+            expiry_str = claim.get("claimed_expiry")
+            expiry_date = None
+            if expiry_str:
+                try:
+                    expiry_date = datetime.strptime(expiry_str, "%Y-%m-%d").date()
+                except ValueError:
+                    pass
+
+            if existing:
+                existing.status = claim.get("claimed_status", existing.status)
+                if expiry_date:
+                    existing.expiry_date = expiry_date
+            else:
+                new_cert = Certification(
+                    vendor_id=vendor.id,
+                    cert_type=cert_type,
+                    status=claim.get("claimed_status", "Valid"),
+                    expiry_date=expiry_date,
+                    source="extraction"
+                )
+                db.add(new_cert)
+                if not vendor.certifications:
+                    vendor.certifications = []
+                vendor.certifications.append(new_cert)
 
 
 def _assert_no_score_fields(output: dict, job_id: str) -> None:

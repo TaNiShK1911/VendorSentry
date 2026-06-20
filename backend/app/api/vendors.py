@@ -256,7 +256,7 @@ def create_vendor(vendor_data: VendorCreate, db: Session = Depends(get_db)):
         rationale=rationale,
     )
     db.add(score_row)
-    db.flush()
+    db.commit()
 
     return get_vendor(vendor.id, db)
 
@@ -309,7 +309,7 @@ def update_vendor(vendor_id: str, vendor_data: VendorUpdate, db: Session = Depen
         rationale=rationale,
     )
     db.add(score_row)
-    db.flush()
+    db.commit()
 
     return get_vendor(vendor.id, db)
 

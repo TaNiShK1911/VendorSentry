@@ -118,7 +118,7 @@ def rescore_vendor(vendor_id: str, db: Session = Depends(get_db)):
         previous_score_id=previous_score_id,
     )
     db.add(score_row)
-    db.flush()
+    db.commit()
 
     return get_vendor_score(vendor_id, db)
 
@@ -168,30 +168,51 @@ def get_portfolio_trend(
     """Trend-over-time line chart"""
     if range == "30d":
         days = 30
+        step_days = 1
     elif range == "90d":
         days = 90
+        step_days = 7
     else:
         days = 365
+        step_days = 30
 
-    # Build weekly data points
     points = []
     total_vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).count()
     start_date = datetime.utcnow() - timedelta(days=days)
     current_date = start_date
 
     while current_date <= datetime.utcnow():
-        # Simplified: use current distribution as baseline with small variance
-        import random
-        random.seed(int(current_date.timestamp()) % 1000)
-        risk_count = random.randint(1, max(3, total_vendors // 3))
-
-        points.append({
-            "date": current_date.strftime("%Y-%m-%d"),
-            "avg_score": round(35.0 + random.random() * 15, 2),
-            "risk_vendor_count": risk_count,
-            "total_vendors": total_vendors or 10,
-        })
-        current_date += timedelta(days=7)
+        # Get latest score for each vendor as of current_date
+        subquery = (
+            db.query(
+                VendorScore.vendor_id,
+                sa_func.max(VendorScore.computed_at).label('max_date')
+            )
+            .filter(VendorScore.computed_at <= current_date)
+            .group_by(VendorScore.vendor_id)
+            .subquery()
+        )
+        
+        scores_at_date = (
+            db.query(VendorScore)
+            .join(subquery, 
+                  (VendorScore.vendor_id == subquery.c.vendor_id) & 
+                  (VendorScore.computed_at == subquery.c.max_date))
+            .all()
+        )
+        
+        if scores_at_date:
+            avg_score = sum(s.composite_score for s in scores_at_date) / len(scores_at_date)
+            risk_count = sum(1 for s in scores_at_date if s.tier in ["CRITICAL", "HIGH"])
+            
+            points.append({
+                "date": current_date.strftime("%Y-%m-%d"),
+                "avg_score": round(avg_score, 2),
+                "risk_vendor_count": risk_count,
+                "total_vendors": total_vendors,
+            })
+            
+        current_date += timedelta(days=step_days)
 
     return {
         "range": range,

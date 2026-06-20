@@ -47,10 +47,12 @@ def _has_expired_cert(certs: Sequence[Certification]) -> bool:
 
 
 def _has_expiring_soon_cert(certs: Sequence[Certification]) -> bool:
-    """Return True if any cert expires within EXPIRING_SOON_DAYS and is not yet renewed."""
+    """Return True if any cert expires within EXPIRING_SOON_DAYS, or is pending renewal."""
     today = _today()
     threshold = today + timedelta(days=_EXPIRING_SOON_DAYS)
     for cert in certs:
+        if cert.status == "pending_renewal":
+            return True
         if cert.status in ("current", "unknown") and cert.expiry_date:
             if today <= cert.expiry_date <= threshold:
                 return True
@@ -79,18 +81,18 @@ def compute_compliance_subscore(
     Returns:
         float in [0, 100]. 100 = fully compliant. 0 = all penalties hit.
     """
-    score = 100.0
+    score = 0.0
 
     if _has_expired_cert(certs):
-        score -= _PENALTY_EXPIRED
+        score += _PENALTY_EXPIRED
 
     if _has_expiring_soon_cert(certs):
-        score -= _PENALTY_EXPIRING_SOON
+        score += _PENALTY_EXPIRING_SOON
 
     if _is_assessment_overdue(last_assessed_at):
-        score -= _PENALTY_OVERDUE
+        score += _PENALTY_OVERDUE
 
-    return max(0.0, score)
+    return min(100.0, score)
 
 
 def get_compliance_flags(

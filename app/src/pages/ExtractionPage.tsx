@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { extractionApi, vendorsApi } from '@/api';
 import { getErrorMessage } from '@/api';
 import {
@@ -52,6 +53,7 @@ export default function ExtractionPage() {
   const { id } = useParams<{ id: string }>();
   const vendorId = id!;
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [file, setFile] = useState<File | null>(null);
   const [docType, setDocType] = useState<DocumentType>('contract');
@@ -77,10 +79,17 @@ export default function ExtractionPage() {
     refetchInterval: (query) => {
       const data = query?.state?.data;
       if (!data) return 2000;
-      return data.status === 'completed' || data.status === 'failed' ? false : 2000;
+      return data.status === 'completed' || data.status === 'done' || data.status === 'failed' ? false : 2000;
     },
     enabled: !!jobId,
   });
+
+  useEffect(() => {
+    if (jobStatus?.status === 'completed' || jobStatus?.status === 'done') {
+      // Invalidate all vendor-related queries (dashboard, list, detail) so they refetch the new score.
+      queryClient.invalidateQueries({ queryKey: ['vendors'] });
+    }
+  }, [jobStatus?.status, queryClient]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -118,8 +127,8 @@ export default function ExtractionPage() {
 
   const hasConflicts = jobStatus?.result?.conflicts && jobStatus.result.conflicts.length > 0;
   
-  const isProcessing = jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed';
-  const isCompleted = jobStatus && jobStatus.status === 'completed';
+  const isProcessing = jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'done' && jobStatus.status !== 'failed';
+  const isCompleted = jobStatus && (jobStatus.status === 'completed' || jobStatus.status === 'done');
   const isFailed = jobStatus && jobStatus.status === 'failed';
 
   const docTypeOptions: { value: DocumentType; label: string; icon: React.ElementType }[] = [

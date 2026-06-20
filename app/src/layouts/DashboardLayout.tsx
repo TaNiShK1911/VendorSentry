@@ -21,10 +21,19 @@ const navItems = [
   { path: '/settings', label: 'Settings', icon: Settings, roles: ['ciso', 'procurement', 'auditor'] },
 ];
 
+import { useQuery } from '@tanstack/react-query';
+import { alertsApi } from '@/api';
+
 export default function DashboardLayout() {
   const { user, logout, hasRole, isLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { data: alertsSummary } = useQuery({
+    queryKey: ['alerts', 'summary'],
+    queryFn: () => alertsApi.getSummary(),
+    refetchInterval: 5000,
+  });
 
   if (isLoading) {
     return (
@@ -69,9 +78,9 @@ export default function DashboardLayout() {
               >
                 <Icon className="h-[18px] w-[18px]" />
                 <span>{item.label}</span>
-                {item.label === 'Alerts' && (
+                {item.label === 'Alerts' && (alertsSummary?.total_open || 0) > 0 && (
                   <span className={`ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-sm px-1.5 text-[10px] font-bold ${isActive ? 'bg-white text-sg-primary' : 'bg-sg-primary text-white'}`}>
-                    412
+                    {alertsSummary?.total_open}
                   </span>
                 )}
               </button>

@@ -4,10 +4,10 @@ import random
 
 from app.core.celery_app import celery_app
 from app.core.database import SessionLocal
-from app.models import Vendor, EvidenceSignal
+from app.models import Vendor, EvidenceSignal, BreachEvent
 from app.services.alerts.generator import create_new_breach_alert
-from app.services.scoring.engine import score_vendor
-
+from app.services.scoring.engine import score_vendor_from_db
+from app.services.extraction.narrative import generate_rationale
 
 @celery_app.task(name="app.services.monitoring.breach_watcher.poll_breach_db")
 def poll_breach_db():
@@ -53,20 +53,42 @@ def poll_breach_db():
                 )
                 db.add(signal)
 
+                # Create BreachEvent ORM object
+                breach_event = BreachEvent(
+                    vendor_id=vendor.id,
+                    breach_date=datetime.utcnow().date(),
+                    severity=breach_data["severity"],
+                    source=breach_data["source"],
+                    description=breach_data["description"],
+                    resolved=breach_data["resolved"]
+                )
+                db.add(breach_event)
+
                 # Append to vendor breach history
                 if not vendor.breach_history:
                     vendor.breach_history = []
-                vendor.breach_history = vendor.breach_history + [breach_data]
-                db.add(vendor)
+                vendor.breach_history.append(breach_event)
+                db.flush()  # assign IDs so score_vendor_from_db uses the new event
 
-                # Trigger rescore
-                score = score_vendor(vendor, triggered_by="breach_detected")
-                db.add(score)
+                # Trigger rescore via DB method
+                score = score_vendor_from_db(vendor.id, db, triggered_by="breach_detected")
+
+                # Generate rationale
+                rationale = generate_rationale(
+                    vendor_name=vendor.name,
+                    composite_score=score.composite_score,
+                    tier=score.tier,
+                    breach_subscore=score.breach_subscore,
+                    access_subscore=score.access_subscore,
+                    compliance_subscore=score.compliance_subscore,
+                    financial_subscore=score.financial_subscore,
+                    anomaly_types=score.anomaly_types
+                )
+                score.rationale = rationale
 
                 # Link signal to score
                 db.flush()  # Get score ID
                 signal.consumed_by_score_id = score.id
-
                 # Create alert
                 alert = create_new_breach_alert(
                     db,

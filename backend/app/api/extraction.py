@@ -12,6 +12,10 @@ from app.services.extraction.contract_parser import extract_contract
 router = APIRouter()
 
 
+from app.services.extraction.contract_parser import _map_document_type
+from app.services.extraction.tasks import run_extraction_task
+import uuid
+
 @router.post("/vendors/{vendor_id}/extract", status_code=status.HTTP_202_ACCEPTED)
 async def extract_document(
     vendor_id: str,
@@ -57,24 +61,21 @@ async def extract_document(
             detail="Either text or file must be provided"
         )
 
-    try:
-        job = extract_contract(vendor, raw_text, db, document_type)
+    # Create pending job
+    job = ExtractionJob(
+        id=str(uuid.uuid4()),
+        vendor_id=vendor_id,
+        source_type=_map_document_type(document_type),
+        document_type=document_type,
+        raw_text=raw_text[:50_000],
+        status="processing",
+        created_at=datetime.utcnow()
+    )
+    db.add(job)
+    db.commit()
 
-    except Exception as e:
-        # extract_contract should handle exceptions and set job.status="failed"
-        # but in case something slips through:
-        job = ExtractionJob(
-            vendor_id=vendor_id,
-            source_type=document_type,
-            document_type=document_type,
-            raw_text=raw_text,
-            status="failed",
-            error_message=str(e),
-            created_at=datetime.utcnow(),
-            completed_at=datetime.utcnow()
-        )
-        db.add(job)
-        db.flush()
+    # Dispatch to Celery
+    run_extraction_task.delay(job.id, vendor_id, raw_text, document_type)
 
     return {
         "job_id": job.id,
