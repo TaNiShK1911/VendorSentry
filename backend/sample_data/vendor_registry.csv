@@ -1,0 +1,401 @@
+vendor_name,vendor_type,annual_spend,contract_start,contract_end,contract_status,financial_health,pii_access,financial_access,broad_system_access,systems,certifications,cert_expiry,cert_status,breached,breach_date,breach_severity,breach_resolved,under_investigation,last_assessed
+Acme Cloud Storage,cloud_provider,134803.67,2024-10-12,2026-08-11,active,stable,false,false,true,"customer_db,data_warehouse,erp",,,,false,,,,false,2025-02-18
+BlueShield Analytics,software_vendor,1002199.88,2025-03-26,2027-05-25,active,watch,true,false,false,data_warehouse,HIPAA,2027-08-17,current,false,,,,false,2025-05-26
+ClearPath Networks,mss_provider,520029.28,2024-12-20,2027-03-09,active,stable,false,false,false,"erp,object_storage","SOC2_TYPE2,HIPAA","2027-06-24,2026-04-28",current,false,,,,false,2025-06-01
+DataVault Systems,mss_provider,4926255.39,2024-08-10,2027-04-15,active,distressed,true,false,false,,"HIPAA,PCI_DSS","2026-06-06,2027-01-05",expired,false,,,,false,2026-02-13
+EdgeSecure Ltd,contractor,825378.44,2025-05-13,2028-02-24,active,stable,true,true,false,"customer_db,object_storage",PCI_DSS,2026-02-17,expired,false,,,,false,2026-02-07
+FortKnox Payments,mss_provider,1071006.45,2025-05-15,2027-07-04,active,stable,true,false,false,"erp,crm,billing_system",PCI_DSS,2026-05-13,expired,false,,,,false,2025-10-23
+GlobalMesh MSS,payment_processor,463637.97,2024-08-15,2026-08-25,active,stable,true,false,false,"erp,customer_db",HIPAA,2027-08-24,current,false,,,,false,2026-05-04
+HealthBridge IT,software_vendor,3756880.22,2024-12-11,2026-07-14,active,watch,false,false,false,erp,"HIPAA,ISO_27001","2027-03-31,2025-12-25",current,false,,,,false,2025-07-07
+IntelliGuard Software,software_vendor,3048761.36,2024-09-10,2027-09-25,active,stable,false,false,true,"billing_system,object_storage",,,,true,2026-03-02,HIGH,true,false,2025-10-11
+JetStream Infrastructure,software_vendor,3831513.8,2025-02-18,2027-10-05,active,stable,false,false,true,data_warehouse,PCI_DSS,2027-06-15,current,false,,,,false,2026-01-03
+KeyLock Security,mss_provider,2196119.42,2024-08-20,2026-11-30,active,stable,true,false,false,,SOC2_TYPE2,2026-12-03,current,true,2026-04-04,HIGH,true,false,2026-05-14
+LibertyData Corp,mss_provider,363578.18,2025-05-28,2027-08-01,active,stable,false,false,false,crm,SOC2_TYPE1,2026-05-06,expired,false,,,,false,2025-03-26
+MegaScale Hosting,payment_processor,1777944.86,2024-07-17,2028-02-09,active,stable,true,false,false,,,,,false,,,,false,2025-09-22
+NetSafe Solutions,contractor,2115189.38,2024-10-25,2026-06-07,expired,stable,false,false,false,crm,"SOC2_TYPE1,SOC2_TYPE2,HIPAA","2027-10-20,2027-06-28,2026-01-06",current,false,,,,false,2025-08-29
+OmniCloud Services,cloud_provider,831539.24,2025-01-05,2026-12-18,active,stable,true,true,false,,"PCI_DSS,HIPAA,SOC2_TYPE1","2027-07-14,2027-10-30,2027-05-04",current,false,,,,false,2025-12-01
+PrecisionPay Ltd,payment_processor,2519223.41,2024-09-08,2026-05-19,expired,distressed,false,true,true,crm,,,,true,2026-03-03,MEDIUM,true,false,2025-02-25
+QuantumRisk Analytics,payment_processor,3290292.09,2024-11-28,2026-12-14,active,watch,true,true,false,"billing_system,customer_db,erp",PCI_DSS,2026-08-23,current,false,,,,false,2025-03-28
+RapidDeploy Systems,cloud_provider,2692795.68,2024-08-26,2027-03-14,active,stable,false,false,true,"erp,data_warehouse",,,,true,2026-02-23,CRITICAL,true,false,2025-03-30
+SecureHarbor Inc,mss_provider,585989.07,2025-03-30,2026-08-28,active,stable,false,false,false,"customer_db,data_warehouse","PCI_DSS,ISO_27001","2026-12-08,2026-07-18",current,false,,,,false,2025-02-27
+TrustFrame Technologies,cloud_provider,1674447.13,2024-11-01,2026-09-03,active,stable,false,false,true,,"SOC2_TYPE1,HIPAA,PCI_DSS","2025-12-31,2026-04-15,2026-03-09",expired,false,,,,false,2025-04-21
+UltraSecure MSS,payment_processor,645953.14,2024-07-10,2027-03-23,active,stable,true,false,false,"erp,object_storage,data_warehouse",ISO_27001,2027-11-04,current,false,,,,false,2026-03-27
+VaultMaster Corp,contractor,4408266.86,2024-12-07,2028-05-31,active,stable,false,false,true,"billing_system,data_warehouse,object_storage","ISO_27001,PCI_DSS,SOC2_TYPE2","2027-12-10,2026-04-11,2027-01-17",current,false,,,,false,2025-08-28
+WebArmor Ltd,mss_provider,1400229.27,2024-11-09,2027-03-16,active,stable,false,false,true,"billing_system,data_warehouse,crm","SOC2_TYPE1,PCI_DSS,SOC2_TYPE2","2026-04-19,2026-09-15,2026-06-22",expired,false,,,,false,2025-08-21
+XcelData Solutions,software_vendor,958493.08,2025-01-29,2026-03-23,expired,stable,true,false,false,"data_warehouse,customer_db",PCI_DSS,2027-03-08,current,false,,,,false,2025-07-13
+YieldSecure Analytics,payment_processor,1637652.7,2025-03-30,2026-07-30,active,watch,false,false,false,"crm,erp",HIPAA,2027-11-02,current,false,,,,false,2025-05-23
+ZenCloud Systems,payment_processor,3930936.55,2024-12-01,2027-07-11,active,watch,true,false,false,"customer_db,object_storage","HIPAA,ISO_27001,PCI_DSS","2027-04-20,2026-06-13,2027-10-27",current,false,,,,false,2025-05-17
+Acme Cloud Storage 2,contractor,131882.68,2025-02-18,2027-12-07,active,stable,false,false,false,"crm,data_warehouse,object_storage",,,,true,2026-05-03,HIGH,true,false,2026-04-21
+BlueShield Analytics 2,payment_processor,1102017.27,2025-06-11,2027-09-03,active,distressed,false,false,false,"erp,data_warehouse,crm","SOC2_TYPE2,ISO_27001,SOC2_TYPE1","2027-04-03,2026-05-07,2027-04-11",current,false,,,,false,2026-05-10
+ClearPath Networks 2,contractor,3720840.66,2024-10-30,2028-04-29,active,stable,false,true,false,"object_storage,billing_system",PCI_DSS,2027-06-08,current,false,,,,false,2025-03-18
+DataVault Systems 2,contractor,762644.98,2024-09-06,2028-03-14,active,stable,false,false,false,crm,SOC2_TYPE2,2027-02-19,current,false,,,,false,2026-06-04
+EdgeSecure Ltd 2,cloud_provider,4285092.84,2024-12-31,2027-07-23,active,watch,false,true,false,"erp,data_warehouse,object_storage",,,,false,,,,false,2025-10-11
+FortKnox Payments 2,cloud_provider,1950397.44,2025-01-13,2028-04-01,active,watch,false,false,false,,HIPAA,2026-05-01,expired,true,2025-12-21,MEDIUM,true,false,2025-05-09
+GlobalMesh MSS 2,mss_provider,1901728.28,2024-12-04,2027-03-02,active,stable,false,true,false,data_warehouse,"PCI_DSS,HIPAA,ISO_27001","2026-03-15,2027-04-17,2026-01-10",expired,true,2026-04-14,HIGH,true,false,2026-06-06
+HealthBridge IT 2,contractor,4197751.94,2024-10-20,2026-07-29,active,watch,true,false,false,,"SOC2_TYPE2,ISO_27001,HIPAA","2027-12-08,2026-09-10,2027-01-03",current,false,,,,false,2025-07-14
+IntelliGuard Software 2,cloud_provider,2897636.82,2025-04-10,2028-02-13,active,unknown,true,false,false,,"HIPAA,ISO_27001,SOC2_TYPE2","2027-08-20,2027-11-29,2027-09-25",current,false,,,,false,2025-02-26
+JetStream Infrastructure 2,mss_provider,2668398.77,2024-07-25,2027-08-22,active,watch,false,false,false,"data_warehouse,object_storage,crm","SOC2_TYPE2,HIPAA","2027-05-07,2026-04-09",current,true,2026-02-07,CRITICAL,false,false,2026-05-21
+KeyLock Security 2,payment_processor,2183516.72,2024-11-04,2027-02-15,active,watch,false,true,false,"billing_system,customer_db,crm",SOC2_TYPE2,2026-10-03,current,false,,,,false,2025-05-24
+LibertyData Corp 2,mss_provider,3991183.46,2025-04-21,2028-03-09,active,stable,true,false,false,data_warehouse,"SOC2_TYPE1,SOC2_TYPE2","2027-06-04,2026-07-05",current,false,,,,false,2025-09-22
+MegaScale Hosting 2,cloud_provider,474336.22,2025-06-09,2026-11-26,active,stable,false,false,false,"billing_system,crm","SOC2_TYPE1,PCI_DSS","2027-04-20,2027-07-11",current,false,,,,false,2025-04-07
+NetSafe Solutions 2,contractor,1584584.24,2025-06-08,2026-09-27,active,watch,true,false,false,"customer_db,object_storage",ISO_27001,2027-05-01,current,false,,,,false,2025-07-09
+OmniCloud Services 2,cloud_provider,3543012.24,2024-07-13,2026-05-16,expired,stable,false,false,false,customer_db,"ISO_27001,HIPAA","2026-04-06,2026-01-03",expired,false,,,,false,2025-04-04
+PrecisionPay Ltd 2,cloud_provider,2009530.14,2025-05-08,2028-02-22,active,stable,true,false,false,,,,,false,,,,false,2026-03-03
+QuantumRisk Analytics 2,payment_processor,3035525.08,2024-10-13,2028-05-24,active,watch,false,true,false,,"HIPAA,SOC2_TYPE1,ISO_27001","2027-08-16,2027-03-06,2026-10-30",current,false,,,,false,2025-05-24
+RapidDeploy Systems 2,mss_provider,3305536.4,2024-09-16,2027-10-08,active,stable,true,false,false,"billing_system,customer_db,object_storage",,,,false,,,,false,2026-04-21
+SecureHarbor Inc 2,payment_processor,365187.0,2024-11-02,2028-06-05,active,stable,false,false,false,customer_db,HIPAA,2026-04-18,expired,true,2025-10-20,CRITICAL,false,false,2025-10-02
+TrustFrame Technologies 2,payment_processor,4713954.44,2025-02-27,2027-06-13,active,stable,false,false,false,"customer_db,data_warehouse",,,,false,,,,false,2026-04-21
+UltraSecure MSS 2,software_vendor,2939743.43,2025-05-30,2026-12-22,active,stable,false,true,false,"billing_system,object_storage,crm",,,,false,,,,false,2025-03-23
+VaultMaster Corp 2,payment_processor,1746325.67,2025-05-29,2026-07-07,active,stable,false,true,false,,PCI_DSS,2027-02-16,current,false,,,,false,2025-07-20
+WebArmor Ltd 2,cloud_provider,4851221.79,2025-03-10,2026-03-23,expired,stable,false,false,false,billing_system,"HIPAA,SOC2_TYPE2,SOC2_TYPE1","2027-06-05,2026-12-27,2027-09-20",current,false,,,,false,2025-09-17
+XcelData Solutions 2,payment_processor,615916.16,2025-04-27,2028-06-17,active,unknown,false,false,true,,ISO_27001,2026-11-05,current,false,,,,false,2026-04-07
+YieldSecure Analytics 2,contractor,2496893.77,2025-03-07,2028-03-13,active,watch,false,true,true,customer_db,"HIPAA,SOC2_TYPE1","2027-04-19,2026-08-28",current,false,,,,false,2025-09-05
+ZenCloud Systems 2,mss_provider,4671899.48,2024-06-21,2027-01-05,active,stable,false,false,false,"crm,billing_system,object_storage","SOC2_TYPE1,HIPAA","2026-05-23,2027-03-24",expired,false,,,,false,2025-08-20
+Acme Cloud Storage 3,contractor,4281504.75,2024-11-29,2028-04-22,active,stable,false,true,false,"customer_db,crm","HIPAA,SOC2_TYPE1,PCI_DSS","2027-10-20,2026-05-26,2027-05-13",current,true,2026-01-04,HIGH,true,false,2025-09-02
+BlueShield Analytics 3,cloud_provider,2352758.1,2024-12-10,2027-12-20,active,unknown,false,false,false,,"SOC2_TYPE2,PCI_DSS,HIPAA","2027-06-21,2027-01-15,2026-11-11",current,false,,,,false,2026-01-21
+ClearPath Networks 3,mss_provider,4987155.36,2025-01-28,2026-06-30,active,watch,false,false,false,,,,,false,,,,false,2025-08-07
+DataVault Systems 3,mss_provider,2159127.07,2025-01-16,2027-10-22,active,stable,true,false,false,crm,ISO_27001,2026-06-19,expired,false,,,,false,2025-09-29
+EdgeSecure Ltd 3,mss_provider,2303256.79,2025-02-13,2027-01-10,active,watch,false,false,false,"data_warehouse,billing_system,crm",SOC2_TYPE2,2027-03-19,current,false,,,,false,2025-08-20
+FortKnox Payments 3,payment_processor,542199.8,2024-12-20,2027-10-31,active,stable,true,false,false,,"PCI_DSS,SOC2_TYPE2","2027-10-27,2027-01-31",current,false,,,,false,2026-04-07
+GlobalMesh MSS 3,mss_provider,3880947.49,2024-12-17,2026-11-01,active,stable,false,false,false,data_warehouse,SOC2_TYPE1,2026-09-04,current,true,2026-04-02,HIGH,true,false,2025-09-18
+HealthBridge IT 3,software_vendor,1830657.55,2024-11-18,2027-02-19,active,stable,false,true,true,"billing_system,data_warehouse,customer_db","ISO_27001,SOC2_TYPE1,SOC2_TYPE2","2027-06-27,2026-12-31,2027-06-18",current,false,,,,false,2026-02-26
+IntelliGuard Software 3,contractor,4302101.58,2025-01-09,2027-10-13,active,watch,false,false,false,"erp,crm","SOC2_TYPE2,HIPAA","2026-01-05,2026-09-18",expired,false,,,,false,2025-04-01
+JetStream Infrastructure 3,contractor,2362669.57,2025-04-03,2027-02-20,active,watch,false,false,false,"customer_db,object_storage,data_warehouse",SOC2_TYPE2,2027-10-03,current,false,,,,false,2025-10-15
+KeyLock Security 3,cloud_provider,494988.07,2024-08-28,2027-04-23,active,distressed,true,false,false,"customer_db,billing_system","PCI_DSS,HIPAA,SOC2_TYPE1","2026-05-29,2027-02-19,2027-10-23",expired,false,,,,false,2025-06-05
+LibertyData Corp 3,mss_provider,505779.58,2025-03-25,2028-01-11,active,watch,false,false,false,,"SOC2_TYPE2,HIPAA","2026-09-30,2026-07-04",current,false,,,,false,2025-12-07
+MegaScale Hosting 3,cloud_provider,262386.77,2024-08-23,2028-06-04,active,stable,true,true,false,"object_storage,erp",SOC2_TYPE2,2027-07-12,current,true,2025-07-29,MEDIUM,true,false,2026-03-20
+NetSafe Solutions 3,cloud_provider,3308677.64,2024-06-27,2027-03-23,active,stable,true,true,true,"erp,customer_db,data_warehouse",SOC2_TYPE1,2026-11-18,current,false,,,,false,2025-10-25
+OmniCloud Services 3,software_vendor,554179.51,2025-04-30,2026-05-05,expired,stable,false,false,true,"customer_db,data_warehouse,billing_system","HIPAA,SOC2_TYPE2","2026-02-22,2027-04-26",expired,false,,,,false,2025-06-25
+PrecisionPay Ltd 3,software_vendor,3169052.85,2024-12-03,2027-04-16,active,stable,true,false,false,crm,"HIPAA,SOC2_TYPE1","2026-04-02,2027-12-10",expired,false,,,,false,2025-07-28
+QuantumRisk Analytics 3,payment_processor,1999663.62,2024-11-27,2027-06-02,active,watch,false,true,false,,"PCI_DSS,SOC2_TYPE1","2026-05-27,2027-11-25",expired,false,,,,false,2025-08-14
+RapidDeploy Systems 3,contractor,2786289.97,2025-04-03,2027-10-18,active,watch,false,false,false,,"SOC2_TYPE2,HIPAA","2026-12-19,2027-11-03",current,false,,,,false,2025-08-04
+SecureHarbor Inc 3,cloud_provider,2893813.41,2025-05-22,2027-07-28,active,stable,false,false,false,crm,SOC2_TYPE2,2026-12-15,current,false,,,,false,2026-03-31
+TrustFrame Technologies 3,software_vendor,3071730.67,2024-07-03,2027-12-05,active,watch,false,false,false,object_storage,"SOC2_TYPE2,ISO_27001","2026-09-27,2027-12-11",current,false,,,,false,2025-04-18
+UltraSecure MSS 3,cloud_provider,467870.84,2024-12-29,2027-05-25,active,stable,false,false,true,,"PCI_DSS,ISO_27001,HIPAA","2026-11-06,2026-11-19,2027-07-26",current,false,,,,false,2026-01-09
+VaultMaster Corp 3,payment_processor,2433451.91,2024-11-06,2026-10-28,active,stable,true,true,false,"erp,billing_system,customer_db",,,,false,,,,false,2025-03-05
+WebArmor Ltd 3,cloud_provider,1030071.39,2024-08-29,2028-05-12,active,unknown,false,false,true,erp,"PCI_DSS,SOC2_TYPE1","2026-04-23,2025-12-29",expired,false,,,,false,2025-08-05
+XcelData Solutions 3,cloud_provider,1991385.16,2025-01-29,2026-04-10,expired,watch,false,false,true,,"SOC2_TYPE2,PCI_DSS,HIPAA","2027-03-06,2027-08-01,2027-02-09",current,false,,,,false,2026-06-05
+YieldSecure Analytics 3,software_vendor,2305883.54,2024-12-22,2026-06-20,active,watch,true,false,false,billing_system,"SOC2_TYPE2,ISO_27001,HIPAA","2027-08-17,2027-02-05,2027-06-11",current,false,,,,false,2025-12-26
+ZenCloud Systems 3,cloud_provider,2657718.06,2024-12-15,2027-03-16,active,stable,true,true,false,,ISO_27001,2026-04-06,expired,true,2026-06-15,LOW,false,false,2025-11-20
+Acme Cloud Storage 4,software_vendor,3218529.24,2024-12-02,2027-12-24,active,unknown,false,false,false,,"ISO_27001,HIPAA","2026-03-01,2027-04-16",expired,false,,,,false,2025-09-29
+BlueShield Analytics 4,payment_processor,197660.16,2024-11-13,2026-06-08,expired,stable,false,false,false,,,,,false,,,,false,2026-01-04
+ClearPath Networks 4,contractor,1614418.55,2024-09-05,2026-05-24,expired,stable,true,true,false,"erp,data_warehouse,object_storage","SOC2_TYPE2,PCI_DSS,HIPAA","2026-03-18,2027-05-22,2027-10-14",expired,false,,,,false,2025-08-22
+DataVault Systems 4,payment_processor,3874579.29,2024-07-16,2028-06-07,active,watch,false,true,false,billing_system,"SOC2_TYPE2,PCI_DSS","2026-03-28,2027-07-16",expired,true,2026-04-20,MEDIUM,false,false,2025-07-13
+EdgeSecure Ltd 4,contractor,2979255.73,2024-11-25,2027-10-15,active,unknown,true,false,false,,"PCI_DSS,ISO_27001,SOC2_TYPE1","2027-12-11,2027-11-23,2027-06-14",current,false,,,,false,2025-05-25
+FortKnox Payments 4,mss_provider,4738864.65,2024-10-13,2026-08-09,active,stable,false,true,false,,SOC2_TYPE2,2026-10-20,current,false,,,,false,2025-12-18
+GlobalMesh MSS 4,contractor,2990259.74,2024-09-20,2028-02-29,active,stable,false,false,true,"erp,billing_system,crm",HIPAA,2026-02-04,expired,false,,,,false,2026-06-14
+HealthBridge IT 4,payment_processor,4520831.95,2025-06-02,2027-10-27,active,stable,false,false,false,billing_system,"HIPAA,PCI_DSS,ISO_27001","2027-05-20,2027-06-15,2027-02-23",current,true,2026-01-17,CRITICAL,true,false,2025-03-29
+IntelliGuard Software 4,mss_provider,428536.88,2025-02-05,2027-08-29,active,stable,false,true,false,"customer_db,crm",HIPAA,2026-03-25,expired,true,2026-01-28,CRITICAL,false,false,2025-03-18
+JetStream Infrastructure 4,contractor,150655.85,2025-06-20,2028-01-16,active,unknown,false,false,false,"crm,erp,customer_db","ISO_27001,SOC2_TYPE1","2026-01-30,2026-10-11",expired,false,,,,true,2025-05-26
+KeyLock Security 4,contractor,2748533.18,2025-03-17,2027-05-29,active,watch,false,true,true,crm,,,,false,,,,false,2025-03-09
+LibertyData Corp 4,cloud_provider,4185071.73,2025-03-21,2026-04-07,expired,stable,false,false,true,"object_storage,customer_db,billing_system",ISO_27001,2026-10-16,current,true,2026-02-09,HIGH,true,false,2025-10-03
+MegaScale Hosting 4,payment_processor,4905386.72,2024-06-28,2027-03-22,active,stable,true,false,false,"object_storage,customer_db",,,,false,,,,false,2025-12-31
+NetSafe Solutions 4,contractor,4153614.45,2025-06-11,2027-07-25,active,watch,false,false,true,customer_db,ISO_27001,2026-02-24,expired,false,,,,false,2025-07-16
+OmniCloud Services 4,mss_provider,2581764.11,2025-03-25,2027-07-19,active,unknown,false,true,false,"customer_db,billing_system","SOC2_TYPE2,ISO_27001","2026-10-10,2026-12-22",current,false,,,,false,2025-09-18
+PrecisionPay Ltd 4,payment_processor,1701792.78,2025-06-09,2027-08-13,active,stable,true,false,false,"billing_system,customer_db","SOC2_TYPE1,PCI_DSS","2026-03-16,2027-03-01",expired,true,2026-04-19,CRITICAL,false,false,2025-12-10
+QuantumRisk Analytics 4,contractor,3451926.39,2024-07-11,2028-04-04,active,stable,false,false,true,"billing_system,erp,object_storage","SOC2_TYPE1,HIPAA","2026-09-29,2027-10-07",current,false,,,,false,2025-12-13
+RapidDeploy Systems 4,payment_processor,183646.84,2025-05-16,2027-04-01,active,stable,false,false,false,,"HIPAA,SOC2_TYPE2","2027-09-02,2026-05-28",current,false,,,,false,2025-08-27
+SecureHarbor Inc 4,mss_provider,3251308.08,2024-08-17,2026-04-17,expired,stable,true,false,false,"data_warehouse,crm",HIPAA,2027-06-05,current,false,,,,false,2026-01-26
+TrustFrame Technologies 4,payment_processor,1008889.92,2024-07-27,2027-06-27,active,stable,false,false,false,"data_warehouse,customer_db",HIPAA,2026-03-21,expired,false,,,,false,2025-07-08
+UltraSecure MSS 4,contractor,3561927.43,2025-05-12,2026-09-16,active,unknown,false,true,false,"erp,data_warehouse","SOC2_TYPE1,ISO_27001","2026-04-25,2026-07-15",expired,false,,,,false,2025-11-14
+VaultMaster Corp 4,contractor,3063622.33,2024-11-25,2027-05-03,active,stable,false,false,false,"object_storage,erp","SOC2_TYPE1,HIPAA,ISO_27001","2027-08-02,2026-03-07,2026-04-29",current,false,,,,false,2026-06-14
+WebArmor Ltd 4,contractor,2168765.25,2024-07-18,2026-07-27,active,unknown,true,false,true,"customer_db,billing_system",PCI_DSS,2026-06-08,expired,true,2026-02-22,CRITICAL,true,false,2025-07-10
+XcelData Solutions 4,software_vendor,3208527.26,2025-04-13,2026-08-26,active,watch,true,false,true,,SOC2_TYPE1,2027-09-02,current,true,2026-04-09,CRITICAL,false,false,2026-03-04
+YieldSecure Analytics 4,software_vendor,3198566.05,2025-05-07,2027-10-01,active,stable,false,false,false,crm,"PCI_DSS,HIPAA","2026-08-29,2027-11-23",current,false,,,,false,2025-07-29
+ZenCloud Systems 4,software_vendor,726906.77,2024-11-30,2028-04-11,active,distressed,false,false,false,"crm,object_storage","HIPAA,ISO_27001","2027-01-05,2027-06-02",current,true,2025-06-10,CRITICAL,false,false,2026-04-23
+Acme Cloud Storage 5,contractor,4813802.4,2024-12-04,2027-11-03,active,unknown,false,false,false,,"ISO_27001,SOC2_TYPE1","2027-05-16,2027-06-02",current,false,,,,false,2026-06-14
+BlueShield Analytics 5,contractor,1083570.67,2024-07-15,2027-01-04,active,stable,false,false,false,"billing_system,customer_db,crm","SOC2_TYPE1,HIPAA,ISO_27001","2027-06-24,2025-12-30,2026-04-11",current,true,2026-02-27,MEDIUM,true,false,2025-07-02
+ClearPath Networks 5,payment_processor,2526235.09,2024-11-10,2027-12-20,active,watch,true,true,false,"erp,billing_system",,,,false,,,,false,2025-10-23
+DataVault Systems 5,payment_processor,2505388.74,2024-08-29,2028-03-21,active,stable,false,true,false,"object_storage,crm","HIPAA,SOC2_TYPE1","2026-05-23,2027-09-03",expired,false,,,,false,2025-07-08
+EdgeSecure Ltd 5,software_vendor,1688503.53,2025-03-19,2027-08-05,active,distressed,false,false,false,,"HIPAA,SOC2_TYPE2","2027-01-03,2026-11-26",current,false,,,,false,2026-01-06
+FortKnox Payments 5,software_vendor,2892395.64,2025-04-14,2027-07-26,active,watch,false,false,false,customer_db,SOC2_TYPE1,2027-09-27,current,false,,,,false,2025-05-13
+GlobalMesh MSS 5,cloud_provider,2210782.45,2025-01-17,2028-02-27,active,stable,false,false,false,,HIPAA,2027-05-19,current,false,,,,false,2025-11-19
+HealthBridge IT 5,mss_provider,4990633.11,2024-12-29,2027-02-06,active,stable,true,false,false,"erp,crm",HIPAA,2027-06-20,current,true,2025-09-19,CRITICAL,false,false,2025-05-31
+IntelliGuard Software 5,mss_provider,3527455.67,2025-02-25,2027-02-09,active,watch,false,false,false,"object_storage,billing_system","PCI_DSS,SOC2_TYPE1,ISO_27001","2026-04-25,2027-08-01,2027-11-14",expired,true,2026-05-16,HIGH,false,false,2025-09-19
+JetStream Infrastructure 5,payment_processor,1077794.17,2024-11-05,2027-10-18,active,distressed,true,true,false,data_warehouse,"ISO_27001,SOC2_TYPE2","2027-09-13,2027-08-14",current,false,,,,false,2025-07-24
+KeyLock Security 5,payment_processor,511719.07,2024-06-22,2027-10-06,active,watch,false,false,false,billing_system,HIPAA,2027-10-21,current,false,,,,false,2026-05-15
+LibertyData Corp 5,cloud_provider,3264970.66,2024-07-09,2026-09-17,active,stable,false,true,false,,"ISO_27001,SOC2_TYPE2,SOC2_TYPE1","2027-05-13,2026-06-30,2026-10-14",current,false,,,,false,2025-09-25
+MegaScale Hosting 5,software_vendor,2626349.49,2024-08-27,2027-08-20,active,distressed,false,false,true,"billing_system,erp","PCI_DSS,ISO_27001,SOC2_TYPE2","2026-11-25,2026-06-06,2027-04-05",current,false,,,,false,2025-12-14
+NetSafe Solutions 5,payment_processor,4136679.23,2024-08-03,2027-05-06,active,stable,true,true,false,customer_db,,,,false,,,,false,2026-02-25
+OmniCloud Services 5,mss_provider,4770633.77,2025-04-09,2026-04-02,expired,stable,true,false,false,"data_warehouse,customer_db","PCI_DSS,ISO_27001","2026-02-23,2027-11-05",expired,false,,,,false,2025-08-12
+PrecisionPay Ltd 5,software_vendor,1112037.71,2025-02-19,2026-08-25,active,unknown,false,false,false,data_warehouse,"SOC2_TYPE1,PCI_DSS,ISO_27001","2027-12-10,2027-07-07,2027-04-18",current,false,,,,false,2025-03-18
+QuantumRisk Analytics 5,software_vendor,2239272.41,2024-07-29,2027-10-20,active,watch,true,false,false,object_storage,,,,false,,,,false,2025-04-05
+RapidDeploy Systems 5,contractor,3587420.65,2025-03-08,2027-06-21,active,stable,false,false,false,,,,,false,,,,false,2025-07-12
+SecureHarbor Inc 5,cloud_provider,1985784.06,2024-10-09,2027-11-04,active,distressed,true,false,true,,,,,false,,,,false,2026-05-29
+TrustFrame Technologies 5,payment_processor,168357.01,2024-08-28,2028-05-14,active,stable,false,false,false,"customer_db,object_storage","PCI_DSS,HIPAA,ISO_27001","2027-01-12,2027-01-10,2026-03-14",current,false,,,,false,2025-04-11
+UltraSecure MSS 5,contractor,4175759.84,2024-11-19,2027-07-09,active,watch,true,true,false,,"SOC2_TYPE1,HIPAA,SOC2_TYPE2","2026-09-01,2027-04-07,2026-12-11",current,true,2026-04-19,LOW,true,false,2026-05-30
+VaultMaster Corp 5,contractor,1038347.29,2024-07-07,2027-06-22,active,stable,true,true,false,customer_db,,,,true,2025-10-11,MEDIUM,false,false,2026-02-14
+WebArmor Ltd 5,software_vendor,2993609.19,2024-12-01,2026-11-19,active,watch,true,false,false,data_warehouse,"ISO_27001,SOC2_TYPE1","2027-02-18,2026-10-25",current,false,,,,false,2025-03-01
+XcelData Solutions 5,mss_provider,4708516.19,2025-03-15,2027-02-11,active,watch,false,false,false,crm,"HIPAA,ISO_27001,SOC2_TYPE1","2027-01-11,2026-06-28,2027-06-25",current,false,,,,false,2026-06-15
+YieldSecure Analytics 5,payment_processor,2790860.92,2024-10-22,2026-12-08,active,stable,true,false,false,customer_db,PCI_DSS,2027-10-15,current,false,,,,false,2025-12-10
+ZenCloud Systems 5,cloud_provider,4369366.09,2025-04-16,2028-04-01,active,stable,false,false,false,,HIPAA,2026-07-23,current,false,,,,false,2026-02-19
+Acme Cloud Storage 6,cloud_provider,3736927.35,2024-10-22,2028-03-03,active,watch,false,false,false,"billing_system,data_warehouse",HIPAA,2026-08-24,current,false,,,,false,2025-10-01
+BlueShield Analytics 6,cloud_provider,4016054.94,2024-11-30,2026-10-16,active,watch,false,false,true,"billing_system,object_storage,erp","PCI_DSS,HIPAA","2026-02-06,2027-07-21",expired,false,,,,false,2026-04-07
+ClearPath Networks 6,contractor,2501514.4,2025-06-05,2027-03-02,active,watch,false,false,true,"object_storage,erp,customer_db","HIPAA,SOC2_TYPE1","2027-04-07,2026-06-12",current,false,,,,false,2025-03-15
+DataVault Systems 6,cloud_provider,3824050.83,2025-05-08,2026-11-13,active,stable,false,true,false,"customer_db,erp",,,,false,,,,false,2026-05-18
+EdgeSecure Ltd 6,payment_processor,3299828.87,2025-03-19,2027-10-07,active,stable,true,false,false,customer_db,"SOC2_TYPE2,SOC2_TYPE1,PCI_DSS","2026-09-29,2027-06-23,2026-10-11",current,false,,,,false,2025-06-08
+FortKnox Payments 6,contractor,3102706.4,2024-12-18,2026-12-20,active,stable,false,true,false,,"SOC2_TYPE2,PCI_DSS,ISO_27001","2027-04-06,2027-07-23,2026-08-28",current,false,,,,false,2026-02-28
+GlobalMesh MSS 6,cloud_provider,476567.52,2025-03-29,2027-07-22,active,stable,false,false,true,"data_warehouse,billing_system,customer_db",,,,false,,,,false,2025-06-02
+HealthBridge IT 6,contractor,4507352.07,2025-04-06,2027-07-21,active,watch,false,false,true,"customer_db,object_storage","SOC2_TYPE2,SOC2_TYPE1","2027-11-22,2026-10-05",current,false,,,,false,2026-02-04
+IntelliGuard Software 6,payment_processor,4645085.95,2025-04-04,2026-11-23,active,stable,false,false,true,"object_storage,customer_db,billing_system","SOC2_TYPE1,PCI_DSS,ISO_27001","2026-05-14,2027-11-27,2026-03-12",expired,false,,,,false,2025-12-06
+JetStream Infrastructure 6,payment_processor,4844913.43,2025-05-10,2026-12-26,active,stable,true,false,false,"object_storage,customer_db","HIPAA,ISO_27001,SOC2_TYPE1","2027-07-11,2027-01-10,2027-03-09",current,true,2025-08-02,LOW,true,false,2025-12-26
+KeyLock Security 6,payment_processor,1590224.36,2024-06-22,2027-01-31,active,stable,false,false,false,,"PCI_DSS,SOC2_TYPE1,SOC2_TYPE2","2026-05-06,2026-03-21,2026-07-01",expired,true,2025-11-13,HIGH,false,false,2026-03-13
+LibertyData Corp 6,payment_processor,71579.67,2024-08-02,2028-04-02,active,stable,true,false,true,"billing_system,crm",SOC2_TYPE1,2027-06-08,current,true,2025-08-09,LOW,false,false,2025-07-08
+MegaScale Hosting 6,cloud_provider,1812013.31,2025-05-06,2027-08-11,active,unknown,true,true,false,"billing_system,crm,data_warehouse",HIPAA,2026-04-10,expired,false,,,,false,2026-01-04
+NetSafe Solutions 6,software_vendor,689261.11,2025-06-10,2026-10-13,active,stable,false,false,false,"crm,billing_system","PCI_DSS,ISO_27001,HIPAA","2026-11-13,2026-10-16,2027-12-03",current,false,,,,false,2025-04-04
+OmniCloud Services 6,software_vendor,1007002.24,2024-09-20,2028-02-18,active,unknown,false,false,false,"billing_system,customer_db,crm",,,,false,,,,false,2025-07-10
+PrecisionPay Ltd 6,contractor,1270881.61,2025-01-22,2028-06-07,active,stable,false,false,false,"erp,customer_db,billing_system","SOC2_TYPE2,HIPAA,PCI_DSS","2027-04-26,2027-08-10,2027-02-05",current,false,,,,false,2025-12-06
+QuantumRisk Analytics 6,cloud_provider,555753.43,2025-05-26,2027-03-20,active,stable,false,false,false,"crm,customer_db",SOC2_TYPE1,2026-02-05,expired,true,2025-09-25,MEDIUM,true,false,2025-10-28
+RapidDeploy Systems 6,payment_processor,1876856.64,2025-06-02,2027-11-14,active,stable,false,true,false,,PCI_DSS,2026-01-16,expired,true,2026-05-24,MEDIUM,false,false,2025-07-30
+SecureHarbor Inc 6,contractor,2610363.0,2024-08-08,2027-06-13,active,stable,false,false,false,data_warehouse,"PCI_DSS,SOC2_TYPE2,ISO_27001","2026-02-05,2026-04-18,2026-01-14",expired,false,,,,false,2025-04-27
+TrustFrame Technologies 6,mss_provider,2803646.27,2024-10-16,2028-06-15,active,unknown,true,false,true,"crm,customer_db,object_storage","ISO_27001,SOC2_TYPE1,PCI_DSS","2027-10-26,2027-03-09,2027-01-31",current,false,,,,false,2026-03-26
+UltraSecure MSS 6,cloud_provider,2890966.05,2025-03-21,2026-09-29,active,watch,true,false,false,"erp,crm","PCI_DSS,ISO_27001","2027-04-04,2026-04-17",current,false,,,,false,2025-08-02
+VaultMaster Corp 6,mss_provider,4229133.84,2025-05-30,2028-03-13,active,watch,true,true,true,"data_warehouse,object_storage","SOC2_TYPE1,SOC2_TYPE2","2027-11-10,2026-05-08",current,false,,,,false,2025-04-16
+WebArmor Ltd 6,software_vendor,1924712.71,2025-05-11,2027-09-23,active,stable,false,true,false,"erp,customer_db,billing_system",SOC2_TYPE1,2026-06-10,expired,false,,,,false,2025-05-15
+XcelData Solutions 6,payment_processor,4819507.16,2025-02-28,2027-05-14,active,stable,true,false,false,"object_storage,erp","HIPAA,SOC2_TYPE1,ISO_27001","2026-06-11,2026-03-16,2027-07-23",expired,false,,,,false,2025-11-21
+YieldSecure Analytics 6,payment_processor,2753133.66,2024-08-17,2026-12-21,active,stable,true,false,false,billing_system,"SOC2_TYPE1,SOC2_TYPE2","2027-03-18,2027-07-04",current,false,,,,false,2025-06-19
+ZenCloud Systems 6,mss_provider,4312376.13,2024-08-19,2028-05-24,active,stable,false,false,false,"object_storage,erp,data_warehouse",ISO_27001,2027-08-16,current,false,,,,false,2026-03-24
+Acme Cloud Storage 7,cloud_provider,2854670.98,2025-04-21,2027-09-24,active,stable,true,false,false,,PCI_DSS,2027-12-12,current,true,2026-06-04,LOW,true,false,2025-06-26
+BlueShield Analytics 7,contractor,1255889.44,2024-10-24,2028-05-09,active,watch,false,false,false,,"HIPAA,ISO_27001,PCI_DSS","2027-09-30,2026-09-23,2027-09-25",current,false,,,,false,2026-01-26
+ClearPath Networks 7,mss_provider,2278931.29,2025-04-13,2026-03-24,expired,stable,false,false,false,"customer_db,erp",,,,false,,,,false,2026-04-03
+DataVault Systems 7,contractor,2478627.59,2024-11-12,2027-03-02,active,stable,false,false,false,,SOC2_TYPE1,2027-05-02,current,true,2026-01-06,HIGH,true,false,2026-04-20
+EdgeSecure Ltd 7,payment_processor,2288025.5,2025-01-25,2026-10-15,active,unknown,false,false,true,"billing_system,customer_db",PCI_DSS,2026-06-02,expired,false,,,,false,2025-04-30
+FortKnox Payments 7,cloud_provider,1987744.42,2025-06-13,2028-05-03,active,stable,true,true,true,,HIPAA,2027-10-24,current,true,2025-09-08,LOW,false,true,2026-01-27
+GlobalMesh MSS 7,cloud_provider,4940893.0,2024-08-26,2027-07-24,active,stable,true,true,false,,,,,false,,,,false,2025-04-16
+HealthBridge IT 7,payment_processor,3869567.81,2024-08-27,2028-01-07,active,watch,false,false,true,"data_warehouse,object_storage",SOC2_TYPE2,2027-06-18,current,false,,,,false,2025-09-03
+IntelliGuard Software 7,software_vendor,3435965.19,2024-08-03,2026-07-02,active,distressed,false,false,false,object_storage,SOC2_TYPE2,2027-08-17,current,false,,,,false,2025-11-15
+JetStream Infrastructure 7,software_vendor,3004039.26,2025-06-08,2026-04-18,expired,watch,false,false,false,crm,"ISO_27001,SOC2_TYPE1","2027-01-27,2026-10-20",current,false,,,,false,2025-12-28
+KeyLock Security 7,software_vendor,364349.89,2024-06-26,2027-03-26,active,distressed,true,false,false,,"ISO_27001,HIPAA","2027-07-27,2027-02-25",current,true,2025-06-19,HIGH,true,false,2025-02-25
+LibertyData Corp 7,payment_processor,2537986.92,2025-03-03,2028-05-15,active,watch,false,true,false,object_storage,"HIPAA,SOC2_TYPE1,SOC2_TYPE2","2027-10-08,2027-06-24,2027-06-25",current,false,,,,false,2025-12-26
+MegaScale Hosting 7,cloud_provider,1557745.77,2024-10-20,2026-05-20,expired,stable,true,false,true,customer_db,SOC2_TYPE2,2027-03-11,current,true,2025-07-25,HIGH,false,false,2026-06-07
+NetSafe Solutions 7,software_vendor,2590941.98,2024-10-30,2026-09-08,active,distressed,true,false,false,"data_warehouse,erp","ISO_27001,PCI_DSS","2026-04-21,2026-01-21",expired,false,,,,false,2025-10-24
+OmniCloud Services 7,mss_provider,286641.16,2024-09-13,2027-04-02,active,distressed,false,false,true,,PCI_DSS,2026-04-06,expired,true,2025-05-22,MEDIUM,false,false,2025-08-10
+PrecisionPay Ltd 7,contractor,903015.06,2024-07-08,2027-10-09,active,unknown,false,false,true,,"ISO_27001,PCI_DSS,SOC2_TYPE2","2027-02-21,2026-11-14,2026-09-25",current,true,2026-02-04,HIGH,false,false,2025-03-12
+QuantumRisk Analytics 7,mss_provider,3869902.12,2024-08-03,2027-10-09,active,stable,false,true,false,"object_storage,erp,data_warehouse","SOC2_TYPE2,PCI_DSS,SOC2_TYPE1","2026-10-16,2027-07-22,2026-10-29",current,true,2025-12-11,HIGH,true,false,2025-08-01
+RapidDeploy Systems 7,mss_provider,17295.58,2024-11-24,2026-07-06,active,watch,false,false,false,data_warehouse,SOC2_TYPE1,2026-08-22,current,false,,,,false,2025-06-03
+SecureHarbor Inc 7,software_vendor,2071153.45,2025-02-09,2028-04-25,active,distressed,false,false,false,"customer_db,erp,data_warehouse",,,,false,,,,false,2025-06-06
+TrustFrame Technologies 7,mss_provider,1312344.79,2025-01-07,2028-03-08,active,stable,true,true,false,,"PCI_DSS,HIPAA","2026-09-26,2026-08-18",current,true,2025-08-08,LOW,true,false,2025-09-01
+UltraSecure MSS 7,software_vendor,1797854.36,2025-02-06,2027-01-31,active,watch,false,false,true,"object_storage,customer_db","PCI_DSS,SOC2_TYPE2,HIPAA","2026-06-01,2027-11-24,2026-10-29",expired,false,,,,false,2025-08-26
+VaultMaster Corp 7,software_vendor,254263.58,2024-09-17,2026-04-22,expired,stable,true,true,false,object_storage,"HIPAA,ISO_27001,SOC2_TYPE2","2027-04-09,2026-04-05,2026-05-14",current,true,2025-12-07,CRITICAL,true,false,2026-05-31
+WebArmor Ltd 7,software_vendor,2934732.57,2024-07-28,2026-04-13,expired,unknown,true,false,false,,,,,false,,,,false,2025-07-24
+XcelData Solutions 7,cloud_provider,223054.63,2024-09-14,2027-10-30,active,stable,true,true,true,"crm,object_storage","HIPAA,SOC2_TYPE1,SOC2_TYPE2","2027-01-17,2027-11-21,2027-03-03",current,true,2026-03-29,MEDIUM,false,false,2025-10-18
+YieldSecure Analytics 7,software_vendor,2400364.34,2025-01-02,2026-08-09,active,stable,false,false,false,"billing_system,erp,data_warehouse","ISO_27001,SOC2_TYPE1,PCI_DSS","2027-07-01,2026-01-10,2027-01-17",current,false,,,,false,2025-07-18
+ZenCloud Systems 7,software_vendor,1102910.74,2024-11-10,2026-05-20,expired,distressed,true,true,false,,"SOC2_TYPE1,PCI_DSS,HIPAA","2026-08-17,2026-06-03,2026-04-03",current,false,,,,false,2025-11-26
+Acme Cloud Storage 8,payment_processor,1780475.13,2024-09-16,2026-09-18,active,distressed,false,false,false,,SOC2_TYPE1,2026-11-12,current,false,,,,false,2025-11-22
+BlueShield Analytics 8,software_vendor,719090.43,2025-02-27,2027-09-28,active,unknown,true,false,true,"customer_db,billing_system,object_storage","ISO_27001,HIPAA","2026-01-29,2026-03-24",expired,false,,,,false,2025-05-06
+ClearPath Networks 8,mss_provider,307184.25,2025-06-15,2026-08-14,active,stable,false,false,false,"data_warehouse,crm",,,,false,,,,false,2025-07-20
+DataVault Systems 8,contractor,4879544.75,2025-01-29,2028-06-09,active,watch,false,true,false,crm,"PCI_DSS,ISO_27001,SOC2_TYPE1","2027-07-20,2027-12-02,2027-09-11",current,false,,,,false,2025-04-11
+EdgeSecure Ltd 8,contractor,3646866.47,2025-04-09,2027-04-26,active,unknown,true,false,false,data_warehouse,,,,false,,,,false,2025-04-18
+FortKnox Payments 8,mss_provider,3729263.21,2024-11-30,2026-09-09,active,stable,false,false,false,"crm,customer_db",,,,false,,,,false,2025-03-11
+GlobalMesh MSS 8,mss_provider,1290723.13,2024-06-20,2026-05-10,expired,stable,true,false,false,object_storage,"HIPAA,SOC2_TYPE1,SOC2_TYPE2","2027-02-18,2027-05-10,2027-01-13",current,false,,,,false,2025-02-22
+HealthBridge IT 8,mss_provider,110189.21,2024-08-12,2026-06-05,expired,stable,false,false,true,"data_warehouse,customer_db,crm","ISO_27001,HIPAA","2026-06-04,2026-03-08",expired,false,,,,false,2026-05-06
+IntelliGuard Software 8,payment_processor,793947.85,2024-10-03,2026-10-02,active,stable,true,false,false,"object_storage,customer_db,billing_system","SOC2_TYPE1,PCI_DSS,HIPAA","2026-10-06,2026-10-22,2026-08-22",current,true,2025-06-29,CRITICAL,false,false,2025-12-22
+JetStream Infrastructure 8,contractor,493964.62,2025-05-12,2027-01-14,active,stable,false,true,false,"crm,billing_system,customer_db",,,,false,,,,false,2025-08-13
+KeyLock Security 8,payment_processor,1853314.31,2024-11-01,2027-06-15,active,stable,false,false,true,"erp,crm","PCI_DSS,ISO_27001,HIPAA","2027-07-22,2026-02-23,2026-05-25",current,false,,,,false,2025-11-15
+LibertyData Corp 8,cloud_provider,4205577.86,2025-01-20,2027-09-21,active,distressed,false,false,false,customer_db,"SOC2_TYPE1,ISO_27001,HIPAA","2026-10-24,2026-03-12,2027-01-30",current,false,,,,false,2026-06-05
+MegaScale Hosting 8,contractor,4861102.74,2024-08-23,2026-05-04,expired,distressed,true,false,false,,"SOC2_TYPE2,HIPAA,SOC2_TYPE1","2027-09-25,2026-05-22,2027-08-23",current,true,2026-02-24,LOW,false,false,2026-04-19
+NetSafe Solutions 8,software_vendor,2296204.33,2025-06-13,2027-12-20,active,distressed,false,false,true,,"SOC2_TYPE2,HIPAA,SOC2_TYPE1","2026-05-22,2027-07-25,2027-08-16",expired,false,,,,false,2025-07-01
+OmniCloud Services 8,software_vendor,4401877.57,2024-11-02,2027-04-18,active,distressed,true,false,false,,"SOC2_TYPE1,HIPAA,SOC2_TYPE2","2026-06-16,2026-09-30,2027-02-07",expired,false,,,,false,2026-01-24
+PrecisionPay Ltd 8,contractor,255961.97,2024-11-04,2027-04-07,active,stable,true,false,false,"data_warehouse,customer_db,object_storage",,,,true,2026-05-31,LOW,false,false,2025-07-19
+QuantumRisk Analytics 8,payment_processor,3028845.87,2025-02-01,2026-10-24,active,stable,true,false,true,,"HIPAA,PCI_DSS,SOC2_TYPE2","2027-06-02,2026-06-02,2026-02-27",current,true,2025-08-26,HIGH,true,false,2025-09-26
+RapidDeploy Systems 8,mss_provider,3526123.39,2025-02-12,2027-08-21,active,stable,false,false,false,"billing_system,object_storage","SOC2_TYPE2,SOC2_TYPE1,HIPAA","2027-01-07,2027-05-06,2027-08-22",current,false,,,,false,2026-04-06
+SecureHarbor Inc 8,cloud_provider,1432496.19,2024-09-11,2027-10-28,active,stable,true,true,false,,ISO_27001,2027-10-15,current,false,,,,false,2026-01-20
+TrustFrame Technologies 8,cloud_provider,2375745.06,2024-09-16,2027-11-27,active,stable,true,false,false,"crm,data_warehouse",,,,false,,,,false,2025-05-27
+UltraSecure MSS 8,payment_processor,1517704.01,2025-05-05,2027-05-02,active,stable,true,false,false,"erp,data_warehouse",,,,false,,,,false,2025-04-01
+VaultMaster Corp 8,payment_processor,328546.9,2025-05-13,2027-02-17,active,unknown,false,true,true,"data_warehouse,billing_system,object_storage","PCI_DSS,SOC2_TYPE1","2026-07-02,2026-05-24",current,false,,,,false,2025-07-06
+WebArmor Ltd 8,mss_provider,4535488.7,2024-07-08,2027-11-09,active,stable,false,false,false,"erp,billing_system",PCI_DSS,2026-08-06,current,false,,,,false,2026-04-29
+XcelData Solutions 8,software_vendor,913867.93,2024-08-24,2028-04-18,active,stable,false,true,true,"crm,billing_system","SOC2_TYPE1,ISO_27001","2027-11-18,2026-11-30",current,false,,,,false,2025-09-30
+YieldSecure Analytics 8,cloud_provider,2357977.47,2025-04-14,2027-11-06,active,distressed,false,true,true,"erp,billing_system,crm",,,,true,2025-08-01,MEDIUM,false,false,2025-07-30
+ZenCloud Systems 8,software_vendor,4465297.17,2024-09-01,2027-02-08,active,unknown,true,false,false,,SOC2_TYPE2,2027-05-05,current,true,2025-10-03,MEDIUM,true,false,2025-05-02
+Acme Cloud Storage 9,payment_processor,3928202.42,2024-08-25,2027-12-11,active,watch,true,true,false,,"HIPAA,SOC2_TYPE1,ISO_27001","2027-04-24,2027-01-18,2025-12-26",current,false,,,,false,2025-11-03
+BlueShield Analytics 9,contractor,99401.47,2024-10-25,2026-11-08,active,stable,false,false,true,,"PCI_DSS,ISO_27001","2026-04-06,2027-01-18",expired,false,,,,false,2026-02-12
+ClearPath Networks 9,software_vendor,2985885.89,2025-06-06,2026-08-06,active,stable,false,false,false,object_storage,"HIPAA,PCI_DSS","2026-07-02,2026-06-08",current,false,,,,false,2026-02-15
+DataVault Systems 9,cloud_provider,2952567.25,2024-12-24,2028-03-19,active,stable,true,false,false,,,,,false,,,,false,2025-04-01
+EdgeSecure Ltd 9,cloud_provider,250692.93,2025-02-02,2027-04-15,active,stable,false,false,true,,,,,false,,,,false,2026-01-10
+FortKnox Payments 9,software_vendor,1357185.98,2024-08-29,2027-05-24,active,watch,false,false,false,,,,,false,,,,false,2026-03-10
+GlobalMesh MSS 9,mss_provider,4159179.11,2024-12-20,2028-03-11,active,unknown,false,false,true,,"PCI_DSS,ISO_27001,SOC2_TYPE2","2027-07-06,2027-05-14,2026-07-22",current,false,,,,false,2026-04-08
+HealthBridge IT 9,software_vendor,3348419.43,2024-08-05,2028-05-28,active,stable,false,true,false,crm,,,,false,,,,false,2025-09-30
+IntelliGuard Software 9,cloud_provider,508046.49,2024-07-10,2027-01-13,active,stable,false,false,true,data_warehouse,"PCI_DSS,HIPAA","2026-04-19,2026-03-29",expired,false,,,,false,2026-05-08
+JetStream Infrastructure 9,payment_processor,4775894.89,2024-08-06,2027-04-07,active,stable,false,true,false,"crm,object_storage,customer_db","ISO_27001,SOC2_TYPE2","2027-02-05,2027-02-04",current,true,2026-05-22,HIGH,true,false,2026-04-13
+KeyLock Security 9,cloud_provider,2085978.31,2025-04-07,2028-02-14,active,watch,false,false,false,"crm,customer_db,data_warehouse","ISO_27001,HIPAA,SOC2_TYPE1","2027-09-09,2026-01-20,2027-11-22",current,false,,,,false,2026-01-06
+LibertyData Corp 9,mss_provider,71677.46,2025-03-15,2028-05-15,active,distressed,false,false,true,crm,PCI_DSS,2027-06-06,current,false,,,,false,2025-08-21
+MegaScale Hosting 9,contractor,4196774.78,2025-04-29,2026-05-16,expired,watch,false,true,false,"object_storage,customer_db,crm",,,,false,,,,false,2025-06-27
+NetSafe Solutions 9,cloud_provider,2539577.37,2024-12-30,2027-05-08,active,watch,false,false,true,"crm,billing_system,customer_db",SOC2_TYPE2,2027-04-06,current,false,,,,false,2025-02-14
+OmniCloud Services 9,cloud_provider,2023163.9,2025-03-28,2026-03-22,expired,stable,false,false,false,data_warehouse,,,,false,,,,false,2025-08-10
+PrecisionPay Ltd 9,cloud_provider,4084777.55,2024-12-06,2027-10-16,active,distressed,true,false,false,"erp,data_warehouse","PCI_DSS,HIPAA,SOC2_TYPE2","2026-03-31,2027-10-27,2026-08-06",expired,false,,,,false,2026-05-10
+QuantumRisk Analytics 9,contractor,2467186.49,2025-01-15,2026-07-09,active,distressed,false,false,false,data_warehouse,"SOC2_TYPE1,ISO_27001","2026-07-02,2026-04-24",current,false,,,,false,2025-02-28
+RapidDeploy Systems 9,software_vendor,624863.76,2025-02-09,2028-01-25,active,distressed,false,true,false,"erp,object_storage,data_warehouse",HIPAA,2025-12-26,expired,false,,,,false,2025-08-22
+SecureHarbor Inc 9,software_vendor,3034742.26,2025-01-02,2027-05-24,active,stable,false,false,false,object_storage,PCI_DSS,2027-02-02,current,false,,,,false,2026-02-23
+TrustFrame Technologies 9,software_vendor,1501576.54,2024-11-27,2028-03-19,active,watch,false,true,false,data_warehouse,ISO_27001,2026-07-24,current,false,,,,false,2025-10-20
+UltraSecure MSS 9,software_vendor,3474616.75,2024-08-18,2028-05-09,active,stable,false,false,false,"crm,customer_db","SOC2_TYPE1,HIPAA","2027-08-10,2027-07-29",current,false,,,,true,2025-04-20
+VaultMaster Corp 9,cloud_provider,3354568.35,2024-09-10,2027-01-09,active,stable,true,false,false,"customer_db,erp,object_storage","ISO_27001,SOC2_TYPE2","2027-11-29,2026-10-20",current,false,,,,false,2025-06-06
+WebArmor Ltd 9,software_vendor,3923692.79,2024-11-14,2028-02-29,active,watch,false,false,false,"erp,customer_db",,,,true,2025-09-21,MEDIUM,false,false,2026-03-11
+XcelData Solutions 9,contractor,4558317.02,2025-05-17,2027-04-02,active,watch,false,false,true,data_warehouse,ISO_27001,2026-10-19,current,false,,,,false,2025-09-12
+YieldSecure Analytics 9,mss_provider,2787427.12,2025-04-15,2026-12-08,active,stable,true,false,true,billing_system,,,,false,,,,false,2025-12-22
+ZenCloud Systems 9,software_vendor,4217268.51,2025-04-09,2027-10-06,active,stable,false,false,false,crm,"SOC2_TYPE2,PCI_DSS","2027-06-13,2026-08-04",current,false,,,,false,2025-08-02
+Acme Cloud Storage 10,contractor,4418149.73,2024-12-06,2027-03-26,active,watch,true,false,false,customer_db,"ISO_27001,HIPAA","2027-07-19,2027-10-17",current,false,,,,false,2026-05-19
+BlueShield Analytics 10,cloud_provider,1935520.91,2024-11-11,2026-04-16,expired,stable,true,false,false,,"SOC2_TYPE1,HIPAA","2027-05-04,2026-02-04",current,false,,,,false,2026-06-09
+ClearPath Networks 10,software_vendor,2670697.05,2024-10-05,2028-02-06,active,watch,true,false,false,"data_warehouse,customer_db,object_storage",HIPAA,2026-04-07,expired,true,2026-05-18,CRITICAL,true,false,2025-03-14
+DataVault Systems 10,contractor,3973131.79,2025-04-10,2026-11-10,active,watch,false,false,false,,"HIPAA,SOC2_TYPE1","2027-03-28,2027-09-28",current,false,,,,false,2025-12-18
+EdgeSecure Ltd 10,cloud_provider,3782243.38,2025-06-13,2026-06-04,expired,watch,true,true,false,"crm,data_warehouse,customer_db","SOC2_TYPE1,SOC2_TYPE2","2026-10-14,2027-11-24",current,false,,,,false,2025-04-15
+FortKnox Payments 10,payment_processor,3985884.48,2024-11-18,2027-12-31,active,distressed,false,false,false,"customer_db,erp",PCI_DSS,2027-11-15,current,false,,,,false,2025-02-26
+GlobalMesh MSS 10,cloud_provider,2867865.79,2025-03-27,2026-06-17,expired,stable,false,false,true,object_storage,"ISO_27001,PCI_DSS","2026-07-26,2027-02-17",current,false,,,,false,2025-04-04
+HealthBridge IT 10,contractor,3358179.78,2024-07-17,2028-04-29,active,watch,true,false,false,"billing_system,object_storage","SOC2_TYPE1,SOC2_TYPE2,ISO_27001","2027-11-09,2026-02-28,2026-09-04",current,false,,,,false,2025-06-30
+IntelliGuard Software 10,software_vendor,358346.33,2025-02-23,2027-06-26,active,stable,true,false,false,"object_storage,customer_db,billing_system","SOC2_TYPE1,PCI_DSS","2027-12-02,2027-08-12",current,false,,,,false,2026-02-18
+JetStream Infrastructure 10,payment_processor,1390632.38,2025-06-02,2028-04-10,active,stable,false,false,true,,"HIPAA,SOC2_TYPE1","2027-03-23,2026-12-24",current,false,,,,false,2025-04-17
+KeyLock Security 10,software_vendor,990195.33,2025-05-06,2026-06-08,expired,watch,false,false,false,"erp,object_storage,customer_db",,,,false,,,,false,2025-11-08
+LibertyData Corp 10,payment_processor,3273001.62,2025-01-06,2026-11-05,active,stable,true,false,true,erp,"ISO_27001,HIPAA","2027-05-19,2027-05-28",current,false,,,,false,2025-04-17
+MegaScale Hosting 10,payment_processor,804519.87,2025-04-05,2028-01-26,active,watch,true,false,true,"billing_system,object_storage",HIPAA,2026-12-24,current,true,2025-08-29,CRITICAL,false,false,2026-05-20
+NetSafe Solutions 10,cloud_provider,209124.45,2024-08-11,2028-03-11,active,watch,true,false,false,,"PCI_DSS,ISO_27001","2027-01-11,2027-10-22",current,false,,,,false,2026-05-15
+OmniCloud Services 10,contractor,2586695.19,2024-12-13,2027-08-02,active,stable,true,false,false,object_storage,"SOC2_TYPE1,SOC2_TYPE2,PCI_DSS","2026-05-13,2027-03-17,2026-06-09",expired,true,2026-03-20,HIGH,false,false,2025-09-05
+PrecisionPay Ltd 10,cloud_provider,2412768.08,2024-10-05,2027-11-16,active,stable,true,true,false,data_warehouse,HIPAA,2026-01-13,expired,false,,,,false,2025-04-21
+QuantumRisk Analytics 10,cloud_provider,840043.42,2025-03-11,2027-05-11,active,unknown,false,false,false,,,,,false,,,,false,2025-10-04
+RapidDeploy Systems 10,payment_processor,861128.25,2025-04-23,2026-08-15,active,distressed,false,true,false,"erp,data_warehouse,customer_db",SOC2_TYPE1,2027-10-28,current,false,,,,false,2025-04-01
+SecureHarbor Inc 10,cloud_provider,1019719.26,2025-03-05,2028-02-20,active,distressed,true,false,false,,"ISO_27001,SOC2_TYPE2,HIPAA","2027-04-23,2027-09-12,2027-08-28",current,true,2026-04-18,MEDIUM,true,false,2025-11-08
+TrustFrame Technologies 10,payment_processor,2615000.71,2024-07-12,2028-03-05,active,stable,false,false,false,customer_db,"ISO_27001,HIPAA,SOC2_TYPE1","2026-12-15,2027-08-17,2027-12-05",current,false,,,,false,2025-09-02
+UltraSecure MSS 10,mss_provider,953214.86,2024-06-23,2027-11-03,active,watch,false,false,true,"crm,billing_system",,,,true,2025-12-20,CRITICAL,false,false,2025-11-06
+VaultMaster Corp 10,software_vendor,1834564.03,2025-06-03,2027-05-02,active,stable,false,false,false,"billing_system,data_warehouse,erp",HIPAA,2027-07-10,current,false,,,,false,2025-04-16
+WebArmor Ltd 10,cloud_provider,3741592.83,2025-06-13,2026-09-03,active,stable,true,false,false,,,,,true,2026-04-06,HIGH,true,false,2026-04-02
+XcelData Solutions 10,payment_processor,4630050.32,2024-07-22,2026-12-16,active,stable,false,false,false,"erp,data_warehouse,billing_system",PCI_DSS,2026-03-13,expired,false,,,,false,2026-06-04
+YieldSecure Analytics 10,contractor,3205053.66,2024-10-01,2028-01-23,active,stable,false,true,true,,"ISO_27001,SOC2_TYPE2","2027-08-27,2027-05-28",current,false,,,,false,2026-06-19
+ZenCloud Systems 10,contractor,443345.63,2025-01-10,2027-03-18,active,stable,false,false,false,"billing_system,data_warehouse","HIPAA,ISO_27001,PCI_DSS","2026-01-06,2027-12-12,2026-03-02",expired,false,,,,false,2025-09-25
+Acme Cloud Storage 11,payment_processor,2878784.54,2025-01-14,2027-08-22,active,stable,false,false,false,,,,,false,,,,false,2026-04-29
+BlueShield Analytics 11,software_vendor,4067605.27,2025-06-10,2027-06-18,active,watch,false,false,true,,"SOC2_TYPE1,HIPAA,SOC2_TYPE2","2026-12-04,2027-04-05,2027-11-19",current,false,,,,false,2026-03-15
+ClearPath Networks 11,contractor,3387795.75,2024-11-28,2027-05-18,active,stable,true,true,false,"customer_db,erp","SOC2_TYPE1,SOC2_TYPE2","2027-12-09,2026-09-17",current,false,,,,false,2025-08-05
+DataVault Systems 11,contractor,4472638.1,2025-06-04,2026-10-02,active,stable,true,false,false,"object_storage,customer_db","ISO_27001,SOC2_TYPE1,PCI_DSS","2026-08-26,2026-09-19,2026-07-21",current,true,2025-06-25,LOW,true,false,2026-03-03
+EdgeSecure Ltd 11,payment_processor,1862270.71,2025-04-10,2026-12-28,active,stable,true,false,false,,"ISO_27001,PCI_DSS,SOC2_TYPE1","2026-08-06,2027-08-04,2026-05-02",current,false,,,,false,2026-01-22
+FortKnox Payments 11,contractor,2291408.21,2025-03-12,2027-07-06,active,stable,true,true,false,"object_storage,erp","SOC2_TYPE2,SOC2_TYPE1","2027-11-12,2026-07-25",current,false,,,,false,2026-06-10
+GlobalMesh MSS 11,software_vendor,1722051.34,2025-01-23,2026-10-23,active,stable,false,false,false,,"PCI_DSS,SOC2_TYPE1,ISO_27001","2026-10-04,2027-03-28,2026-06-24",current,false,,,,false,2025-11-16
+HealthBridge IT 11,payment_processor,4282980.61,2024-09-04,2027-07-19,active,stable,true,false,false,"crm,billing_system",,,,false,,,,false,2025-03-01
+IntelliGuard Software 11,payment_processor,503884.25,2024-10-08,2026-12-07,active,stable,true,false,false,"customer_db,crm","SOC2_TYPE2,HIPAA,PCI_DSS","2026-11-29,2026-09-14,2026-12-26",current,true,2026-04-28,MEDIUM,true,false,2026-01-03
+JetStream Infrastructure 11,mss_provider,1781994.1,2025-02-24,2028-05-23,active,watch,false,false,false,"crm,erp","SOC2_TYPE2,HIPAA,PCI_DSS","2026-10-11,2027-04-10,2027-09-29",current,false,,,,false,2025-03-13
+KeyLock Security 11,cloud_provider,818377.45,2024-11-29,2028-01-19,active,stable,false,false,false,"crm,object_storage,erp","PCI_DSS,HIPAA","2026-09-25,2027-03-22",current,false,,,,false,2025-06-05
+LibertyData Corp 11,mss_provider,4702782.31,2024-07-30,2026-10-23,active,watch,true,false,false,,HIPAA,2026-04-06,expired,true,2025-12-05,HIGH,true,false,2025-12-18
+MegaScale Hosting 11,cloud_provider,3277615.05,2024-11-25,2026-11-11,active,distressed,false,true,false,,PCI_DSS,2027-03-20,current,true,2025-11-14,CRITICAL,false,false,2025-10-02
+NetSafe Solutions 11,software_vendor,2229776.21,2025-06-12,2027-09-25,active,unknown,false,false,false,"erp,data_warehouse,billing_system",SOC2_TYPE1,2027-08-25,current,false,,,,false,2025-06-01
+OmniCloud Services 11,cloud_provider,2214882.92,2024-10-31,2026-08-28,active,stable,true,false,true,"crm,billing_system,customer_db","SOC2_TYPE2,SOC2_TYPE1","2027-06-10,2026-05-10",current,false,,,,false,2025-12-07
+PrecisionPay Ltd 11,contractor,3985869.25,2024-09-24,2027-05-17,active,stable,true,true,false,"billing_system,erp","HIPAA,ISO_27001,SOC2_TYPE2","2027-10-14,2027-01-25,2027-01-13",current,false,,,,false,2026-04-17
+QuantumRisk Analytics 11,cloud_provider,920211.82,2025-05-12,2027-07-01,active,stable,true,false,true,,"PCI_DSS,HIPAA,SOC2_TYPE2","2026-11-15,2026-01-10,2026-05-26",current,false,,,,false,2025-09-17
+RapidDeploy Systems 11,cloud_provider,1171724.38,2025-02-27,2026-10-30,active,stable,false,false,false,customer_db,"HIPAA,PCI_DSS","2027-05-16,2027-01-06",current,false,,,,false,2025-11-10
+SecureHarbor Inc 11,payment_processor,916202.66,2024-10-26,2027-04-16,active,distressed,true,false,true,"object_storage,customer_db,data_warehouse",,,,false,,,,false,2025-10-29
+TrustFrame Technologies 11,contractor,2369399.47,2024-11-26,2027-02-15,active,watch,false,true,false,billing_system,SOC2_TYPE2,2027-07-07,current,false,,,,false,2025-05-27
+UltraSecure MSS 11,cloud_provider,1187469.53,2024-06-27,2026-09-09,active,stable,true,true,false,"data_warehouse,erp,object_storage","SOC2_TYPE1,SOC2_TYPE2","2027-01-31,2026-08-27",current,false,,,,false,2025-04-26
+VaultMaster Corp 11,payment_processor,466093.75,2025-05-06,2026-05-22,expired,watch,true,true,false,,,,,true,2025-09-12,CRITICAL,false,false,2026-03-15
+WebArmor Ltd 11,payment_processor,3668612.27,2024-12-30,2027-03-23,active,stable,false,false,false,"object_storage,erp,data_warehouse",PCI_DSS,2026-01-31,expired,false,,,,false,2025-10-02
+XcelData Solutions 11,mss_provider,4339632.58,2025-03-30,2026-09-02,active,watch,false,false,false,"crm,customer_db",,,,false,,,,false,2026-02-15
+YieldSecure Analytics 11,contractor,4415832.54,2024-12-23,2028-05-24,active,watch,false,false,false,"erp,object_storage,billing_system",PCI_DSS,2026-02-24,expired,false,,,,false,2025-04-02
+ZenCloud Systems 11,cloud_provider,2620770.69,2024-08-25,2026-09-20,active,stable,true,false,true,"data_warehouse,crm,billing_system",,,,true,2025-09-06,HIGH,true,true,2026-05-22
+Acme Cloud Storage 12,payment_processor,4642734.56,2025-02-14,2028-06-19,active,distressed,true,false,false,"data_warehouse,customer_db",,,,false,,,,false,2025-02-25
+BlueShield Analytics 12,cloud_provider,4173937.93,2024-10-08,2027-09-04,active,stable,true,true,false,erp,,,,false,,,,false,2026-06-05
+ClearPath Networks 12,contractor,2796533.17,2024-08-13,2028-05-14,active,watch,false,false,false,erp,"HIPAA,SOC2_TYPE1","2026-04-07,2026-06-10",expired,false,,,,false,2025-08-04
+DataVault Systems 12,mss_provider,2754905.9,2024-12-27,2027-05-18,active,unknown,false,false,false,"crm,data_warehouse,customer_db","PCI_DSS,ISO_27001,SOC2_TYPE1","2027-07-03,2026-07-29,2027-01-10",current,false,,,,false,2025-12-07
+EdgeSecure Ltd 12,cloud_provider,2592870.7,2024-11-21,2026-03-28,expired,unknown,false,false,false,customer_db,"ISO_27001,SOC2_TYPE1","2026-11-09,2026-01-13",current,true,2025-11-14,MEDIUM,true,false,2025-08-11
+FortKnox Payments 12,contractor,1288656.75,2025-04-08,2027-05-05,active,stable,false,true,false,,SOC2_TYPE2,2026-11-19,current,false,,,,false,2026-02-14
+GlobalMesh MSS 12,software_vendor,1913915.09,2024-12-08,2027-03-13,active,watch,false,false,true,,"HIPAA,SOC2_TYPE2,SOC2_TYPE1","2027-10-21,2027-08-30,2026-01-02",current,false,,,,false,2025-07-22
+HealthBridge IT 12,software_vendor,3491865.58,2025-05-30,2028-04-09,active,stable,true,false,false,,"HIPAA,SOC2_TYPE2,SOC2_TYPE1","2027-03-09,2026-10-14,2027-01-29",current,false,,,,false,2025-08-28
+IntelliGuard Software 12,software_vendor,2178110.64,2024-08-28,2027-07-27,active,watch,false,true,false,object_storage,HIPAA,2027-01-30,current,true,2026-06-17,LOW,true,false,2026-05-24
+JetStream Infrastructure 12,cloud_provider,3362020.29,2024-12-15,2026-10-03,active,stable,false,false,false,"erp,object_storage,crm","PCI_DSS,SOC2_TYPE2","2026-10-30,2026-06-13",current,true,2025-09-12,MEDIUM,true,false,2025-04-25
+KeyLock Security 12,cloud_provider,3700512.33,2025-05-03,2026-08-20,active,stable,true,false,false,object_storage,"SOC2_TYPE2,PCI_DSS","2027-12-02,2026-04-14",current,false,,,,false,2025-11-12
+LibertyData Corp 12,payment_processor,3118979.54,2025-06-10,2028-03-06,active,unknown,true,false,false,"object_storage,customer_db",,,,false,,,,false,2025-12-18
+MegaScale Hosting 12,mss_provider,274895.39,2024-06-24,2026-05-29,expired,watch,true,false,false,,"PCI_DSS,SOC2_TYPE1,SOC2_TYPE2","2026-01-10,2026-10-17,2027-10-17",expired,false,,,,false,2025-12-07
+NetSafe Solutions 12,software_vendor,449223.14,2025-02-09,2027-10-17,active,stable,true,false,false,"crm,object_storage,customer_db",,,,false,,,,false,2025-12-22
+OmniCloud Services 12,mss_provider,1188661.78,2025-03-03,2026-12-29,active,unknown,false,false,false,,,,,false,,,,false,2025-05-31
+PrecisionPay Ltd 12,contractor,1715512.9,2024-08-29,2026-06-19,expired,stable,false,false,false,"erp,object_storage,data_warehouse","SOC2_TYPE1,ISO_27001,HIPAA","2026-08-25,2027-07-31,2026-05-27",current,false,,,,false,2026-01-21
+QuantumRisk Analytics 12,contractor,4314312.43,2025-06-16,2027-09-09,active,stable,false,false,true,,HIPAA,2026-05-19,expired,false,,,,false,2025-04-06
+RapidDeploy Systems 12,contractor,1594811.97,2024-07-05,2028-05-13,active,distressed,false,false,false,"object_storage,data_warehouse","HIPAA,SOC2_TYPE1","2026-10-28,2027-03-20",current,true,2025-08-18,HIGH,false,false,2025-12-15
+SecureHarbor Inc 12,software_vendor,2839545.03,2024-10-16,2026-11-13,active,stable,true,false,false,"data_warehouse,billing_system,object_storage",,,,false,,,,false,2025-04-16
+TrustFrame Technologies 12,contractor,974366.55,2024-06-27,2026-12-23,active,stable,false,false,false,"object_storage,crm,erp","ISO_27001,SOC2_TYPE1,SOC2_TYPE2","2026-02-27,2026-06-21,2027-03-16",expired,false,,,,false,2026-04-03
+UltraSecure MSS 12,payment_processor,3603802.56,2025-04-08,2027-11-20,active,stable,false,false,false,,,,,false,,,,false,2025-11-07
+VaultMaster Corp 12,payment_processor,4919314.91,2025-01-04,2027-09-01,active,stable,true,false,false,"crm,object_storage",,,,false,,,,false,2025-03-04
+WebArmor Ltd 12,software_vendor,4519341.48,2025-05-16,2027-06-27,active,stable,false,true,false,crm,,,,false,,,,false,2025-05-07
+XcelData Solutions 12,payment_processor,2955674.22,2024-10-01,2027-06-30,active,watch,true,false,false,data_warehouse,,,,false,,,,false,2026-02-01
+YieldSecure Analytics 12,payment_processor,3174021.37,2025-06-17,2027-04-19,active,stable,true,false,false,object_storage,HIPAA,2027-07-08,current,false,,,,false,2026-02-04
+ZenCloud Systems 12,cloud_provider,2103712.64,2025-02-03,2027-01-11,active,stable,false,true,false,,SOC2_TYPE2,2026-05-05,expired,false,,,,false,2025-11-10
+Acme Cloud Storage 13,cloud_provider,3043839.82,2024-10-09,2027-11-14,active,stable,true,false,false,customer_db,"HIPAA,SOC2_TYPE1,ISO_27001","2026-03-13,2027-08-29,2027-08-28",expired,true,2025-06-13,CRITICAL,true,false,2026-04-18
+BlueShield Analytics 13,software_vendor,4191692.03,2024-08-03,2026-05-11,expired,stable,false,true,false,crm,,,,false,,,,false,2025-02-23
+ClearPath Networks 13,cloud_provider,3844874.8,2024-12-31,2026-05-30,expired,stable,false,true,false,data_warehouse,"SOC2_TYPE1,SOC2_TYPE2,ISO_27001","2027-04-18,2026-05-08,2026-04-25",current,false,,,,false,2025-11-24
+DataVault Systems 13,software_vendor,4936074.43,2025-06-07,2027-12-01,active,stable,false,false,false,"erp,crm,data_warehouse","HIPAA,PCI_DSS","2026-09-13,2027-06-13",current,false,,,,false,2025-06-04
+EdgeSecure Ltd 13,mss_provider,4896495.72,2024-07-02,2027-07-11,active,stable,false,true,false,"crm,customer_db,billing_system",,,,false,,,,false,2025-05-24
+FortKnox Payments 13,cloud_provider,3206685.37,2024-10-28,2028-06-08,active,watch,true,false,false,,,,,true,2025-11-02,CRITICAL,true,false,2025-11-23
+GlobalMesh MSS 13,contractor,978137.74,2025-05-30,2027-07-25,active,distressed,false,false,false,"data_warehouse,customer_db,billing_system","SOC2_TYPE2,ISO_27001,HIPAA","2026-05-30,2027-09-25,2027-04-07",expired,false,,,,false,2025-11-16
+HealthBridge IT 13,software_vendor,103404.97,2024-12-06,2028-06-17,active,watch,true,false,false,erp,"SOC2_TYPE2,ISO_27001","2026-10-05,2026-01-22",current,false,,,,false,2025-04-05
+IntelliGuard Software 13,mss_provider,3529278.26,2024-07-06,2026-12-25,active,stable,true,false,true,,"SOC2_TYPE2,HIPAA,SOC2_TYPE1","2027-01-06,2027-03-29,2026-10-27",current,false,,,,false,2025-09-20
+JetStream Infrastructure 13,software_vendor,134424.53,2025-03-03,2026-08-26,active,stable,false,false,false,customer_db,PCI_DSS,2027-05-01,current,false,,,,false,2026-01-17
+KeyLock Security 13,contractor,1033883.68,2025-01-04,2028-03-21,active,stable,true,false,false,,,,,false,,,,false,2025-03-29
+LibertyData Corp 13,software_vendor,3833239.12,2024-07-01,2027-11-03,active,watch,true,false,false,,"ISO_27001,PCI_DSS","2026-07-15,2026-07-07",current,false,,,,false,2025-04-04
+MegaScale Hosting 13,cloud_provider,4791907.29,2024-08-11,2026-10-19,active,watch,false,false,false,customer_db,"SOC2_TYPE1,PCI_DSS","2026-09-25,2026-05-15",current,false,,,,false,2025-11-08
+NetSafe Solutions 13,payment_processor,263123.66,2025-05-31,2026-05-12,expired,stable,true,true,false,"erp,billing_system,data_warehouse",,,,false,,,,false,2026-02-28
+OmniCloud Services 13,software_vendor,401942.58,2025-02-13,2027-10-24,active,unknown,false,false,false,"crm,object_storage,erp",SOC2_TYPE2,2027-12-07,current,true,2026-03-27,CRITICAL,true,false,2025-08-24
+PrecisionPay Ltd 13,mss_provider,3946005.74,2025-02-07,2027-08-03,active,distressed,true,true,false,billing_system,,,,false,,,,false,2025-04-11
+QuantumRisk Analytics 13,software_vendor,523631.73,2024-08-13,2027-02-18,active,distressed,false,false,false,"object_storage,erp,data_warehouse",,,,false,,,,false,2025-08-20
+RapidDeploy Systems 13,cloud_provider,1710163.65,2025-04-18,2027-06-06,active,distressed,false,true,false,"customer_db,erp,crm","SOC2_TYPE1,PCI_DSS,HIPAA","2027-12-02,2026-08-20,2026-06-17",current,false,,,,false,2025-09-20
+SecureHarbor Inc 13,contractor,1547098.26,2025-04-22,2026-07-11,active,stable,true,true,false,,"PCI_DSS,HIPAA,SOC2_TYPE1","2027-10-29,2026-02-22,2026-03-24",current,false,,,,false,2025-09-24
+TrustFrame Technologies 13,software_vendor,1464601.23,2025-02-03,2026-10-08,active,watch,false,false,false,"data_warehouse,billing_system,customer_db",PCI_DSS,2026-10-24,current,false,,,,false,2025-10-24
+UltraSecure MSS 13,payment_processor,4239707.36,2024-07-21,2027-04-04,active,distressed,true,false,false,,,,,false,,,,false,2025-06-05
+VaultMaster Corp 13,payment_processor,3514087.19,2024-11-29,2028-03-19,active,stable,true,true,false,"crm,object_storage","HIPAA,SOC2_TYPE1,ISO_27001","2027-07-03,2026-07-26,2027-10-31",current,false,,,,false,2025-04-10
+WebArmor Ltd 13,contractor,67897.73,2024-09-01,2028-03-29,active,watch,false,false,false,"erp,object_storage,crm","HIPAA,ISO_27001,SOC2_TYPE2","2026-05-11,2027-10-10,2027-02-20",expired,false,,,,false,2025-09-23
+XcelData Solutions 13,payment_processor,1782983.08,2025-04-25,2026-03-29,expired,stable,true,true,false,"customer_db,erp","ISO_27001,PCI_DSS,SOC2_TYPE1","2027-07-04,2027-08-04,2027-01-01",current,false,,,,false,2025-04-18
+YieldSecure Analytics 13,software_vendor,4918059.7,2024-11-10,2027-07-11,active,unknown,false,false,true,,,,,false,,,,false,2025-11-28
+ZenCloud Systems 13,mss_provider,3069065.18,2025-03-20,2028-05-27,active,unknown,false,false,false,"crm,billing_system",,,,false,,,,false,2025-07-03
+Acme Cloud Storage 14,contractor,186277.94,2024-11-22,2028-04-04,active,unknown,false,false,false,,"SOC2_TYPE2,HIPAA","2027-08-06,2026-06-13",current,false,,,,false,2025-10-21
+BlueShield Analytics 14,cloud_provider,4258711.83,2024-08-26,2027-12-12,active,stable,false,false,false,"billing_system,object_storage,data_warehouse","PCI_DSS,SOC2_TYPE1","2026-01-05,2026-04-15",expired,false,,,,false,2025-05-08
+ClearPath Networks 14,software_vendor,4311452.0,2024-08-02,2026-08-17,active,stable,false,true,false,object_storage,HIPAA,2027-02-17,current,false,,,,false,2025-03-04
+DataVault Systems 14,mss_provider,3779864.82,2024-09-13,2027-07-10,active,stable,false,false,false,"customer_db,billing_system,crm","HIPAA,PCI_DSS,ISO_27001","2027-06-20,2026-08-18,2027-01-14",current,false,,,,false,2025-11-03
+EdgeSecure Ltd 14,cloud_provider,495847.96,2024-12-18,2027-06-07,active,stable,true,false,false,data_warehouse,"PCI_DSS,SOC2_TYPE1","2026-09-21,2026-04-01",current,false,,,,false,2025-10-29
+FortKnox Payments 14,mss_provider,3391813.62,2024-11-27,2027-10-03,active,unknown,false,false,true,,,,,false,,,,false,2025-08-03
+GlobalMesh MSS 14,contractor,3629000.77,2024-07-07,2026-04-15,expired,stable,true,false,false,erp,,,,false,,,,false,2025-04-07
+HealthBridge IT 14,cloud_provider,4283639.71,2025-05-22,2028-05-12,active,stable,true,true,false,,SOC2_TYPE2,2027-12-04,current,false,,,,false,2025-06-26
+IntelliGuard Software 14,payment_processor,3464185.24,2024-12-02,2026-12-10,active,watch,false,false,false,,SOC2_TYPE2,2026-10-01,current,false,,,,false,2025-05-07
+JetStream Infrastructure 14,payment_processor,356298.42,2024-09-30,2027-12-06,active,unknown,true,false,false,"customer_db,data_warehouse","ISO_27001,HIPAA,SOC2_TYPE2","2026-05-18,2027-06-28,2027-03-08",expired,true,2026-03-04,CRITICAL,false,false,2025-02-14
+KeyLock Security 14,contractor,3267798.01,2024-07-09,2028-01-31,active,stable,true,false,false,"crm,data_warehouse,customer_db","PCI_DSS,ISO_27001,SOC2_TYPE1","2026-11-24,2027-01-26,2027-08-02",current,false,,,,true,2026-06-08
+LibertyData Corp 14,payment_processor,614806.21,2024-12-20,2027-02-26,active,stable,true,false,false,,"HIPAA,SOC2_TYPE2","2027-09-30,2027-10-15",current,false,,,,false,2025-07-03
+MegaScale Hosting 14,contractor,891325.34,2025-01-02,2028-01-27,active,stable,true,true,false,"customer_db,crm,object_storage",PCI_DSS,2027-12-04,current,true,2025-08-22,HIGH,true,false,2025-12-05
+NetSafe Solutions 14,payment_processor,1949949.99,2025-05-15,2027-01-31,active,watch,true,false,false,data_warehouse,"SOC2_TYPE1,HIPAA,SOC2_TYPE2","2026-01-28,2026-12-04,2026-02-17",expired,false,,,,false,2026-01-18
+OmniCloud Services 14,software_vendor,753278.61,2024-07-26,2026-04-28,expired,watch,true,false,false,data_warehouse,HIPAA,2027-10-22,current,false,,,,true,2025-12-25
+PrecisionPay Ltd 14,cloud_provider,4524265.13,2024-08-08,2027-07-02,active,distressed,false,true,false,customer_db,SOC2_TYPE1,2026-02-25,expired,false,,,,false,2026-03-27
+QuantumRisk Analytics 14,payment_processor,1627932.36,2025-04-10,2027-10-01,active,unknown,false,false,false,,PCI_DSS,2026-07-28,current,false,,,,false,2025-05-02
+RapidDeploy Systems 14,mss_provider,2771504.57,2025-04-13,2026-05-02,expired,stable,false,false,true,"customer_db,data_warehouse,erp",SOC2_TYPE2,2027-09-30,current,true,2025-06-30,CRITICAL,false,false,2026-03-25
+SecureHarbor Inc 14,contractor,1038739.49,2025-03-14,2027-06-26,active,watch,true,false,false,"billing_system,crm","ISO_27001,SOC2_TYPE1,PCI_DSS","2027-11-30,2026-01-29,2027-08-24",current,true,2025-09-13,MEDIUM,true,false,2025-11-03
+TrustFrame Technologies 14,software_vendor,1815887.51,2025-03-23,2027-08-23,active,watch,false,true,true,data_warehouse,HIPAA,2027-09-24,current,false,,,,false,2025-10-17
+UltraSecure MSS 14,contractor,807200.37,2024-07-17,2028-01-11,active,unknown,true,false,false,,"PCI_DSS,ISO_27001","2027-03-12,2026-09-05",current,true,2025-06-11,MEDIUM,false,false,2025-02-19
+VaultMaster Corp 14,software_vendor,589164.78,2025-02-02,2027-11-18,active,distressed,true,true,true,data_warehouse,"HIPAA,ISO_27001","2027-11-15,2026-11-20",current,false,,,,false,2026-05-07
+WebArmor Ltd 14,contractor,376913.28,2024-07-17,2027-06-11,active,watch,false,false,true,data_warehouse,ISO_27001,2027-09-07,current,false,,,,false,2025-07-26
+XcelData Solutions 14,contractor,170152.03,2024-11-10,2026-08-08,active,watch,false,false,true,"object_storage,billing_system",,,,false,,,,false,2025-12-28
+YieldSecure Analytics 14,software_vendor,4528834.72,2025-03-30,2026-11-12,active,watch,false,false,false,erp,,,,false,,,,false,2025-02-12
+ZenCloud Systems 14,payment_processor,3683532.51,2024-12-04,2027-06-09,active,stable,false,false,false,,SOC2_TYPE1,2026-05-23,expired,true,2026-01-11,HIGH,false,false,2025-08-25
+Acme Cloud Storage 15,cloud_provider,2267682.43,2025-04-01,2028-05-01,active,stable,false,false,true,"billing_system,object_storage",,,,false,,,,false,2025-10-08
+BlueShield Analytics 15,mss_provider,817396.14,2025-04-08,2028-04-25,active,stable,false,false,true,"object_storage,billing_system,crm",,,,false,,,,true,2025-12-23
+ClearPath Networks 15,cloud_provider,1930547.55,2025-03-18,2026-04-24,expired,watch,false,false,false,,"HIPAA,PCI_DSS","2027-12-06,2027-09-10",current,false,,,,false,2026-05-28
+DataVault Systems 15,cloud_provider,2578535.04,2024-12-23,2026-05-13,expired,unknown,true,false,true,"object_storage,erp",,,,false,,,,false,2026-03-08
+EdgeSecure Ltd 15,contractor,700644.98,2025-03-23,2026-07-16,active,stable,false,false,false,,"SOC2_TYPE1,ISO_27001,PCI_DSS","2026-08-09,2026-11-15,2026-12-18",current,true,2025-11-08,LOW,true,false,2025-11-01
+FortKnox Payments 15,payment_processor,3552028.19,2025-03-19,2027-01-15,active,watch,false,false,true,billing_system,"SOC2_TYPE1,PCI_DSS,HIPAA","2027-12-01,2026-02-27,2026-07-02",current,false,,,,false,2025-04-30
+GlobalMesh MSS 15,mss_provider,569002.66,2024-09-05,2026-10-17,active,stable,true,false,false,crm,,,,false,,,,false,2026-01-01
+HealthBridge IT 15,cloud_provider,1464668.82,2024-10-16,2027-09-05,active,stable,false,false,false,"crm,billing_system,object_storage","HIPAA,PCI_DSS","2027-10-24,2027-10-14",current,false,,,,false,2026-03-16
+IntelliGuard Software 15,mss_provider,1141641.87,2024-11-14,2028-05-18,active,stable,true,true,false,data_warehouse,,,,false,,,,false,2025-05-05
+JetStream Infrastructure 15,contractor,814661.02,2024-11-29,2027-10-31,active,stable,true,true,false,"billing_system,object_storage",HIPAA,2026-09-14,current,false,,,,false,2025-04-29
+KeyLock Security 15,software_vendor,1514783.25,2025-01-13,2027-08-15,active,unknown,true,false,false,"data_warehouse,billing_system",HIPAA,2026-11-14,current,false,,,,false,2026-06-03
+LibertyData Corp 15,software_vendor,3337769.78,2025-02-01,2027-03-03,active,watch,false,false,true,,,,,false,,,,false,2026-04-11
+MegaScale Hosting 15,contractor,2235403.73,2024-07-18,2027-12-04,active,stable,true,false,false,,SOC2_TYPE1,2027-06-14,current,true,2025-12-30,HIGH,true,false,2025-08-25
+NetSafe Solutions 15,payment_processor,1595611.48,2024-07-18,2028-02-02,active,watch,true,true,false,"crm,erp","HIPAA,ISO_27001","2027-03-04,2027-01-04",current,true,2026-05-23,LOW,false,false,2025-09-05
+OmniCloud Services 15,mss_provider,827313.82,2025-01-23,2028-04-06,active,watch,false,false,false,"customer_db,data_warehouse,crm","ISO_27001,SOC2_TYPE2,HIPAA","2026-07-22,2026-10-28,2027-04-22",current,false,,,,false,2025-05-05
+PrecisionPay Ltd 15,software_vendor,2315978.62,2024-08-29,2026-10-12,active,watch,false,true,false,"crm,erp",HIPAA,2026-10-14,current,false,,,,false,2026-03-17
+QuantumRisk Analytics 15,cloud_provider,778579.61,2025-05-13,2028-01-02,active,stable,false,true,false,"customer_db,erp,billing_system","SOC2_TYPE2,PCI_DSS,ISO_27001","2026-06-23,2027-05-09,2027-11-26",current,false,,,,false,2026-04-25
+RapidDeploy Systems 15,mss_provider,3143700.28,2025-06-10,2026-07-22,active,stable,false,true,false,billing_system,"SOC2_TYPE1,SOC2_TYPE2","2026-09-13,2026-06-06",current,true,2025-10-02,CRITICAL,false,false,2026-05-17
+SecureHarbor Inc 15,cloud_provider,1456382.43,2024-07-29,2027-08-30,active,stable,false,true,false,"data_warehouse,billing_system",ISO_27001,2026-03-28,expired,false,,,,false,2025-08-09
+TrustFrame Technologies 15,cloud_provider,2676757.41,2024-09-01,2026-04-04,expired,stable,true,false,false,customer_db,SOC2_TYPE1,2026-10-06,current,false,,,,false,2026-04-06
+UltraSecure MSS 15,contractor,3977582.62,2025-06-08,2027-09-11,active,watch,false,false,true,customer_db,,,,false,,,,false,2025-08-09
+VaultMaster Corp 15,contractor,4087023.13,2025-04-21,2027-09-08,active,distressed,true,false,true,billing_system,"ISO_27001,PCI_DSS","2026-01-20,2026-04-22",expired,true,2025-07-21,HIGH,true,false,2026-03-02
+WebArmor Ltd 15,cloud_provider,103843.99,2025-01-26,2026-05-04,expired,stable,false,false,true,,SOC2_TYPE2,2026-01-24,expired,false,,,,false,2025-07-09
+XcelData Solutions 15,cloud_provider,3775205.85,2025-04-24,2026-10-18,active,watch,true,true,false,"erp,billing_system",ISO_27001,2027-11-08,current,false,,,,false,2026-03-11
+YieldSecure Analytics 15,software_vendor,1216694.39,2024-08-09,2027-11-04,active,watch,false,false,false,erp,,,,true,2026-05-22,HIGH,false,false,2026-05-22
+ZenCloud Systems 15,mss_provider,3493683.2,2025-05-30,2026-07-09,active,stable,false,false,false,"customer_db,crm",PCI_DSS,2027-01-14,current,true,2025-07-24,LOW,false,false,2026-01-31
+Acme Cloud Storage 16,software_vendor,3613461.5,2025-02-27,2026-07-18,active,stable,true,false,false,"object_storage,customer_db,crm","PCI_DSS,HIPAA,SOC2_TYPE1","2026-11-06,2027-11-25,2027-03-21",current,false,,,,false,2025-02-11
+BlueShield Analytics 16,payment_processor,3363756.44,2025-03-14,2028-01-25,active,stable,true,false,false,,,,,false,,,,false,2025-05-02
+ClearPath Networks 16,cloud_provider,1824912.87,2024-09-30,2027-11-21,active,stable,false,false,false,"billing_system,crm,erp","SOC2_TYPE2,ISO_27001,HIPAA","2027-05-17,2026-10-03,2027-08-09",current,false,,,,false,2025-04-21
+DataVault Systems 16,payment_processor,549102.97,2025-03-01,2026-11-13,active,stable,false,false,false,,SOC2_TYPE2,2026-04-02,expired,false,,,,false,2026-01-18
+EdgeSecure Ltd 16,mss_provider,772155.89,2024-08-08,2028-05-08,active,watch,false,false,false,"object_storage,billing_system,crm",,,,false,,,,false,2025-07-30
+FortKnox Payments 16,software_vendor,2737633.97,2024-07-06,2027-06-05,active,unknown,true,false,false,"customer_db,data_warehouse,object_storage",,,,false,,,,false,2025-07-10
+GlobalMesh MSS 16,contractor,2462483.25,2025-01-05,2027-08-03,active,stable,false,false,false,"crm,erp,object_storage",,,,false,,,,false,2025-10-16
+HealthBridge IT 16,software_vendor,4854645.08,2024-12-17,2028-05-14,active,watch,true,false,false,,"PCI_DSS,SOC2_TYPE2","2026-01-19,2027-08-18",expired,false,,,,false,2025-08-18
+IntelliGuard Software 16,cloud_provider,2146459.47,2025-01-16,2027-03-16,active,unknown,false,true,false,,,,,false,,,,false,2025-07-11
+JetStream Infrastructure 16,cloud_provider,1694595.34,2024-12-03,2026-04-29,expired,stable,false,false,false,"billing_system,erp,customer_db","HIPAA,SOC2_TYPE1,ISO_27001","2026-01-11,2027-12-04,2027-04-16",expired,false,,,,false,2026-01-16
