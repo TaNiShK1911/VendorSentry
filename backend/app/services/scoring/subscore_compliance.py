@@ -63,7 +63,13 @@ def _is_assessment_overdue(last_assessed_at: Optional[datetime]) -> bool:
     """Return True if last assessment was > 12 months ago (or never done)."""
     if last_assessed_at is None:
         return True  # Never assessed -> treat as overdue
-    cutoff = datetime.utcnow() - timedelta(days=_OVERDUE_MONTHS * 30.44)
+    
+    if last_assessed_at.tzinfo:
+        from datetime import timezone
+        cutoff = datetime.now(timezone.utc) - timedelta(days=_OVERDUE_MONTHS * 30.44)
+    else:
+        cutoff = datetime.utcnow() - timedelta(days=_OVERDUE_MONTHS * 30.44)
+        
     return last_assessed_at < cutoff
 
 
