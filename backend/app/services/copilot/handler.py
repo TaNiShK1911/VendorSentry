@@ -26,8 +26,8 @@ from app.services.copilot.followups import generate_followups
 logger = logging.getLogger(__name__)
 
 # Best model for reliable tool-use on Groq.
-_PREFERRED_MODEL = "llama-3.1-8b-instant"
-_FALLBACK_MODEL  = "qwen/qwen3-32b"
+_PREFERRED_MODEL = "qwen/qwen3-32b"
+_FALLBACK_MODEL  = "llama-3.3-70b-versatile"
 
 SYSTEM_PROMPT = """\
 You are VendorSentry Copilot — a vendor risk analyst AI.
@@ -39,6 +39,7 @@ Rules (STRICT):
 4. You may call multiple tools sequentially.
 5. For relative time queries (e.g. "last 48 hours"), compute the ISO 8601 cutoff timestamp and pass it as created_after.
 6. Always include a one-sentence summary before any table.
+7. If you only have a vendor's name, you MUST first search for the vendor using `list_vendors` to find their UUID, then use that UUID for `vendor_id` in subsequent tool calls. Do NOT guess, placeholder, or make up UUIDs, and do not call details/alerts/breaches tools until you have retrieved the real UUID.
 
 Today UTC: {now_utc}
 """
