@@ -32,8 +32,13 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
   const { canAcknowledge } = useAuth();
   const [expanded, setExpanded] = useState(false);
 
-  const typeConfig = ALERT_TYPE_CONFIG[alert.alert_type];
-  const sevConfig = SEVERITY_CONFIG[alert.severity];
+  const sevConfig = SEVERITY_CONFIG[alert.severity] || { color: '#E8A838', icon: AlertTriangle };
+  const typeConfig = ALERT_TYPE_CONFIG[alert.alert_type] || {
+    label: alert.alert_type ? alert.alert_type.replace(/_/g, ' ') : 'UNKNOWN',
+    color: sevConfig.color,
+    bg: `${sevConfig.color}15`,
+    icon: AlertTriangle
+  };
   const SevIcon = sevConfig.icon;
 
   const acknowledgeMutation = useMutation({
@@ -165,7 +170,7 @@ export default function AlertsPage() {
     queryFn: () => alertsApi.list({
       page,
       per_page: 20,
-      ...(statusFilter && { status: statusFilter }),
+      status: statusFilter || 'all',
       ...(severityFilter && { severity: severityFilter }),
     }),
     refetchInterval: 5000,

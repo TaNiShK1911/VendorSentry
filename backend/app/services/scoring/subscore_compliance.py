@@ -35,31 +35,29 @@ def _today() -> date:
     return datetime.utcnow().date()
 
 
-def _has_expired_cert(certs: Sequence[Certification]) -> bool:
+def _has_expired_cert(certs: Sequence[Certification], eval_date: date) -> bool:
     """Return True if any cert is currently expired."""
-    today = _today()
     for cert in certs:
         if cert.status == "expired":
             return True
-        if cert.expiry_date and cert.expiry_date < today:
+        if cert.expiry_date and cert.expiry_date < eval_date:
             return True
     return False
 
 
-def _has_expiring_soon_cert(certs: Sequence[Certification]) -> bool:
+def _has_expiring_soon_cert(certs: Sequence[Certification], eval_date: date) -> bool:
     """Return True if any cert expires within EXPIRING_SOON_DAYS, or is pending renewal."""
-    today = _today()
-    threshold = today + timedelta(days=_EXPIRING_SOON_DAYS)
+    threshold = eval_date + timedelta(days=_EXPIRING_SOON_DAYS)
     for cert in certs:
         if cert.status == "pending_renewal":
             return True
         if cert.status in ("current", "unknown") and cert.expiry_date:
-            if today <= cert.expiry_date <= threshold:
+            if eval_date <= cert.expiry_date <= threshold:
                 return True
     return False
 
 
-def _is_assessment_overdue(last_assessed_at: Optional[datetime]) -> bool:
+def _is_assessment_overdue(last_assessed_at: Optional[datetime], eval_date: datetime) -> bool:
     """Return True if last assessment was > 12 months ago (or never done)."""
     if last_assessed_at is None:
         return True  # Never assessed -> treat as overdue
@@ -68,7 +66,7 @@ def _is_assessment_overdue(last_assessed_at: Optional[datetime]) -> bool:
         from datetime import timezone
         cutoff = datetime.now(timezone.utc) - timedelta(days=_OVERDUE_MONTHS * 30.44)
     else:
-        cutoff = datetime.utcnow() - timedelta(days=_OVERDUE_MONTHS * 30.44)
+        cutoff = eval_date - timedelta(days=_OVERDUE_MONTHS * 30.44)
         
     return last_assessed_at < cutoff
 
@@ -88,14 +86,16 @@ def compute_compliance_subscore(
         float in [0, 100]. 0 = fully compliant. 100 = maximum risk/penalties hit.
     """
     score = 0.0
+    eval_date_dt = last_assessed_at if last_assessed_at else datetime.utcnow()
+    eval_date = eval_date_dt.date()
 
-    if _has_expired_cert(certs):
+    if _has_expired_cert(certs, eval_date):
         score += _PENALTY_EXPIRED
 
-    if _has_expiring_soon_cert(certs):
+    if _has_expiring_soon_cert(certs, eval_date):
         score += _PENALTY_EXPIRING_SOON
 
-    if _is_assessment_overdue(last_assessed_at):
+    if _is_assessment_overdue(last_assessed_at, eval_date_dt):
         score += _PENALTY_OVERDUE
 
     return min(100.0, score)
@@ -109,8 +109,10 @@ def get_compliance_flags(
     Return a dict of boolean flags for use by tiering.py.
     Keeps tiering logic readable without re-computing cert states.
     """
+    eval_date_dt = last_assessed_at if last_assessed_at else datetime.utcnow()
+    eval_date = eval_date_dt.date()
     return {
-        "has_expired_cert": _has_expired_cert(certs),
-        "has_expiring_soon_cert": _has_expiring_soon_cert(certs),
-        "is_assessment_overdue": _is_assessment_overdue(last_assessed_at),
+        "has_expired_cert": _has_expired_cert(certs, eval_date),
+        "has_expiring_soon_cert": _has_expiring_soon_cert(certs, eval_date),
+        "is_assessment_overdue": _is_assessment_overdue(last_assessed_at, eval_date_dt),
     }

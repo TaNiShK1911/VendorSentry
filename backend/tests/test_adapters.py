@@ -9,14 +9,24 @@ def test_check_public_records(db_session, setup_test_vendor):
     vendor.financial_health_signal = "stable"
     db_session.commit()
     
-    from unittest.mock import patch
-    with patch("app.services.enrichment.public_records.SessionLocal", return_value=db_session):
+    from unittest.mock import patch, MagicMock
+    from tests.services.enrichment.test_public_records import SAMPLE_EDGAR_RESPONSE_WITH_HITS
+    
+    with patch("app.services.enrichment.public_records.httpx.get") as mock_get, \
+         patch("app.services.enrichment.public_records.SessionLocal", return_value=db_session):
+        
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.raise_for_status.return_value = None
+        mock_resp.json.return_value = SAMPLE_EDGAR_RESPONSE_WITH_HITS
+        mock_get.return_value = mock_resp
+        
         result = check_public_records()
         assert "signals generated" in result
     
         signal = db_session.query(EvidenceSignal).filter_by(vendor_id=vendor.id, source="public_records").first()
         assert signal is not None
-        assert signal.payload["financial_health_signal"] == "stable"
+        assert signal.payload["filing_count"] == 2
 
 
 def test_check_live_cert_status(db_session, setup_test_vendor):
