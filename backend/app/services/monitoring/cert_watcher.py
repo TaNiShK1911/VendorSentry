@@ -20,24 +20,15 @@ def check_cert_expiry():
         vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
 
         alerts_created = 0
-        now = datetime.utcnow()
+        now = datetime.utcnow().date()
 
         for vendor in vendors:
             if not vendor.certifications:
                 continue
 
             for cert in vendor.certifications:
-                expiry_date_str = cert.get('expiry_date')
-                if not expiry_date_str:
-                    continue
-
-                # Parse expiry date
-                try:
-                    if isinstance(expiry_date_str, str):
-                        expiry_date = datetime.fromisoformat(expiry_date_str.replace('Z', '+00:00'))
-                    else:
-                        expiry_date = expiry_date_str
-                except Exception:
+                expiry_date = cert.expiry_date
+                if not expiry_date:
                     continue
 
                 # Calculate days until expiry
@@ -49,7 +40,7 @@ def check_cert_expiry():
                         db,
                         vendor.id,
                         vendor.name,
-                        cert.get('type', 'UNKNOWN'),
+                        cert.cert_type,
                         days_until_expiry
                     )
                     if alert:

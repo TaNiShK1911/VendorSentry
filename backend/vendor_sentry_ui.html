@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VendorSentry | Executive Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#af8784",
+                        "surface-dim": "#131315",
+                        "secondary-fixed-dim": "#c8c5cc",
+                        "background": "#0A0A0C",
+                        "secondary-container": "#47464c",
+                        "on-primary-container": "#fff8f7",
+                        "on-primary-fixed": "#410005",
+                        "tertiary-container": "#007aac",
+                        "on-background": "#e5e1e4",
+                        "inverse-surface": "#e5e1e4",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#ffdad7",
+                        "surface-bright": "#39393b",
+                        "surface-container-low": "#1c1b1d",
+                        "tertiary": "#86cfff",
+                        "on-secondary-fixed": "#1b1b20",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0e0e10",
+                        "on-error": "#690005",
+                        "primary-container": "#e60028",
+                        "inverse-primary": "#c0001f",
+                        "surface-variant": "#353437",
+                        "surface-container-high": "#2a2a2c",
+                        "outline-variant": "#5e3f3d",
+                        "on-tertiary-fixed-variant": "#004c6d",
+                        "on-surface": "#e5e1e4",
+                        "surface-container-highest": "#353437",
+                        "on-secondary-container": "#b6b4bb",
+                        "primary": "#ffb3ae",
+                        "on-primary": "#68000c",
+                        "secondary": "#c8c5cc",
+                        "inverse-on-surface": "#313032",
+                        "on-tertiary-container": "#f5f9ff",
+                        "surface-container": "#201f21",
+                        "on-surface-variant": "#e8bcb9",
+                        "surface-tint": "#ffb3ae",
+                        "tertiary-fixed": "#c7e7ff",
+                        "secondary-fixed": "#e4e1e8",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#930015",
+                        "on-secondary": "#303035",
+                        "on-tertiary-fixed": "#001e2e",
+                        "on-tertiary": "#00344c",
+                        "on-secondary-fixed-variant": "#47464c",
+                        "surface": "#121215",
+                        "primary-fixed-dim": "#ffb3ae",
+                        "tertiary-fixed-dim": "#86cfff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "container-max": "1440px",
+                        "margin-desktop": "32px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["monospace"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "title-sm": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0A0A0C; }
+        ::-webkit-scrollbar-thumb { background: #1C1C21; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #353437; }
+        
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .bg-red-sg { background-color: #E60028; }
+        .text-red-sg { color: #E60028; }
+        
+        /* Grid background for financial terminal look */
+        .terminal-bg {
+            background-image: linear-gradient(#1C1C21 1px, transparent 1px), linear-gradient(90deg, #1C1C21 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-white">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-surface-container border-b border-surface-variant">
+<div class="flex items-center gap-8">
+<span class="font-headline-lg text-headline-lg font-bold text-primary-container">VendorSentry</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-primary border-b-2 border-primary-container h-16 flex items-center px-2 font-label-caps text-label-caps tracking-widest" href="#">DASHBOARD</a>
+<a class="text-on-surface-variant hover:bg-surface-bright transition-colors h-16 flex items-center px-2 font-label-caps text-label-caps tracking-widest" href="#">PORTFOLIO</a>
+<a class="text-on-surface-variant hover:bg-surface-bright transition-colors h-16 flex items-center px-2 font-label-caps text-label-caps tracking-widest" href="#">REPORTS</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative cursor-pointer group">
+<span class="material-symbols-outlined text-on-surface group-hover:text-primary-container transition-colors">notifications</span>
+<span class="absolute -top-1 -right-1 bg-primary-container text-[10px] font-bold text-white w-4 h-4 rounded-full flex items-center justify-center border-2 border-surface-container">12</span>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-surface-variant">
+<div class="text-right">
+<p class="text-sm font-semibold leading-none">Alex Rivera</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Chief Risk Officer</p>
+</div>
+<div class="w-10 h-10 rounded-full border border-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up professional corporate headshot of a Hispanic male executive in a dark tailored suit. The lighting is dramatic and precise with cool blue rim lighting against a dark, out-of-focus high-tech office background. The overall tone is authoritative, modern, and high-stakes finance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGJHEQDgFNaRZPNGj1CCj8P3Uk9n3SfkhqxpiMQDB0EeBh9nzFF-ClE-3LGpGk7x5wxb2Gh3dA3fBZ3vRrn1QqIjtu07cFRbb99qExJ4EpoD_wCK2q1yNqmiKtEdiSs2CYw93bZPLDMNVUAzWhiCiuFzhckSyl2fICkDnjYG_z7fTwkGbPdypuIO8mO1Ci6ljJm6QTMiddo4_QdXO1X1_pqooguqJAeMEWPrBHll6pJyTJAlD4jg8v7xCKR_ukVFQ7echkQ6kCh90"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 z-40 flex flex-col py-4 bg-surface-container-low border-r border-surface-variant">
+<div class="px-6 mb-8">
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Societe Generale</h2>
+<p class="text-label-caps font-label-caps text-on-surface-variant opacity-60">Risk Management</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-3">
+<a class="flex items-center gap-4 px-4 py-3 text-primary bg-surface-container-high translate-x-1 transition-transform rounded-lg group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-caps text-label-caps">DASHBOARD</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-caps text-label-caps">PORTFOLIO</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-label-caps text-label-caps">ALERTS</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps">REPORTS</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">SETTINGS</span>
+</a>
+</nav>
+<div class="px-4 py-4 border-t border-surface-variant mt-auto">
+<div class="bg-surface-container-highest p-4 rounded-xl">
+<p class="text-[10px] text-on-surface-variant uppercase mb-2">System Integrity</p>
+<div class="flex items-center justify-between">
+<span class="text-xs font-mono-data text-[#10B981]">OPERATIONAL</span>
+<span class="status-dot bg-[#10B981] animate-pulse"></span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 mt-16 p-8 min-h-screen terminal-bg">
+<!-- Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h1 class="font-display text-display text-on-surface mb-1">Executive Portfolio</h1>
+<div class="flex items-center gap-2 text-on-surface-variant opacity-60">
+<span class="material-symbols-outlined text-sm">sync</span>
+<span class="font-mono-data text-xs">Last sync: 2023-10-27 09:42:11 GMT</span>
+</div>
+</div>
+<button class="bg-primary-container hover:bg-[#c0001f] text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-all font-semibold active:scale-95">
+<span class="material-symbols-outlined text-lg">download</span>
+<span class="font-label-caps text-label-caps">EXPORT DATA</span>
+</button>
+</div>
+<!-- Metric Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+<!-- Total Vendors -->
+<div class="bg-surface border border-surface-variant p-6 rounded-lg relative overflow-hidden group">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-2">TOTAL VENDORS MANAGED</span>
+<span class="font-headline-lg text-display text-on-surface font-extrabold">1,248</span>
+<div class="mt-4 flex items-center gap-2 text-[#10B981]">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-xs font-semibold">+14 this month</span>
+</div>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-surface-variant opacity-20 text-7xl">corporate_fare</span>
+</div>
+<!-- Risk Distribution -->
+<div class="bg-surface border border-surface-variant p-6 rounded-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-4 block">RISK DISTRIBUTION</span>
+<div class="flex gap-2 h-20 items-end">
+<div class="flex-1 bg-[#EF4444] rounded-t w-full flex flex-col items-center justify-end pb-2 group relative cursor-help" style="height: 40%">
+<span class="text-white font-bold text-xs">42</span>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap border border-surface-variant">High Risk</div>
+</div>
+<div class="flex-1 bg-[#F59E0B] rounded-t w-full flex flex-col items-center justify-end pb-2 group relative cursor-help" style="height: 65%">
+<span class="text-white font-bold text-xs">156</span>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap border border-surface-variant">Medium Risk</div>
+</div>
+<div class="flex-1 bg-[#10B981] rounded-t w-full flex flex-col items-center justify-end pb-2 group relative cursor-help" style="height: 100%">
+<span class="text-white font-bold text-xs">1,050</span>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap border border-surface-variant">Low Risk</div>
+</div>
+</div>
+</div>
+<!-- Critical Alerts -->
+<div class="bg-surface border border-surface-variant p-6 rounded-lg flex flex-col justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-2">CRITICAL ALERTS</span>
+<div class="flex items-center gap-3">
+<span class="font-headline-lg text-display text-[#EF4444] font-extrabold">12</span>
+<span class="bg-[#EF4444]/10 text-[#EF4444] px-2 py-1 rounded text-[10px] font-bold">ACTIVE</span>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between border-t border-surface-variant pt-4">
+<span class="text-xs text-on-surface-variant">Breach Notifications: 2</span>
+<span class="text-xs text-on-surface-variant">Compliance Gap: 10</span>
+</div>
+</div>
+<!-- Avg Portfolio Score -->
+<div class="bg-surface border border-surface-variant p-6 rounded-lg relative">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-2">AVG. PORTFOLIO SCORE</span>
+<span class="font-headline-lg text-display text-on-surface font-extrabold">78.4</span>
+<div class="flex items-center gap-2 mt-4 text-[#10B981]">
+<span class="material-symbols-outlined text-sm">expand_less</span>
+<span class="font-mono-data text-xs font-bold">+2.1</span>
+<span class="text-on-surface-variant text-[10px] font-label-caps">VS PREV QTR</span>
+</div>
+<div class="absolute top-6 right-6 w-12 h-12">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#1C1C21" stroke-width="3"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E60028" stroke-dasharray="78, 100" stroke-width="3"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Portfolio Risk Trend Section -->
+<div class="bg-surface border border-surface-variant rounded-lg mb-8 overflow-hidden">
+<div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-title-sm text-title-sm font-semibold">Portfolio Risk Trend (90 Days)</h3>
+<div class="flex bg-background rounded p-1 border border-surface-variant">
+<button class="px-4 py-1 text-xs font-semibold rounded text-on-surface-variant hover:text-on-surface">30D</button>
+<button class="px-4 py-1 text-xs font-semibold rounded bg-surface-variant text-on-surface">90D</button>
+<button class="px-4 py-1 text-xs font-semibold rounded text-on-surface-variant hover:text-on-surface">1Y</button>
+</div>
+</div>
+<div class="h-64 w-full p-6 relative">
+<!-- Placeholder for Trend Chart -->
+<div class="absolute inset-x-6 inset-y-6 flex items-end justify-between">
+<!-- Faux Bar/Line Chart nodes for visual density -->
+<div class="w-2 bg-primary-container/20 rounded-t h-[40%]"></div>
+<div class="w-2 bg-primary-container/20 rounded-t h-[45%]"></div>
+<div class="w-2 bg-primary-container/20 rounded-t h-[42%]"></div>
+<div class="w-2 bg-primary-container/20 rounded-t h-[50%]"></div>
+<div class="w-2 bg-primary-container/20 rounded-t h-[48%]"></div>
+<div class="w-2 bg-primary-container/30 rounded-t h-[55%]"></div>
+<div class="w-2 bg-primary-container/40 rounded-t h-[60%]"></div>
+<div class="w-2 bg-primary-container/30 rounded-t h-[58%]"></div>
+<div class="w-2 bg-primary-container/40 rounded-t h-[65%]"></div>
+<div class="w-2 bg-primary-container/50 rounded-t h-[72%]"></div>
+<div class="w-2 bg-primary-container/40 rounded-t h-[68%]"></div>
+<div class="w-2 bg-primary-container/50 rounded-t h-[75%]"></div>
+<div class="w-2 bg-primary-container/60 rounded-t h-[78%]"></div>
+</div>
+<svg class="absolute inset-x-6 inset-y-6 w-[calc(100%-48px)] h-[calc(100%-48px)] overflow-visible">
+<path class="opacity-80" d="M 0 100 Q 150 80, 300 120 T 600 90 T 900 60 T 1200 40" fill="none" stroke="#E60028" stroke-width="2"></path>
+<circle cx="0" cy="100" fill="#E60028" r="3"></circle>
+<circle cx="300" cy="120" fill="#E60028" r="3"></circle>
+<circle cx="600" cy="90" fill="#E60028" r="3"></circle>
+<circle cx="900" cy="60" fill="#E60028" r="3"></circle>
+<circle cx="1200" cy="40" fill="#E60028" r="3"></circle>
+</svg>
+</div>
+</div>
+<!-- Portfolio Table Section -->
+<div class="bg-surface border border-surface-variant rounded-lg overflow-hidden">
+<!-- Filter Bar -->
+<div class="p-6 border-b border-surface-variant bg-surface-container-lowest">
+<div class="grid grid-cols-1 xl:grid-cols-5 gap-6">
+<div class="xl:col-span-2 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-60">search</span>
+<input class="w-full bg-[#16161A] border-surface-variant rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary-container focus:border-primary-container transition-all" placeholder="Search vendors by name or UUID..." type="text"/>
+</div>
+<div class="flex gap-4">
+<select class="flex-1 bg-[#16161A] border-surface-variant rounded-lg px-3 py-2 text-xs font-semibold focus:ring-primary-container">
+<option>Risk Tier</option>
+<option>Critical</option>
+<option>High</option>
+<option>Medium</option>
+<option>Low</option>
+</select>
+<select class="flex-1 bg-[#16161A] border-surface-variant rounded-lg px-3 py-2 text-xs font-semibold focus:ring-primary-container">
+<option>Vendor Type</option>
+<option>Software</option>
+<option>Cloud</option>
+<option>Hardware</option>
+</select>
+</div>
+<div class="flex flex-col justify-center">
+<div class="flex justify-between mb-1">
+<span class="text-[10px] font-label-caps">SCORE RANGE: 0-100</span>
+</div>
+<input class="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary-container" type="range"/>
+</div>
+<div class="flex items-center justify-between gap-4">
+<label class="flex items-center gap-3 cursor-pointer">
+<input class="w-4 h-4 bg-[#16161A] border-surface-variant rounded text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="text-xs font-label-caps">PII ACCESS ONLY</span>
+</label>
+<button class="bg-primary-container hover:bg-[#c0001f] text-white px-4 py-2 rounded font-label-caps text-label-caps tracking-widest transition-all">
+                            APPLY FILTERS
+                        </button>
+</div>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-surface-variant">
+<tr>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">STATUS</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">VENDOR NAME</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">TYPE</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">RISK TIER</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">SCORE</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">ALERTS</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant opacity-60">LAST ASSESSED</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-6 py-4"><span class="status-dot bg-[#EF4444]"></span></td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm">AWS - Cloud Provider</span>
+<span class="text-[10px] font-mono-data opacity-50 uppercase">UUID: 82F1-992B-001X</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-semibold">Infrastructure</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20 uppercase">Critical</span>
+</td>
+<td class="px-6 py-4 w-48">
+<div class="flex items-center gap-3">
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="bg-[#EF4444] h-full" style="width: 42%"></div>
+</div>
+<span class="font-mono-data text-xs font-bold">42</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-[#EF4444] text-white px-2 py-0.5 rounded-full text-[10px] font-bold">4 NEW</span>
+</td>
+<td class="px-6 py-4 text-xs font-mono-data opacity-80">2023-10-25</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-6 py-4"><span class="status-dot bg-[#10B981]"></span></td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Tata Consultancy - Software</span>
+<span class="text-[10px] font-mono-data opacity-50 uppercase">UUID: A42D-110P-559Z</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-semibold">Development</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 uppercase">Low</span>
+</td>
+<td class="px-6 py-4 w-48">
+<div class="flex items-center gap-3">
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="bg-[#10B981] h-full" style="width: 91%"></div>
+</div>
+<span class="font-mono-data text-xs font-bold">91</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-on-surface-variant text-[10px] font-bold">0 ACTIVE</span>
+</td>
+<td class="px-6 py-4 text-xs font-mono-data opacity-80">2023-10-21</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-6 py-4"><span class="status-dot bg-[#F59E0B]"></span></td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Equifax - Data Provider</span>
+<span class="text-[10px] font-mono-data opacity-50 uppercase">UUID: 33C1-BB01-772L</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-semibold">Financial Data</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 uppercase">Medium</span>
+</td>
+<td class="px-6 py-4 w-48">
+<div class="flex items-center gap-3">
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="bg-[#F59E0B] h-full" style="width: 68%"></div>
+</div>
+<span class="font-mono-data text-xs font-bold">68</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-[#F59E0B] text-white px-2 py-0.5 rounded-full text-[10px] font-bold">1 NEW</span>
+</td>
+<td class="px-6 py-4 text-xs font-mono-data opacity-80">2023-10-24</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-6 py-4"><span class="status-dot bg-[#10B981]"></span></td>
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Microsoft Azure - Cloud</span>
+<span class="text-[10px] font-mono-data opacity-50 uppercase">UUID: 99K2-001A-667T</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-semibold">Infrastructure</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 uppercase">Low</span>
+</td>
+<td class="px-6 py-4 w-48">
+<div class="flex items-center gap-3">
+<div class="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="bg-[#10B981] h-full" style="width: 88%"></div>
+</div>
+<span class="font-mono-data text-xs font-bold">88</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-on-surface-variant text-[10px] font-bold">0 ACTIVE</span>
+</td>
+<td class="px-6 py-4 text-xs font-mono-data opacity-80">2023-10-18</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-surface-variant bg-surface-container-low flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">Showing <span class="text-on-surface font-bold">1-10</span> of <span class="text-on-surface font-bold">1,248</span> vendors</span>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-surface-variant hover:bg-surface-container-highest transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary-container text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-surface-variant hover:bg-surface-container-highest font-bold text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-surface-variant hover:bg-surface-container-highest font-bold text-xs">3</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-surface-variant hover:bg-surface-container-highest font-bold text-xs">125</button>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-surface-variant hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual Micro-interactions -->
+<script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Faux interaction
+                console.log('Navigate to vendor detail view');
+            });
+        });
+
+        // Hover effect for charts or other components could go here
+    </script>
+</body></html>

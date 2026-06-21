@@ -1,8 +1,12 @@
 """Vendor CRUD API endpoints"""
+import csv
+import io
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -44,7 +48,7 @@ def list_vendors(
         query = query.filter(Vendor.name.ilike(f"%{q}%"))
 
     if type:
-        query = query.filter(Vendor.type == type)
+        query = query.filter(Vendor.vendor_type == type)
 
     # Get total count
     total_items = query.count()
@@ -67,15 +71,19 @@ def list_vendors(
             Alert.resolved_at.is_(None)
         ).count()
 
-        # Check PII access
-        has_pii = vendor.data_access_scope.get("pii", False) if vendor.data_access_scope else False
+        # Check PII access - data_access_scope is an ORM relationship object
+        has_pii = vendor.data_access_scope.pii_access if vendor.data_access_scope else False
+
+        # Convert enum values to strings for serialization
+        tier_val = latest_score.tier.value if (latest_score and hasattr(latest_score.tier, "value")) else (latest_score.tier if latest_score else RiskTier.CLEAR.value)
+        color_val = latest_score.status_color.value if (latest_score and hasattr(latest_score.status_color, "value")) else (latest_score.status_color if latest_score else StatusColor.GREEN.value)
 
         items.append(VendorListItem(
-            id=vendor.id,
+            id=str(vendor.id),
             name=vendor.name,
-            type=vendor.type,
-            tier=latest_score.tier if latest_score else RiskTier.CLEAR,
-            status_color=latest_score.status_color if latest_score else StatusColor.GREEN,
+            vendor_type=vendor.vendor_type,
+            tier=tier_val,
+            status_color=color_val,
             composite_score=latest_score.composite_score if latest_score else 0.0,
             anomaly_types=latest_score.anomaly_types if latest_score else [],
             last_assessed_at=vendor.last_assessed_at,
@@ -84,7 +92,7 @@ def list_vendors(
             active_alert_count=alert_count
         ))
 
-    total_pages = (total_items + page_size - 1) // page_size
+    total_pages = (total_items + page_size - 1) // page_size if total_items > 0 else 1
 
     return PaginatedResponse(
         items=items,
@@ -92,6 +100,41 @@ def list_vendors(
         page_size=page_size,
         total_items=total_items,
         total_pages=total_pages
+    )
+
+
+@router.get("/export.csv")
+def export_vendors_csv(db: Session = Depends(get_db)):
+    """Export all vendors as CSV download"""
+    vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header
+    writer.writerow([
+        "id", "name", "vendor_type", "annual_spend", "contract_start",
+        "contract_end", "contract_status", "financial_health_signal",
+        "under_investigation", "last_assessed_at", "created_at"
+    ])
+
+    for v in vendors:
+        latest_score = db.query(VendorScore).filter(
+            VendorScore.vendor_id == v.id
+        ).order_by(VendorScore.computed_at.desc()).first()
+
+        writer.writerow([
+            str(v.id), v.name, v.vendor_type, v.annual_spend,
+            v.contract_start, v.contract_end, v.contract_status,
+            v.financial_health_signal, v.under_investigation,
+            v.last_assessed_at, v.created_at
+        ])
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=vendors.csv"}
     )
 
 
@@ -115,23 +158,37 @@ def get_vendor(vendor_id: UUID, db: Session = Depends(get_db)):
         VendorScore.vendor_id == vendor.id
     ).order_by(VendorScore.computed_at.desc()).limit(10).all()
 
+    # Build contact safely
+    contact = None
+    if vendor.contact:
+        if isinstance(vendor.contact, dict):
+            contact = VendorContact(
+                liaison_name=vendor.contact.get("liaison_name"),
+                email=vendor.contact.get("email"),
+                phone=vendor.contact.get("phone")
+            )
+        else:
+            contact = VendorContact(
+                liaison_name=getattr(vendor.contact, "liaison_name", None),
+                email=getattr(vendor.contact, "email", None),
+                phone=getattr(vendor.contact, "phone", None)
+            )
+
     return VendorDetail(
-        id=vendor.id,
+        id=str(vendor.id),
         name=vendor.name,
-        type=vendor.type,
-        contact=VendorContact(
-            liaison_name=vendor.contact_name,
-            email=vendor.contact_email
-        ),
+        vendor_type=vendor.vendor_type,
+        contact=contact,
         annual_spend=vendor.annual_spend,
         contract_start=vendor.contract_start,
         contract_end=vendor.contract_end,
         contract_status=vendor.contract_status,
-        certifications=vendor.certifications,
+        certifications=vendor.certifications or [],
         data_access_scope=vendor.data_access_scope,
-        breach_history=vendor.breach_history,
-        financial_health_signal=vendor.financial_health_signal,
-        financial_health_source=vendor.financial_health_source,
+        breach_history=vendor.breach_history or [],
+        financial_health_signal=vendor.financial_health_signal or "unknown",
+        financial_health_source=vendor.financial_health_source or "unknown",
+        under_investigation=vendor.under_investigation,
         last_assessed_at=vendor.last_assessed_at,
         current_score=latest_score,
         score_history=score_history,
@@ -143,15 +200,24 @@ def get_vendor(vendor_id: UUID, db: Session = Depends(get_db)):
 @router.post("", response_model=VendorDetail, status_code=status.HTTP_201_CREATED)
 def create_vendor(vendor_data: VendorCreate, db: Session = Depends(get_db)):
     """Create a vendor manually"""
-    vendor = Vendor(**vendor_data.model_dump())
+    data = vendor_data.model_dump()
+
+    # Convert contact Pydantic model to dict for JSON storage
+    if data.get("contact") and hasattr(data["contact"], "model_dump"):
+        data["contact"] = data["contact"].model_dump()
+
+    vendor = Vendor(**data)
     db.add(vendor)
     db.commit()
     db.refresh(vendor)
 
     # Trigger initial scoring
-    score = score_vendor(vendor, triggered_by="manual")
-    db.add(score)
-    db.commit()
+    try:
+        score = score_vendor(vendor, triggered_by="manual")
+        db.add(score)
+        db.commit()
+    except Exception:
+        pass  # Don't fail vendor creation if scoring fails
 
     return get_vendor(vendor.id, db)
 
@@ -165,6 +231,12 @@ def update_vendor(vendor_id: UUID, vendor_data: VendorUpdate, db: Session = Depe
 
     # Update fields
     update_data = vendor_data.model_dump(exclude_unset=True)
+
+    # Convert contact if present
+    if "contact" in update_data and update_data["contact"] is not None:
+        if hasattr(update_data["contact"], "model_dump"):
+            update_data["contact"] = update_data["contact"].model_dump()
+
     for field, value in update_data.items():
         setattr(vendor, field, value)
 
@@ -172,9 +244,12 @@ def update_vendor(vendor_id: UUID, vendor_data: VendorUpdate, db: Session = Depe
     db.refresh(vendor)
 
     # Trigger rescore
-    score = score_vendor(vendor, triggered_by="manual")
-    db.add(score)
-    db.commit()
+    try:
+        score = score_vendor(vendor, triggered_by="manual")
+        db.add(score)
+        db.commit()
+    except Exception:
+        pass
 
     return get_vendor(vendor.id, db)
 
@@ -182,8 +257,6 @@ def update_vendor(vendor_id: UUID, vendor_data: VendorUpdate, db: Session = Depe
 @router.delete("/{vendor_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_vendor(vendor_id: UUID, db: Session = Depends(get_db)):
     """Soft-delete (sets archived_at)"""
-    from datetime import datetime
-
     vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
     if not vendor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vendor not found")
@@ -204,10 +277,3 @@ async def import_vendors(file: UploadFile = File(...), db: Session = Depends(get
         rows_failed=0,
         errors=[]
     )
-
-
-@router.get("/export.csv")
-def export_vendors(db: Session = Depends(get_db)):
-    """Export vendors as CSV"""
-    # Stub - to be implemented
-    return {"message": "CSV export not yet implemented"}

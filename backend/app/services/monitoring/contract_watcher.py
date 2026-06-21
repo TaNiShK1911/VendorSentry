@@ -19,7 +19,7 @@ def check_contract_expiry():
         vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
 
         alerts_created = 0
-        now = datetime.utcnow()
+        now = datetime.utcnow().date()
 
         for vendor in vendors:
             if not vendor.contract_end:

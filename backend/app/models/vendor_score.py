@@ -86,6 +86,15 @@ class VendorScore(Base):
         "VendorScore", remote_side="VendorScore.id", foreign_keys=[previous_score_id]
     )
 
+    @property
+    def subscores(self):
+        return {
+            "breach_subscore": self.breach_subscore,
+            "access_subscore": self.access_subscore,
+            "compliance_subscore": self.compliance_subscore,
+            "financial_subscore": self.financial_subscore
+        }
+
     def __repr__(self) -> str:
         return (
             f"<VendorScore vendor_id={self.vendor_id!r} "

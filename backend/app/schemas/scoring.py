@@ -34,6 +34,8 @@ class PreviousScoreSummary(BaseModel):
     status_color: str
     computed_at: datetime
 
+    model_config = {"from_attributes": True}
+
 
 class VendorScoreOut(BaseModel):
     """Full score breakdown — returned by GET /vendors/{id}/score."""

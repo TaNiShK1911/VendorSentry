@@ -54,17 +54,45 @@ def poll_breach_db():
                 db.add(signal)
 
                 # Append to vendor breach history
-                if not vendor.breach_history:
-                    vendor.breach_history = []
-                vendor.breach_history = vendor.breach_history + [breach_data]
-                db.add(vendor)
+                from app.models.breach import BreachEvent
+                breach_event = BreachEvent(
+                    vendor_id=vendor.id,
+                    breach_date=datetime.utcnow().date(),
+                    severity=breach_data["severity"],
+                    source=breach_data["source"],
+                    description=breach_data["description"],
+                    resolved=breach_data["resolved"]
+                )
+                db.add(breach_event)
+                db.flush()
 
                 # Trigger rescore
-                score = score_vendor(vendor, triggered_by="breach_detected")
-                db.add(score)
+                from app.services.scoring.engine import score_vendor_from_db
+                score = score_vendor_from_db(
+                    vendor_id=vendor.id,
+                    db=db,
+                    triggered_by="breach_detected"
+                )
 
+                # Generate narrative rationale
+                from app.services.extraction.narrative import generate_rationale
+                try:
+                    narrative = generate_rationale(
+                        vendor_name=vendor.name,
+                        composite_score=score.composite_score,
+                        tier=score.tier,
+                        breach_subscore=score.breach_subscore,
+                        access_subscore=score.access_subscore,
+                        compliance_subscore=score.compliance_subscore,
+                        financial_subscore=score.financial_subscore,
+                        anomaly_types=score.anomaly_types or [],
+                    )
+                    score.rationale = narrative
+                except Exception:
+                    pass
+
+                db.flush()
                 # Link signal to score
-                db.flush()  # Get score ID
                 signal.consumed_by_score_id = score.id
 
                 # Create alert

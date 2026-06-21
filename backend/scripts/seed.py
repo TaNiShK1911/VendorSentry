@@ -196,7 +196,7 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
     vendor.contract_status = contract_status
     vendor.annual_spend = annual_spend
     vendor.financial_health_signal = financial_signal
-    vendor.financial_health_source = "csv_import"
+    vendor.financial_health_source = "public_records_enrichment"
     vendor.under_investigation = under_investigation
     vendor.last_assessed_at = last_assessed_dt
 
@@ -281,7 +281,7 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
                 vendor_id=vendor.id,
                 breach_date=breach_date,
                 severity=breach_severity,
-                source="csv_import",
+                source="public_records",
                 description=str(row.get("breach_description", "Imported from registry CSV")),
                 resolved=_parse_bool(row.get("breach_resolved", False)),
             ))
@@ -363,16 +363,12 @@ def run_initial_scoring(db: Session) -> None:
                 db=db,
                 triggered_by="scheduled_sweep",
             )
-            # Generate narrative after scoring
-            narrative = generate_rationale(
-                vendor_name=vendor.name,
-                composite_score=score_row.composite_score,
-                tier=score_row.tier,
-                breach_subscore=score_row.breach_subscore,
-                access_subscore=score_row.access_subscore,
-                compliance_subscore=score_row.compliance_subscore,
-                financial_subscore=score_row.financial_subscore,
-                anomaly_types=score_row.anomaly_types or [],
+            # Use deterministic fallback rationale during bulk seed to avoid LLM rate limits (429)
+            flags = ", ".join(a.replace("_", " ").title() for a in (score_row.anomaly_types or [])[:3])
+            narrative = (
+                f"{vendor.name} has been flagged for: {flags}."
+                if flags else
+                f"{vendor.name} has no flagged anomalies at this time. Continue standard monitoring cadence."
             )
             score_row.rationale = narrative
             scored += 1

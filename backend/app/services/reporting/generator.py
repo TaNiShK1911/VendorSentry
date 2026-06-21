@@ -8,23 +8,31 @@ from sqlalchemy.orm import Session
 from app.models import Vendor, VendorScore, Alert
 
 
+def _enum_val(v) -> str:
+    """Safely get string value from either an enum or plain string."""
+    return v.value if hasattr(v, "value") else str(v) if v is not None else "N/A"
+
+
 def generate_vendor_report_markdown(vendor: Vendor, score: VendorScore, alerts: List[Alert]) -> str:
     """
     Generate a vendor risk report in Markdown format.
 
     Framed against GDPR Art. 28/33, NIST SP 800-53 SA-9, SOX 404.
     """
+    tier_val = _enum_val(score.tier)
+    color_val = _enum_val(score.status_color)
+
     report = f"""# Vendor Risk Assessment Report
 
 **Vendor:** {vendor.name}
-**Type:** {vendor.type.value}
+**Type:** {vendor.vendor_type}
 **Report Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
 
 ---
 
 ## Executive Summary
 
-**Risk Tier:** {score.tier.value} ({score.status_color.value})
+**Risk Tier:** {tier_val} ({color_val})
 **Composite Score:** {score.composite_score:.1f}/100
 **Last Assessed:** {vendor.last_assessed_at.strftime('%Y-%m-%d') if vendor.last_assessed_at else 'Never'}
 
@@ -60,10 +68,10 @@ def generate_vendor_report_markdown(vendor: Vendor, score: VendorScore, alerts: 
 
     if vendor.data_access_scope:
         scope = vendor.data_access_scope
-        report += f"""- **PII Access:** {'Yes' if scope.get('pii') else 'No'}
-- **Financial Data Access:** {'Yes' if scope.get('financial') else 'No'}
-- **Systems:** {', '.join(scope.get('systems', [])) or 'None specified'}
-- **Notes:** {scope.get('scope_notes', 'None')}
+        report += f"""- **PII Access:** {'Yes' if scope.pii_access else 'No'}
+- **Financial Data Access:** {'Yes' if scope.financial_access else 'No'}
+- **Systems:** {', '.join(scope.systems) if scope.systems else 'None specified'}
+- **Notes:** {scope.scope_notes or 'None'}
 """
     else:
         report += "No data access scope defined.\n"
@@ -73,7 +81,7 @@ def generate_vendor_report_markdown(vendor: Vendor, score: VendorScore, alerts: 
     if vendor.certifications:
         report += "| Type | Status | Issued | Expires |\n|------|--------|--------|----------|\n"
         for cert in vendor.certifications:
-            report += f"| {cert.get('type', 'N/A')} | {cert.get('status', 'N/A')} | {cert.get('issued_date', 'N/A')} | {cert.get('expiry_date', 'N/A')} |\n"
+            report += f"| {cert.cert_type} | {cert.status} | {cert.issued_date or 'N/A'} | {cert.expiry_date or 'N/A'} |\n"
     else:
         report += "No certifications on record.\n"
 
@@ -81,12 +89,11 @@ def generate_vendor_report_markdown(vendor: Vendor, score: VendorScore, alerts: 
 
     if vendor.breach_history:
         for breach in vendor.breach_history:
-            report += f"""### {breach.get('date', 'Unknown Date')}
-- **Severity:** {breach.get('severity', 'Unknown')}
-- **Source:** {breach.get('source', 'Unknown')}
-- **Description:** {breach.get('description', 'No description')}
-- **Resolved:** {'Yes' if breach.get('resolved') else 'No'}
-
+            report += f"""### {breach.breach_date or 'Unknown Date'}
+- **Severity:** {breach.severity}
+- **Source:** {breach.source}
+- **Description:** {breach.description or 'No description'}
+- **Resolved:** {'Yes' if breach.resolved else 'No'}
 """
     else:
         report += "No breach history recorded.\n"
@@ -95,9 +102,18 @@ def generate_vendor_report_markdown(vendor: Vendor, score: VendorScore, alerts: 
 
     if alerts:
         for alert in alerts:
-            report += f"- **[{alert.severity.value}]** {alert.message} (Created: {alert.created_at.strftime('%Y-%m-%d')})\n"
+            sev = _enum_val(alert.severity)
+            report += f"- **[{sev}]** {alert.message} (Created: {alert.created_at.strftime('%Y-%m-%d')})\n"
     else:
         report += "No active alerts.\n"
+
+    # Check SOC2 cert safely
+    has_soc2 = False
+    if vendor.certifications:
+        has_soc2 = any(
+            getattr(c, "cert_type", None) == "SOC2_TYPE2"
+            for c in vendor.certifications
+        )
 
     report += f"""
 ---
@@ -105,16 +121,16 @@ def generate_vendor_report_markdown(vendor: Vendor, score: VendorScore, alerts: 
 ## Compliance Framework Mapping
 
 ### GDPR Article 28/33 (Third-Party Processor Requirements)
-- Data processing agreement: {'In place' if vendor.contract_status.value == 'active' else 'Missing/Expired'}
+- Data processing agreement: {'In place' if vendor.contract_status == 'active' else 'Missing/Expired'}
 - Breach notification capability: {('Adequate (72h SLA)' if vendor.breach_history else 'Not tested')}
 
 ### NIST SP 800-53 SA-9 (External System Services)
 - Security assessment: {'Current' if vendor.last_assessed_at else 'Overdue'}
-- Continuous monitoring: {'Active' if score.tier != 'CLEAR' else 'Standard'}
+- Continuous monitoring: {'Active' if tier_val != 'CLEAR' else 'Standard'}
 
 ### SOX 404 (Internal Controls)
 - Vendor risk assessment: Documented in this report
-- Control attestation: {'SOC 2 Type II' if any(c.get('type') == 'SOC2_TYPE2' for c in vendor.certifications) else 'Not available'}
+- Control attestation: {'SOC 2 Type II' if has_soc2 else 'Not available'}
 
 ---
 
@@ -148,7 +164,11 @@ def generate_portfolio_report_markdown(db: Session) -> str:
         ).order_by(VendorScore.computed_at.desc()).first()
 
         if latest_score:
-            tier_counts[latest_score.tier.value] += 1
+            tier_val = _enum_val(latest_score.tier)
+            if tier_val in tier_counts:
+                tier_counts[tier_val] += 1
+            else:
+                tier_counts["CLEAR"] += 1
         else:
             tier_counts["CLEAR"] += 1
 

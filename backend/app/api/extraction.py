@@ -1,8 +1,9 @@
 """Extraction and evidence API endpoints"""
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -11,6 +12,44 @@ from app.schemas import ExtractionJobCreate, ExtractionJobResponse, EvidenceSign
 from app.services.extraction.extractor import extract_from_text
 
 router = APIRouter()
+
+
+@router.get("/extraction-jobs", response_model=dict)
+def list_extraction_jobs(
+    vendor_id: Optional[UUID] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    """List all extraction jobs, optionally filtered by vendor."""
+    query = db.query(ExtractionJob)
+    if vendor_id:
+        query = query.filter(ExtractionJob.vendor_id == vendor_id)
+
+    total_items = query.count()
+    offset = (page - 1) * page_size
+    jobs = query.order_by(ExtractionJob.created_at.desc()).offset(offset).limit(page_size).all()
+
+    items = [
+        ExtractionJobResponse(
+            id=job.id,
+            vendor_id=job.vendor_id,
+            document_type=job.document_type,
+            status=job.status.value if hasattr(job.status, "value") else job.status,
+            structured_output=job.structured_output,
+            conflicts=job.conflicts or [],
+            completed_at=job.completed_at
+        )
+        for job in jobs
+    ]
+
+    return {
+        "items": items,
+        "page": page,
+        "page_size": page_size,
+        "total_items": total_items,
+        "total_pages": (total_items + page_size - 1) // page_size if total_items > 0 else 1
+    }
 
 
 @router.post("/vendors/{vendor_id}/extract", response_model=ExtractionJobResponse, status_code=status.HTTP_202_ACCEPTED)
@@ -55,8 +94,7 @@ async def extract_document(
     db.commit()
     db.refresh(job)
 
-    # In a real implementation, this would trigger a Celery task
-    # For now, we'll process synchronously using the stub
+    # Process synchronously using the stub
     try:
         job.status = ExtractionStatus.PROCESSING
         db.commit()
@@ -79,7 +117,7 @@ async def extract_document(
         id=job.id,
         vendor_id=job.vendor_id,
         document_type=job.document_type,
-        status=job.status.value,
+        status=job.status.value if hasattr(job.status, "value") else job.status,
         structured_output=job.structured_output,
         conflicts=job.conflicts or [],
         completed_at=job.completed_at
@@ -97,7 +135,7 @@ def get_extraction_job(job_id: UUID, db: Session = Depends(get_db)):
         id=job.id,
         vendor_id=job.vendor_id,
         document_type=job.document_type,
-        status=job.status.value,
+        status=job.status.value if hasattr(job.status, "value") else job.status,
         structured_output=job.structured_output,
         conflicts=job.conflicts or [],
         completed_at=job.completed_at

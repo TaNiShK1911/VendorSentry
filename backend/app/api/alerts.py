@@ -13,6 +13,46 @@ from app.schemas import AlertResponse, AlertSummary, AlertResolve, PaginatedResp
 router = APIRouter()
 
 
+def _build_alert_response(alert: Alert, db: Session) -> AlertResponse:
+    """Helper to build AlertResponse from an Alert ORM object."""
+    vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
+    return AlertResponse(
+        id=alert.id,
+        vendor_id=alert.vendor_id,
+        vendor_name=vendor.name if vendor else "Unknown",
+        type=alert.type,
+        severity=alert.severity,
+        message=alert.message,
+        created_at=alert.created_at,
+        acknowledged_at=alert.acknowledged_at,
+        resolved_at=alert.resolved_at
+    )
+
+
+@router.get("/summary", response_model=AlertSummary)
+def get_alert_summary(db: Session = Depends(get_db)):
+    """Badge/counter widget for nav bar"""
+    open_critical = db.query(Alert).filter(
+        Alert.resolved_at.is_(None),
+        Alert.severity == AlertSeverity.CRITICAL
+    ).count()
+
+    open_high = db.query(Alert).filter(
+        Alert.resolved_at.is_(None),
+        Alert.severity == AlertSeverity.HIGH
+    ).count()
+
+    open_total = db.query(Alert).filter(
+        Alert.resolved_at.is_(None)
+    ).count()
+
+    return AlertSummary(
+        open_critical=open_critical,
+        open_high=open_high,
+        open_total=open_total
+    )
+
+
 @router.get("", response_model=PaginatedResponse)
 def list_alerts(
     status_filter: str = Query("open", alias="status"),
@@ -54,23 +94,9 @@ def list_alerts(
     offset = (page - 1) * page_size
     alerts = query.order_by(Alert.created_at.desc()).offset(offset).limit(page_size).all()
 
-    # Build response items
-    items = []
-    for alert in alerts:
-        vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
-        items.append(AlertResponse(
-            id=alert.id,
-            vendor_id=alert.vendor_id,
-            vendor_name=vendor.name if vendor else "Unknown",
-            type=alert.type,
-            severity=alert.severity,
-            message=alert.message,
-            created_at=alert.created_at,
-            acknowledged_at=alert.acknowledged_at,
-            resolved_at=alert.resolved_at
-        ))
+    items = [_build_alert_response(alert, db) for alert in alerts]
 
-    total_pages = (total_items + page_size - 1) // page_size
+    total_pages = (total_items + page_size - 1) // page_size if total_items > 0 else 1
 
     return PaginatedResponse(
         items=items,
@@ -79,6 +105,15 @@ def list_alerts(
         total_items=total_items,
         total_pages=total_pages
     )
+
+
+@router.get("/{alert_id}", response_model=AlertResponse)
+def get_alert(alert_id: UUID, db: Session = Depends(get_db)):
+    """Get a single alert by ID"""
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    if not alert:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
+    return _build_alert_response(alert, db)
 
 
 @router.post("/{alert_id}/acknowledge", response_model=AlertResponse)
@@ -92,19 +127,7 @@ def acknowledge_alert(alert_id: UUID, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(alert)
 
-    vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
-
-    return AlertResponse(
-        id=alert.id,
-        vendor_id=alert.vendor_id,
-        vendor_name=vendor.name if vendor else "Unknown",
-        type=alert.type,
-        severity=alert.severity,
-        message=alert.message,
-        created_at=alert.created_at,
-        acknowledged_at=alert.acknowledged_at,
-        resolved_at=alert.resolved_at
-    )
+    return _build_alert_response(alert, db)
 
 
 @router.post("/{alert_id}/resolve", response_model=AlertResponse)
@@ -121,40 +144,4 @@ def resolve_alert(alert_id: UUID, data: AlertResolve, db: Session = Depends(get_
     db.commit()
     db.refresh(alert)
 
-    vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
-
-    return AlertResponse(
-        id=alert.id,
-        vendor_id=alert.vendor_id,
-        vendor_name=vendor.name if vendor else "Unknown",
-        type=alert.type,
-        severity=alert.severity,
-        message=alert.message,
-        created_at=alert.created_at,
-        acknowledged_at=alert.acknowledged_at,
-        resolved_at=alert.resolved_at
-    )
-
-
-@router.get("/summary", response_model=AlertSummary)
-def get_alert_summary(db: Session = Depends(get_db)):
-    """Badge/counter widget for nav bar"""
-    open_critical = db.query(Alert).filter(
-        Alert.resolved_at.is_(None),
-        Alert.severity == AlertSeverity.CRITICAL
-    ).count()
-
-    open_high = db.query(Alert).filter(
-        Alert.resolved_at.is_(None),
-        Alert.severity == AlertSeverity.HIGH
-    ).count()
-
-    open_total = db.query(Alert).filter(
-        Alert.resolved_at.is_(None)
-    ).count()
-
-    return AlertSummary(
-        open_critical=open_critical,
-        open_high=open_high,
-        open_total=open_total
-    )
+    return _build_alert_response(alert, db)

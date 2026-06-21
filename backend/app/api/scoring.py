@@ -68,8 +68,9 @@ def get_vendor_score(vendor_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.post("/vendors/{vendor_id}/rescore", response_model=VendorScoreResponse)
+@router.post("/vendors/{vendor_id}/score", response_model=VendorScoreResponse)
 def rescore_vendor(vendor_id: UUID, db: Session = Depends(get_db)):
-    """Force an immediate recompute"""
+    """Force an immediate recompute (also accessible as POST /vendors/{id}/score)"""
     vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
     if not vendor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vendor not found")
@@ -93,6 +94,8 @@ def rescore_vendor(vendor_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/portfolio/score-distribution", response_model=PortfolioScoreDistribution)
+@router.get("/scoring/distribution", response_model=PortfolioScoreDistribution)
+@router.get("/distribution", response_model=PortfolioScoreDistribution)
 def get_portfolio_distribution(db: Session = Depends(get_db)):
     """Portfolio summary widget - Red/Yellow/Green at a glance"""
     # Get all non-archived vendors
@@ -115,8 +118,10 @@ def get_portfolio_distribution(db: Session = Depends(get_db)):
     for vendor in vendors:
         latest_score = get_latest_score(vendor.id, db)
         if latest_score:
-            by_tier[latest_score.tier.value] += 1
-            by_status_color[latest_score.status_color.value] += 1
+            tier_val = latest_score.tier.value if hasattr(latest_score.tier, "value") else latest_score.tier
+            color_val = latest_score.status_color.value if hasattr(latest_score.status_color, "value") else latest_score.status_color
+            by_tier[tier_val] += 1
+            by_status_color[color_val] += 1
         else:
             by_tier["CLEAR"] += 1
             by_status_color["GREEN"] += 1
