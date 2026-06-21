@@ -44,10 +44,10 @@ _TIER_TO_COLOR: dict[str, str] = {
 }
 
 
-def _has_recent_breach(breaches: Sequence[BreachEvent]) -> bool:
-    """Return True if any breach occurred within the last 12 months."""
+def _has_recent_breach(breaches: Sequence[BreachEvent], eval_date: date) -> bool:
+    """Return True if any breach occurred within the last 12 months from eval_date."""
     from datetime import timedelta
-    cutoff = datetime.utcnow().date() - timedelta(days=_RECENT_BREACH_MONTHS * 30.44)
+    cutoff = eval_date - timedelta(days=_RECENT_BREACH_MONTHS * 30.44)
     return any(
         b.breach_date is not None and b.breach_date >= cutoff
         for b in breaches
@@ -61,10 +61,9 @@ def _has_sensitive_access(scope: Optional[DataAccessScope]) -> bool:
     return scope.pii_access or scope.financial_access
 
 
-def _has_expired_cert(certs: Sequence[Certification]) -> bool:
-    today = datetime.utcnow().date()
+def _has_expired_cert(certs: Sequence[Certification], eval_date: date) -> bool:
     return any(
-        c.status == "expired" or (c.expiry_date and c.expiry_date < today)
+        c.status == "expired" or (c.expiry_date and c.expiry_date < eval_date)
         for c in certs
     )
 
@@ -72,15 +71,15 @@ def _has_expired_cert(certs: Sequence[Certification]) -> bool:
 def _contract_expired_with_access(
     contract_end: Optional[date],
     contract_status: Optional[str],
+    eval_date: date
 ) -> bool:
     """
-    Return True if contract end date has passed but vendor still has active status.
+    Return True if contract end date has passed relative to eval_date but vendor still has active status.
     A contract_status of 'active' despite an expired date signals orphaned access.
     """
     if contract_end is None:
         return False
-    today = datetime.utcnow().date()
-    expired = contract_end < today
+    expired = contract_end < eval_date
     still_active = contract_status in ("active", None)
     return expired and still_active
 
@@ -120,12 +119,14 @@ def determine_tier(
         if tier_priority.index(new_tier) > tier_priority.index(current_tier):
             current_tier = new_tier
 
+    eval_date = vendor.last_assessed_at.date() if vendor.last_assessed_at else datetime.utcnow().date()
+
     # ── CRITICAL conditions ─────────────────────────────────────────────────
     if vendor.under_investigation:
         anomaly_types.append("VENDOR_UNDER_INVESTIGATION")
         _upgrade("CRITICAL")
 
-    if _has_recent_breach(breaches) and _has_sensitive_access(scope):
+    if _has_recent_breach(breaches, eval_date) and _has_sensitive_access(scope):
         if "BREACHED_VENDOR_HIGH_ACCESS" not in anomaly_types:
             anomaly_types.append("BREACHED_VENDOR_HIGH_ACCESS")
         _upgrade("CRITICAL")
@@ -135,7 +136,7 @@ def determine_tier(
         anomaly_types.append("HIGH_RISK_SCORE")
         _upgrade("HIGH")
 
-    if _has_expired_cert(certs):
+    if _has_expired_cert(certs, eval_date):
         anomaly_types.append("EXPIRED_CERTIFICATION")
         # HIGH if sensitive access, otherwise MEDIUM
         if _has_sensitive_access(scope):
@@ -144,13 +145,13 @@ def determine_tier(
             _upgrade("MEDIUM")
 
     # ── MEDIUM conditions ───────────────────────────────────────────────────
-    if _has_recent_breach(breaches) and not _has_sensitive_access(scope):
+    if _has_recent_breach(breaches, eval_date) and not _has_sensitive_access(scope):
         # Recent breach but not high-access → MEDIUM (already CRITICAL if high-access)
         if "RECENTLY_BREACHED_VENDOR" not in anomaly_types:
             anomaly_types.append("RECENTLY_BREACHED_VENDOR")
         _upgrade("MEDIUM")
 
-    if _contract_expired_with_access(vendor.contract_end, vendor.contract_status):
+    if _contract_expired_with_access(vendor.contract_end, vendor.contract_status, eval_date):
         anomaly_types.append("CONTRACT_EXPIRED_ACTIVE_ACCESS")
         _upgrade("MEDIUM")
 
