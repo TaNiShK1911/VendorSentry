@@ -15,16 +15,23 @@ def check_live_cert_status():
         vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
         signals_created = 0
 
+        import random
         for vendor in vendors:
-            # Generate a mock API response
+            # Generate a mock API response with a 5% chance of divergence for demos
+            claims = []
+            for c in vendor.certifications:
+                claimed_status = c.status
+                if random.random() < 0.05:
+                    claimed_status = "expired" if c.status in ("current", "Valid") else "current"
+                
+                claims.append({
+                    "type": c.cert_type,
+                    "claimed_status": claimed_status,
+                    "claimed_expiry": c.expiry_date.strftime("%Y-%m-%d") if c.expiry_date else None
+                })
+
             api_response = {
-                "compliance_claims": [
-                    {
-                        "type": c.cert_type,
-                        "claimed_status": c.status,
-                        "claimed_expiry": c.expiry_date.strftime("%Y-%m-%d") if c.expiry_date else None
-                    } for c in vendor.certifications
-                ]
+                "compliance_claims": claims
             }
 
             # Check for conflicts using the existing conflict_checker logic

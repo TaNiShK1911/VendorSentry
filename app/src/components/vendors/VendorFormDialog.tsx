@@ -18,6 +18,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
   const [name, setName] = useState('');
   const [vendorType, setVendorType] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [websiteDomain, setWebsiteDomain] = useState('');
   const [annualSpend, setAnnualSpend] = useState('');
   const [contractStart, setContractStart] = useState('');
   const [contractEnd, setContractEnd] = useState('');
@@ -34,6 +35,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
       setName(vendor.name);
       setVendorType(vendor.vendor_type);
       setContactEmail(vendor.contact_email);
+      setWebsiteDomain(vendor.website_domain || '');
       setAnnualSpend(vendor.annual_spend?.toString() || '');
       setContractStart(vendor.contract_start || '');
       setContractEnd(vendor.contract_end || '');
@@ -45,6 +47,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
       setName('');
       setVendorType('');
       setContactEmail('');
+      setWebsiteDomain('');
       setAnnualSpend('');
       setContractStart('');
       setContractEnd('');
@@ -82,6 +85,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
       name,
       vendor_type: vendorType,
       contact_email: contactEmail,
+      ...(websiteDomain && { website_domain: websiteDomain }),
       ...(annualSpend && { annual_spend: Number(annualSpend) }),
       ...(contractStart && { contract_start: contractStart }),
       ...(contractEnd && { contract_end: contractEnd }),
@@ -189,6 +193,20 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
                       placeholder="security@company.com"
                     />
                   </div>
+                </div>
+
+                {/* Website Domain */}
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
+                    Website Domain
+                  </label>
+                  <input
+                    type="text"
+                    value={websiteDomain}
+                    onChange={(e) => setWebsiteDomain(e.target.value)}
+                    className="w-full rounded-input border border-sg-border-subtle bg-sg-surface-muted px-4 py-2.5 text-sm text-sg-text-primary placeholder-vs-text-tertiary outline-none transition-all focus:border-vs-accent-blue focus:shadow-glow-blue"
+                    placeholder="e.g. acmecloud.com"
+                  />
                 </div>
 
                 {/* Annual Spend */}

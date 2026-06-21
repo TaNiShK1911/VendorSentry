@@ -38,6 +38,7 @@ export interface Vendor {
   name: string;
   vendor_type: VendorType;
   contact_email: string;
+  website_domain?: string;
   annual_spend: number;
   contract_start: string;
   contract_end: string;
@@ -60,6 +61,7 @@ export interface VendorCreateRequest {
   name: string;
   vendor_type: VendorType | string;
   contact_email: string;
+  website_domain?: string;
   annual_spend?: number;
   contract_start?: string;
   contract_end?: string;
@@ -74,6 +76,7 @@ export interface VendorUpdateRequest {
   name?: string;
   vendor_type?: VendorType | string;
   contact_email?: string;
+  website_domain?: string;
   annual_spend?: number;
   contract_start?: string;
   contract_end?: string;

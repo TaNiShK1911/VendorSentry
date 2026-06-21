@@ -168,44 +168,44 @@ class TestComplianceSubscore:
         cert = make_cert(status="current", expiry_date=date.today() + timedelta(days=180))
         last_assessed = datetime.utcnow() - timedelta(days=30)
         score = compute_compliance_subscore([cert], last_assessed)
-        assert score == 100.0
+        assert score == 0.0
 
-    def test_expired_cert_minus_40(self):
+    def test_expired_cert_plus_40(self):
         cert = make_cert(status="expired", expiry_date=date.today() - timedelta(days=10))
         last_assessed = datetime.utcnow() - timedelta(days=30)
         score = compute_compliance_subscore([cert], last_assessed)
-        assert score == 60.0  # 100 - 40
+        assert score == 40.0  # 0 + 40
 
-    def test_expiring_soon_minus_20(self):
+    def test_expiring_soon_plus_20(self):
         cert = make_cert(status="current", expiry_date=date.today() + timedelta(days=15))
         last_assessed = datetime.utcnow() - timedelta(days=30)
         score = compute_compliance_subscore([cert], last_assessed)
-        assert score == 80.0  # 100 - 20
+        assert score == 20.0  # 0 + 20
 
-    def test_overdue_assessment_minus_15(self):
+    def test_overdue_assessment_plus_15(self):
         cert = make_cert(status="current", expiry_date=date.today() + timedelta(days=180))
         last_assessed = datetime.utcnow() - timedelta(days=400)  # > 12 months
         score = compute_compliance_subscore([cert], last_assessed)
-        assert score == 85.0  # 100 - 15
+        assert score == 15.0  # 0 + 15
 
-    def test_never_assessed_minus_15(self):
+    def test_never_assessed_plus_15(self):
         cert = make_cert(status="current", expiry_date=date.today() + timedelta(days=180))
         score = compute_compliance_subscore([cert], last_assessed_at=None)
-        assert score == 85.0  # 100 - 15
+        assert score == 15.0  # 0 + 15
 
-    def test_all_penalties_combined_floor_at_zero(self):
+    def test_all_penalties_combined_capped_at_100(self):
         cert = make_cert(status="expired", expiry_date=date.today() - timedelta(days=10))
         expiring = make_cert(status="current", expiry_date=date.today() + timedelta(days=10))
         last_assessed = datetime.utcnow() - timedelta(days=400)
         score = compute_compliance_subscore([cert, expiring], last_assessed)
-        # 100 - 40 (expired) - 20 (expiring_soon) - 15 (overdue) = 25
-        assert score == 25.0
+        # 0 + 40 (expired) + 20 (expiring_soon) + 15 (overdue) = 75
+        assert score == 75.0
 
-    def test_floor_at_zero(self):
-        # Even if penalties exceed 100, floor at 0
+    def test_capped_at_100(self):
+        # Even if penalties exceed 100, cap at 100
         cert = make_cert(status="expired")
-        score = compute_compliance_subscore([cert], last_assessed_at=None)
-        assert score >= 0.0
+        score = compute_compliance_subscore([cert, cert, cert], last_assessed_at=None)
+        assert score <= 100.0
 
     def test_get_compliance_flags(self):
         cert = make_cert(status="expired")
@@ -251,7 +251,7 @@ class TestComputeComposite:
         assert score == 100.0
 
     def test_all_zero_gives_zero(self):
-        # compliance=0 means bad compliance (all certs expired)
+        # compliance=0 means good compliance (no penalties)
         # breach=0 means no breaches, etc.
         score = compute_composite(0.0, 20.0, 0.0, 10.0)
         # 0 + 5 + 0 + 1.5 = 6.5

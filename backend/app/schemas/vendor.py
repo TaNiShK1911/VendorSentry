@@ -11,6 +11,7 @@ from datetime import date, datetime
 from typing import Optional, List
 
 from pydantic import BaseModel, Field, field_validator
+from urllib.parse import urlparse
 
 
 # --------------------------------------------------------------------------- #
@@ -59,10 +60,25 @@ class DataAccessScopeOut(BaseModel):
 # Request schemas (used by POST /vendors, PATCH /vendors/{id})
 # --------------------------------------------------------------------------- #
 
+def _normalize_domain(v: Optional[str]) -> Optional[str]:
+    """Strip protocol, path, and lowercase a domain string."""
+    if not v:
+        return None
+    v = v.strip().lower()
+    # Handle URLs like "https://example.com/path"
+    if "://" in v:
+        parsed = urlparse(v)
+        v = parsed.hostname or v
+    # Strip any trailing path/slash
+    v = v.split("/")[0]
+    return v or None
+
+
 class VendorCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     vendor_type: str = "other"
     contact: Optional[ContactInfo] = None
+    website_domain: Optional[str] = None
     annual_spend: Optional[float] = Field(None, ge=0)
     contract_start: Optional[date] = None
     contract_end: Optional[date] = None
@@ -71,11 +87,23 @@ class VendorCreate(BaseModel):
     financial_health_source: str = "unknown"
     under_investigation: bool = False
 
+    # Scope fields
+    has_pii_access: Optional[bool] = False
+    has_financial_access: Optional[bool] = False
+    systems_access: Optional[List[str]] = Field(default_factory=list)
+    data_access_notes: Optional[str] = None
+
+    @field_validator("website_domain", mode="before")
+    @classmethod
+    def normalize_website_domain(cls, v: Optional[str]) -> Optional[str]:
+        return _normalize_domain(v)
+
 
 class VendorUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     vendor_type: Optional[str] = None
     contact: Optional[ContactInfo] = None
+    website_domain: Optional[str] = None
     annual_spend: Optional[float] = Field(None, ge=0)
     contract_start: Optional[date] = None
     contract_end: Optional[date] = None
@@ -83,6 +111,17 @@ class VendorUpdate(BaseModel):
     financial_health_signal: Optional[str] = None
     financial_health_source: Optional[str] = None
     under_investigation: Optional[bool] = None
+
+    # Scope fields
+    has_pii_access: Optional[bool] = None
+    has_financial_access: Optional[bool] = None
+    systems_access: Optional[List[str]] = None
+    data_access_notes: Optional[str] = None
+
+    @field_validator("website_domain", mode="before")
+    @classmethod
+    def normalize_website_domain(cls, v: Optional[str]) -> Optional[str]:
+        return _normalize_domain(v)
 
 
 # --------------------------------------------------------------------------- #
@@ -112,6 +151,7 @@ class VendorDetail(BaseModel):
     name: str
     vendor_type: str
     contact: Optional[ContactInfo] = None
+    website_domain: Optional[str] = None
     annual_spend: Optional[float] = None
     contract_start: Optional[date] = None
     contract_end: Optional[date] = None
