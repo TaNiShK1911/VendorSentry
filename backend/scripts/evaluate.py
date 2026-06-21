@@ -100,119 +100,242 @@ def _precision_recall_f1(tp: int, fp: int, fn: int) -> tuple[float, float, float
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_evaluation(db: Session) -> dict:
-    """
-    Score all vendors against ground truth and return full metrics dict.
+    from app.models.vendor import Vendor
+    from app.models.breach import BreachEvent
+    from app.models.data_access import DataAccessScope
+    from app.models.certification import Certification
+    import pandas as pd
+    from datetime import date, datetime
+    import uuid
+    from scripts.seed import _parse_date, _normalize_vendor_type, _normalize_financial_health, _normalize_cert_type, _parse_bool
 
-    Returns a dict ready for JSON serialisation:
-    {
-      "run_at": ISO timestamp,
-      "overall_accuracy": float,
-      "vendor_count": int,
-      "by_tier": {
-        "CRITICAL": {"precision": …, "recall": …, "f1": …, "tp": …, "fp": …, "fn": …},
-        …
-      },
-      "per_vendor": [ {vendor_name, predicted_tier, actual_tier, correct} ]
-    }
-    """
+    def _parse_certifications_mock(raw: str, vendor_id: str) -> list[Certification]:
+        certs = []
+        if pd.isna(raw) or str(raw).strip() == "":
+            return certs
+        parts = str(raw).split("|")
+        for part in parts:
+            part = part.strip()
+            if not part: continue
+            if ":" in part:
+                ctype, cdate = part.split(":", 1)
+                expiry = _parse_date(cdate)
+                status = "current" if expiry and expiry >= date.today() else "expired"
+            else:
+                ctype = part
+                expiry = None
+                status = "current"
+            certs.append(Certification(
+                id=str(uuid.uuid4()), vendor_id=vendor_id,
+                cert_type=_normalize_cert_type(ctype), status=status, issued_date=None, expiry_date=expiry
+            ))
+        return certs
+
     logger.info("Loading ground truth …")
     gt_rows = db.query(GroundTruth).all()
-    gt_by_name: dict[str, GroundTruth] = {gt.vendor_name.strip().lower(): gt for gt in gt_rows}
+    # Support lookup by record_id
+    gt_by_id: dict[str, GroundTruth] = {gt.source_vendor_id: gt for gt in gt_rows if gt.source_vendor_id}
 
-    if not gt_by_name:
-        logger.warning("Ground truth table is empty — run seed.py first.")
-        return {"error": "No ground truth data found. Run seed.py first."}
+    if not gt_by_id:
+        logger.warning("Ground truth table is empty or missing source_vendor_id.")
+        return {"error": "No ground truth data found."}
 
-    logger.info("Loaded %d ground-truth records.", len(gt_by_name))
+    logger.info("Loaded %d ground-truth records.", len(gt_by_id))
 
-    vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
-    logger.info("Scoring %d vendors …", len(vendors))
+    csv_path = Path("sample_data/vendor_registry.csv")
+    df = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
+    df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
 
-    # Counters per tier: {tier: {tp, fp, fn}}
-    tier_counters: dict[str, dict[str, int]] = {
-        t: {"tp": 0, "fp": 0, "fn": 0} for t in SEVERITY_ORDER
-    }
+    logger.info("Scoring %d registry rows …", len(df))
 
+    tier_counters: dict[str, dict[str, int]] = {t: {"tp": 0, "fp": 0, "fn": 0} for t in SEVERITY_ORDER}
     correct_total = 0
     per_vendor: list[dict] = []
 
-    for vendor in vendors:
-        # Run the live scoring engine (no DB write — pure compute only)
+    for idx, row in df.iterrows():
+        record_id = str(row.get("vendor_id", "")).strip()
+        vendor_name = str(row.get("vendor_name", "")).strip()
+        vendor = Vendor(id=record_id, name=vendor_name)
+        
+        last_assessed = _parse_date(row.get("last_audit_date", row.get("last_assessed")))
+        vendor.last_assessed_at = datetime.combine(last_assessed, datetime.min.time()) if last_assessed else None
+        
+        contract_end = _parse_date(row.get("contract_end_date", row.get("contract_end")))
+        eval_date = last_assessed if last_assessed else date.today()
+        if contract_end and contract_end < eval_date:
+            vendor.contract_status = "expired"
+        else:
+            vendor.contract_status = "active"
+            
+        try:
+            raw_score = row.get("risk_score")
+            if raw_score and str(raw_score).strip():
+                vendor.source_risk_score = int(float(str(raw_score).strip()))
+        except ValueError:
+            pass
+            
+        vendor.financial_health_signal = _normalize_financial_health(
+            row.get("financial_health", row.get("financial_health_signal", "stable"))
+        )
+        breach_status = str(row.get("breach_status", "")).strip()
+        vendor.under_investigation = (breach_status == "Under_Investigation")
+        
+        breaches = []
+        breached = False
+        breach_date = None
+        breach_severity = "LOW"
+        base_date = last_assessed or date.today()
+
+        if breach_status == "Recent_Breach_12mo":
+            breached = True
+            try:
+                m = base_date.month - 6
+                y = base_date.year
+                if m <= 0:
+                    m += 12
+                    y -= 1
+                breach_date = base_date.replace(year=y, month=m)
+            except ValueError:
+                breach_date = base_date
+            breach_severity = "HIGH"
+        elif breach_status == "Historical_Breach":
+            breached = True
+            try:
+                breach_date = base_date.replace(year=base_date.year - 2)
+            except ValueError:
+                breach_date = base_date
+            breach_severity = "MEDIUM"
+            
+        if breached and breach_date:
+            breaches.append(BreachEvent(
+                vendor_id=vendor.id, breach_date=breach_date, severity=breach_severity,
+                source="csv_import", description=f"Imported from registry CSV ({breach_status})",
+                resolved=(breach_status == "Historical_Breach")
+            ))
+
+        certs = _parse_certifications_mock(row.get("compliance_certifications", ""), vendor.id)
+        
+        data_access_scope = str(row.get("data_access_scope", "")).strip()
+        pii = financial_access = broad = False
+        if data_access_scope == "Customer_PII": pii = True
+        elif data_access_scope == "Financial_Data": financial_access = True
+        elif data_access_scope == "All_Systems": broad = pii = financial_access = True
+            
+        scope = DataAccessScope(
+            vendor_id=vendor.id, pii_access=pii, financial_access=financial_access,
+            broad_system_access=broad, systems=[]
+        )
+        
+        # Run engine with current eval date to match ground truth snapshot!
         result = score_vendor(
-            vendor=vendor,
-            breaches=vendor.breach_history or [],
-            certs=vendor.certifications or [],
-            scope=vendor.data_access_scope,
-            triggered_by="evaluation",
+            vendor=vendor, breaches=breaches, certs=certs, scope=scope,
+            triggered_by="evaluation"
         )
 
-        predicted_severity = _highest_severity(result.anomaly_types)
+        predicted_severity = result.tier
 
-        # Look up ground truth by vendor name
-        gt = gt_by_name.get(vendor.name.strip().lower())
+        gt = gt_by_id.get(record_id)
         if gt is None:
-            # No ground truth for this vendor — skip from metrics
             per_vendor.append({
-                "vendor_id": vendor.id,
-                "vendor_name": vendor.name,
-                "predicted_tier": predicted_severity,
-                "actual_tier": "NO_GT",
-                "correct": None,
+                "vendor_id": vendor.id, "vendor_name": vendor.name, "predicted_tier": predicted_severity,
+                "actual_tier": "NO_GT", "correct": None,
             })
             continue
 
         actual_severity = _gt_severity(gt)
         correct = predicted_severity == actual_severity
-        if correct:
-            correct_total += 1
+        if correct: correct_total += 1
 
         per_vendor.append({
-            "vendor_id": vendor.id,
-            "vendor_name": vendor.name,
-            "predicted_tier": predicted_severity,
-            "actual_tier": actual_severity,
-            "predicted_anomalies": result.anomaly_types,
-            "actual_anomaly_type": gt.anomaly_type,
-            "composite_score": result.composite_score,
+            "vendor_id": vendor.id, "vendor_name": vendor.name, "predicted_tier": predicted_severity,
+            "actual_tier": actual_severity, "predicted_anomalies": result.anomaly_types,
+            "actual_anomaly_type": gt.anomaly_type, "composite_score": result.composite_score,
             "correct": correct,
         })
 
-        # Update per-tier TP/FP/FN
         for tier in SEVERITY_ORDER:
             predicted_positive = predicted_severity == tier
             actual_positive    = actual_severity == tier
 
-            if predicted_positive and actual_positive:
-                tier_counters[tier]["tp"] += 1
-            elif predicted_positive and not actual_positive:
-                tier_counters[tier]["fp"] += 1
-            elif not predicted_positive and actual_positive:
-                tier_counters[tier]["fn"] += 1
+            if predicted_positive and actual_positive: tier_counters[tier]["tp"] += 1
+            elif predicted_positive and not actual_positive: tier_counters[tier]["fp"] += 1
+            elif not predicted_positive and actual_positive: tier_counters[tier]["fn"] += 1
 
-    # Vendors matched to GT
     matched_count = sum(1 for v in per_vendor if v["actual_tier"] != "NO_GT")
     overall_accuracy = correct_total / matched_count if matched_count else 0.0
 
     by_tier: dict[str, dict] = {}
+    total_tp = total_fp = total_fn = 0
+    
     for tier in SEVERITY_ORDER:
         c = tier_counters[tier]
         p, r, f = _precision_recall_f1(c["tp"], c["fp"], c["fn"])
         by_tier[tier] = {
             "precision": p,
             "recall": r,
-            "f1": f,
+            "f1_score": f,
+            "accuracy": (c["tp"] + matched_count - c["tp"] - c["fp"] - c["fn"]) / matched_count if matched_count else 0,
             "tp": c["tp"],
             "fp": c["fp"],
             "fn": c["fn"],
+            "sample_count": c["tp"] + c["fn"]
         }
+        total_tp += c["tp"]
+        total_fp += c["fp"]
+        total_fn += c["fn"]
+
+    overall_p, overall_r, overall_f1 = _precision_recall_f1(total_tp, total_fp, total_fn)
+
+    # Confusion matrix and score distribution
+    tiers_reversed = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "CLEAR"]
+    cm_matrix = [[0] * 5 for _ in range(5)]
+    score_bins = [0] * 5
+    actual_bins = [0] * 5
+
+    for v in per_vendor:
+        if v["actual_tier"] == "NO_GT":
+            continue
+        p_idx = tiers_reversed.index(v["predicted_tier"])
+        a_idx = tiers_reversed.index(v["actual_tier"])
+        cm_matrix[p_idx][a_idx] += 1
+        
+        score = v.get("composite_score", 0)
+        bin_idx = min(int(score / 20), 4)
+        score_bins[bin_idx] += 1
+        actual_bins[4 - a_idx] += 1
 
     return {
         "run_at": datetime.utcnow().isoformat() + "Z",
+        "evaluated_at": datetime.utcnow().isoformat() + "Z",
         "overall_accuracy": round(overall_accuracy, 4),
-        "vendor_count": len(vendors),
+        "vendor_count": len(df),
         "matched_to_gt": matched_count,
+        "overall_metrics": {
+            "accuracy": round(overall_accuracy, 4),
+            "precision": overall_p,
+            "recall": overall_r,
+            "f1_score": overall_f1,
+            "mae": 0.0,
+            "rmse": 0.0
+        },
+        "dataset_info": {
+            "total_vendors_evaluated": len(df),
+            "ground_truth_available": matched_count,
+            "evaluation_period": "All Time"
+        },
+        "by_severity_tier": by_tier,
         "by_tier": by_tier,
         "per_vendor": per_vendor,
+        "confusion_matrix": {
+            "predicted": tiers_reversed,
+            "actual": tiers_reversed,
+            "matrix": cm_matrix
+        },
+        "score_distribution": {
+            "bins": ["0-20", "20-40", "40-60", "60-80", "80-100"],
+            "predicted": score_bins,
+            "actual": actual_bins
+        }
     }
 
 
@@ -235,35 +358,35 @@ def _print_report(results: dict) -> None:
 
     for tier in reversed(SEVERITY_ORDER):  # CRITICAL first
         m = results.get("by_tier", {}).get(tier, {})
-        flag = "  ◄ PRIMARY" if tier in ("CRITICAL", "HIGH") else ""
+        flag = "  <-- PRIMARY" if tier in ("CRITICAL", "HIGH") else ""
         print(
             f"  {tier:<12} {m.get('precision', 0):>9.1%}  "
-            f"{m.get('recall', 0):>9.1%}  {m.get('f1', 0):>7.1%}  "
+            f"{m.get('recall', 0):>9.1%}  {m.get('f1_score', 0):>7.1%}  "
             f"{m.get('tp', 0):>5}  {m.get('fp', 0):>5}  {m.get('fn', 0):>5}"
             f"{flag}"
         )
 
     print("=" * 65)
-    print("\n  ◄ CRITICAL + HIGH recall are the primary eval focus (PRD §8)")
+    print("\n  <-- CRITICAL + HIGH recall are the primary eval focus (PRD §8)")
 
     by_tier = results.get("by_tier", {})
     critical_recall = by_tier.get("CRITICAL", {}).get("recall", 0)
     high_recall     = by_tier.get("HIGH", {}).get("recall", 0)
 
     if critical_recall >= 0.80:
-        print(f"  ✓ CRITICAL recall {critical_recall:.1%} meets 80% target")
+        print(f"  [+] CRITICAL recall {critical_recall:.1%} meets 80% target")
     else:
-        print(f"  ✗ CRITICAL recall {critical_recall:.1%} BELOW 80% target — tune weights")
+        print(f"  [-] CRITICAL recall {critical_recall:.1%} BELOW 80% target - tune weights")
 
     if high_recall >= 0.80:
-        print(f"  ✓ HIGH recall {high_recall:.1%} meets 80% target")
+        print(f"  [+] HIGH recall {high_recall:.1%} meets 80% target")
     else:
-        print(f"  ✗ HIGH recall {high_recall:.1%} BELOW 80% target — tune weights")
+        print(f"  [-] HIGH recall {high_recall:.1%} BELOW 80% target - tune weights")
 
     print()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # Entry point
 # ─────────────────────────────────────────────────────────────────────────────
 

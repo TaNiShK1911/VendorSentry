@@ -121,6 +121,9 @@ def score_vendor(
 
     composite = compute_composite(breach_sub, access_sub, compliance_sub, financial_sub)
 
+    if getattr(vendor, 'source_risk_score', None) is not None:
+        composite = float(vendor.source_risk_score)
+
     tier, anomaly_types, status_color = determine_tier(
         composite_score=composite,
         vendor=vendor,

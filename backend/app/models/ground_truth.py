@@ -22,6 +22,7 @@ class GroundTruth(Base):
     )
 
     vendor_name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    source_vendor_id: Mapped[Optional[str]] = mapped_column(String(255), index=True, nullable=True)
 
     is_anomaly: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     anomaly_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

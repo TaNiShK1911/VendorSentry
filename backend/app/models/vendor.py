@@ -21,6 +21,12 @@ VENDOR_TYPES = (
     "mss_provider",
     "payment_processor",
     "software_vendor",
+    "hardware_vendor",
+    "security_vendor",
+    "consulting",
+    "saas_provider",
+    "data_provider",
+    "msp",
     "other",
 )
 
@@ -41,11 +47,15 @@ class Vendor(Base):
 
     # Identity
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    source_vendor_id: Mapped[Optional[str]] = mapped_column(String(255), unique=True, index=True, nullable=True)
     vendor_type: Mapped[str] = mapped_column(
         String(50),
         nullable=False,
         default="other",
     )
+
+    # Reference score from CSV
+    source_risk_score: Mapped[Optional[int]] = mapped_column(nullable=True)
 
     # Contact info — stored as JSON for flexibility (liaison_name, email, phone)
     contact: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)

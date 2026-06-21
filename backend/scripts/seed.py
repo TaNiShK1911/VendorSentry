@@ -13,7 +13,6 @@ ARCHITECTURAL RULES (AGENT.md + IMPLEMENTATION_PLAN.md §3.1):
 
 Usage:
     python backend/scripts/seed.py [--data-dir path/to/sample_data]
-    python backend/scripts/seed.py --skip-scoring   # load data only, no score compute
 """
 from __future__ import annotations
 
@@ -42,6 +41,9 @@ from app.models.data_access import DataAccessScope
 from app.models.ground_truth import GroundTruth
 from app.models.base import Base
 from app.db.session import engine
+from app.models.alert import Alert
+
+from app.services.scoring.engine import score_vendor
 
 logging.basicConfig(
     level=logging.INFO,
@@ -66,14 +68,12 @@ def _parse_date(value) -> Optional[date]:
             continue
     return None
 
-
 def _parse_bool(value) -> bool:
     """Parse various boolean representations from CSV."""
     if pd.isna(value):
         return False
     v = str(value).strip().lower()
     return v in ("true", "1", "yes", "y")
-
 
 def _normalize_vendor_type(raw: str) -> str:
     mapping = {
@@ -87,10 +87,15 @@ def _normalize_vendor_type(raw: str) -> str:
         "payment_processor": "payment_processor",
         "software": "software_vendor",
         "software_vendor": "software_vendor",
-        "saas": "software_vendor",
+        "saas": "saas_provider",
+        "saas_provider": "saas_provider",
+        "hardware_vendor": "hardware_vendor",
+        "security_vendor": "security_vendor",
+        "consulting": "consulting",
+        "data_provider": "data_provider",
+        "msp": "msp",
     }
     return mapping.get(str(raw).strip().lower(), "other")
-
 
 def _normalize_financial_health(raw: str) -> str:
     mapping = {
@@ -99,7 +104,6 @@ def _normalize_financial_health(raw: str) -> str:
         "distressed": "distressed", "poor": "distressed", "critical": "distressed",
     }
     return mapping.get(str(raw).strip().lower(), "unknown")
-
 
 def _normalize_cert_type(raw: str) -> str:
     mapping = {
@@ -112,18 +116,11 @@ def _normalize_cert_type(raw: str) -> str:
     }
     return mapping.get(str(raw).strip().lower(), "OTHER")
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Registry loader
 # ─────────────────────────────────────────────────────────────────────────────
 
 def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[dict]]:
-    """
-    Load vendor_registry.csv into the Vendor and related tables.
-
-    Returns:
-        (rows_processed, rows_succeeded, errors)
-    """
     logger.info("Loading vendor registry from %s …", csv_path)
     df = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
@@ -132,15 +129,63 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
     rows_succeeded = 0
     errors: list[dict] = []
 
-    for row_num, row in df.iterrows():
-        try:
-            _upsert_vendor_row(row, db)
-            rows_succeeded += 1
-        except Exception as exc:
-            error_detail = {"row": int(row_num) + 2, "reason": str(exc)}
-            errors.append(error_detail)
-            logger.warning("Row %d skipped — %s", int(row_num) + 2, exc)
-            # DO NOT raise — partial failure tolerance
+    # Sort the dataframe by last_audit_date to process chronologically
+    df['last_audit_date_parsed'] = df.apply(lambda r: _parse_date(r.get("last_audit_date", r.get("last_assessed"))), axis=1)
+    df = df.sort_values(by='last_audit_date_parsed', na_position='first')
+
+    for name, group in df.groupby("vendor_name"):
+        if not name or name == "nan":
+            continue
+            
+        group = group.sort_values(by='last_audit_date_parsed', na_position='first')
+        
+        vendor = db.query(Vendor).filter(Vendor.name == name).first()
+        if not vendor:
+            vendor = Vendor(id=str(uuid.uuid4()), name=name)
+            db.add(vendor)
+            
+        previous_score_id = None
+        
+        for idx, row in group.iterrows():
+            try:
+                _process_historical_row(row, db, vendor)
+                db.flush()
+                
+                # Re-score vendor for this point in time
+                breaches = vendor.breach_history
+                certs = vendor.certifications
+                scope = db.query(DataAccessScope).filter(DataAccessScope.vendor_id == vendor.id).first()
+                result = score_vendor(vendor, breaches, certs, scope, triggered_by="scheduled_sweep")
+                
+                score_row = VendorScore(
+                    id=str(uuid.uuid4()),
+                    vendor_id=vendor.id,
+                    breach_subscore=result.breach_subscore,
+                    access_subscore=result.access_subscore,
+                    compliance_subscore=result.compliance_subscore,
+                    financial_subscore=result.financial_subscore,
+                    composite_score=result.composite_score,
+                    tier=result.tier,
+                    status_color=result.status_color,
+                    anomaly_types=result.anomaly_types,
+                    triggered_by=result.triggered_by,
+                    rationale=f"Historical score update for {vendor.name}.",
+                    computed_at=vendor.last_assessed_at or datetime.utcnow(),
+                    previous_score_id=previous_score_id
+                )
+                db.add(score_row)
+                db.flush()
+                previous_score_id = score_row.id
+                
+                # Check for alerts if this is the final row for the vendor
+                if row.equals(group.iloc[-1]):
+                    _generate_alerts(vendor, result, db)
+                
+                rows_succeeded += 1
+            except Exception as exc:
+                error_detail = {"row": int(idx) + 2, "reason": str(exc)}
+                errors.append(error_detail)
+                logger.warning("Row %d skipped — %s", int(idx) + 2, exc)
 
     logger.info(
         "Registry: %d processed, %d succeeded, %d failed.",
@@ -148,22 +193,44 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
     )
     return rows_processed, rows_succeeded, errors
 
+def _generate_alerts(vendor: Vendor, result, db: Session):
+    for anomaly in result.anomaly_types:
+        severity = "HIGH"
+        if anomaly in ["BREACHED_VENDOR_HIGH_ACCESS", "VENDOR_UNDER_INVESTIGATION"]:
+            severity = "CRITICAL"
+        elif anomaly in ["RECENTLY_BREACHED_VENDOR"]:
+            severity = "HIGH"
+        
+        # Simple deduplication key based on vendor and anomaly
+        dedup_key = f"{vendor.id}:{anomaly}:{datetime.utcnow().strftime('%Y%m')}"
+        
+        # Check if active alert already exists
+        existing_alert = db.query(Alert).filter(
+            Alert.vendor_id == vendor.id,
+            Alert.type == anomaly,
+            Alert.resolved_at.is_(None)
+        ).first()
+        
+        if not existing_alert:
+            alert = Alert(
+                id=str(uuid.uuid4()),
+                vendor_id=vendor.id,
+                type=anomaly,
+                severity=severity,
+                message=f"Vendor {vendor.name} flagged for {anomaly}",
+                dedup_key=dedup_key
+            )
+            db.add(alert)
 
-def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
-    """
-    Parse one CSV row and upsert Vendor + related entities.
-    Raises on any parsing error so the caller can log and skip.
-    """
-    name = str(row.get("vendor_name", row.get("name", ""))).strip()
-    if not name:
-        raise ValueError("Missing vendor name")
-
-    # ── Vendor core fields ───────────────────────────────────────────────────
+def _process_historical_row(row: pd.Series, db: Session, vendor: Vendor) -> None:
     vendor_type = _normalize_vendor_type(row.get("vendor_type", "other"))
-    contract_start = _parse_date(row.get("contract_start_date", row.get("contract_start")))
-    contract_end   = _parse_date(row.get("contract_end_date", row.get("contract_end")))
-    contract_status = str(row.get("contract_status", "active")).strip().lower()
-    if contract_status not in ("active", "expired", "terminated", "pending"):
+    contract_end = _parse_date(row.get("contract_end_date", row.get("contract_end")))
+    last_assessed = _parse_date(row.get("last_audit_date", row.get("last_assessed")))
+    eval_date = last_assessed if last_assessed else date.today()
+    
+    if contract_end and contract_end < eval_date:
+        contract_status = "expired"
+    else:
         contract_status = "active"
 
     annual_spend = None
@@ -175,23 +242,25 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
             pass
 
     financial_signal = _normalize_financial_health(
-        row.get("financial_health", row.get("financial_health_signal", "unknown"))
+        row.get("financial_health", row.get("financial_health_signal", "stable"))
     )
-    under_investigation = _parse_bool(row.get("under_investigation", False))
-    last_assessed = _parse_date(row.get("last_assessed_at", row.get("last_assessed")))
+    breach_status = str(row.get("breach_status", "")).strip()
+    under_investigation = breach_status == "Under_Investigation"
     last_assessed_dt = datetime.combine(last_assessed, datetime.min.time()) if last_assessed else None
 
-    # Upsert by name (treat name as the natural key for CSV imports)
-    existing = db.query(Vendor).filter(Vendor.name == name).first()
-    if existing:
-        vendor = existing
-    else:
-        vendor = Vendor(id=str(uuid.uuid4()))
-        db.add(vendor)
-
-    vendor.name = name
+    vendor_id_val = str(row.get("vendor_id", "")).strip()
+    vendor.source_vendor_id = vendor_id_val # update to the latest source_vendor_id
+    
     vendor.vendor_type = vendor_type
-    vendor.contract_start = contract_start
+    
+    contact_name = str(row.get("contact_name", "")).strip()
+    contact_email = str(row.get("contact_email", "")).strip()
+    if contact_name or contact_email:
+        vendor.contact = {
+            "liaison_name": contact_name,
+            "email": contact_email
+        }
+        
     vendor.contract_end = contract_end
     vendor.contract_status = contract_status
     vendor.annual_spend = annual_spend
@@ -199,13 +268,31 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
     vendor.financial_health_source = "csv_import"
     vendor.under_investigation = under_investigation
     vendor.last_assessed_at = last_assessed_dt
+    
+    try:
+        raw_score = row.get("risk_score")
+        if raw_score and str(raw_score).strip():
+            vendor.source_risk_score = int(float(str(raw_score).strip()))
+    except ValueError:
+        pass
 
-    db.flush()  # ensure vendor.id is populated
+    db.flush()
 
-    # ── Data access scope ────────────────────────────────────────────────────
-    pii = _parse_bool(row.get("pii_access", row.get("has_pii_access", False)))
-    financial_access = _parse_bool(row.get("financial_access", False))
-    broad = _parse_bool(row.get("broad_system_access", False))
+    data_access_scope = str(row.get("data_access_scope", "")).strip()
+    
+    pii = False
+    financial_access = False
+    broad = False
+    
+    if data_access_scope == "Customer_PII":
+        pii = True
+    elif data_access_scope == "Financial_Data":
+        financial_access = True
+    elif data_access_scope == "All_Systems":
+        broad = True
+        pii = True
+        financial_access = True
+
     systems_raw = str(row.get("systems", row.get("accessible_systems", ""))).strip()
     systems = [s.strip() for s in systems_raw.split(",") if s.strip()] if systems_raw else []
 
@@ -218,28 +305,19 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
     scope.broad_system_access = broad
     scope.systems = systems
 
-    # ── Certifications ───────────────────────────────────────────────────────
-    cert_raw = str(row.get("certifications", row.get("certification", ""))).strip()
-    expiry_raw = str(row.get("cert_expiry", row.get("certification_expiry", ""))).strip()
-    cert_status_raw = str(row.get("cert_status", "unknown")).strip().lower()
+    cert_raw = str(row.get("compliance_certifications", row.get("certifications", ""))).strip()
 
     if cert_raw and cert_raw not in ("", "none", "nan"):
-        cert_types = [c.strip() for c in cert_raw.split(",") if c.strip()]
-        expiry_dates_raw = [e.strip() for e in expiry_raw.split(",")]
+        cert_pairs = [c.strip() for c in cert_raw.split("|") if c.strip()]
 
-        for i, raw_cert in enumerate(cert_types):
+        for pair in cert_pairs:
+            parts = pair.split(":")
+            raw_cert = parts[0].strip()
             cert_type = _normalize_cert_type(raw_cert)
-            expiry_date = _parse_date(expiry_dates_raw[i]) if i < len(expiry_dates_raw) else None
+            expiry_date = _parse_date(parts[1].strip()) if len(parts) > 1 else None
 
-            # Determine status from expiry date if not explicitly set
-            if cert_status_raw in ("current", "expired", "pending_renewal"):
-                c_status = cert_status_raw
-            elif expiry_date:
-                c_status = "expired" if expiry_date < date.today() else "current"
-            else:
-                c_status = "unknown"
+            c_status = "expired" if (expiry_date and expiry_date < eval_date) else "current"
 
-            # Upsert cert by vendor+type
             existing_cert = (
                 db.query(Certification)
                 .filter(
@@ -259,11 +337,31 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
             existing_cert.status = c_status
             existing_cert.expiry_date = expiry_date
 
-    # ── Breach history ───────────────────────────────────────────────────────
-    breached = _parse_bool(row.get("breached", row.get("has_breach", False)))
-    breach_date = _parse_date(row.get("breach_date", row.get("last_breach_date")))
-    breach_severity = str(row.get("breach_severity", "MEDIUM")).strip().upper()
-    if breach_severity not in ("CRITICAL", "HIGH", "MEDIUM", "LOW"):
+    breach_status = str(row.get("breach_status", "")).strip()
+    breached = False
+    breach_date = None
+    breach_severity = "MEDIUM"
+    
+    if breach_status == "Recent_Breach_12mo":
+        breached = True
+        base_date = last_assessed or date.today()
+        try:
+            m = base_date.month - 6
+            y = base_date.year
+            if m <= 0:
+                m += 12
+                y -= 1
+            breach_date = base_date.replace(year=y, month=m)
+        except ValueError:
+            breach_date = base_date
+        breach_severity = "HIGH"
+    elif breach_status == "Historical_Breach":
+        breached = True
+        base_date = last_assessed or date.today()
+        try:
+            breach_date = base_date.replace(year=base_date.year - 2)
+        except ValueError:
+            breach_date = base_date
         breach_severity = "MEDIUM"
 
     if breached and breach_date:
@@ -282,22 +380,15 @@ def _upsert_vendor_row(row: pd.Series, db: Session) -> None:
                 breach_date=breach_date,
                 severity=breach_severity,
                 source="csv_import",
-                description=str(row.get("breach_description", "Imported from registry CSV")),
-                resolved=_parse_bool(row.get("breach_resolved", False)),
+                description=f"Imported from registry CSV ({breach_status})",
+                resolved=(breach_status == "Historical_Breach"),
             ))
 
-
 # ─────────────────────────────────────────────────────────────────────────────
-# Ground truth loader (evaluation-only)
+# Ground truth loader
 # ─────────────────────────────────────────────────────────────────────────────
 
 def load_ground_truth(csv_path: Path, db: Session) -> tuple[int, int, list[dict]]:
-    """
-    Load vendor_labels.csv into the ground_truth table.
-
-    CRITICAL: This table is NEVER read by the scoring engine.
-    It is read only by scripts/evaluate.py.
-    """
     logger.info("Loading ground truth from %s …", csv_path)
     df = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
@@ -306,14 +397,14 @@ def load_ground_truth(csv_path: Path, db: Session) -> tuple[int, int, list[dict]
     rows_succeeded = 0
     errors: list[dict] = []
 
-    # Clear existing ground truth before reload (idempotent)
     db.query(GroundTruth).delete()
 
     for row_num, row in df.iterrows():
         try:
             name = str(row.get("vendor_name", row.get("name", ""))).strip()
+            record_id = str(row.get("record_id", "")).strip()
             if not name:
-                raise ValueError("Missing vendor name")
+                continue
 
             expired_certs_raw = str(row.get("expired_certifications", "")).strip()
             expired_certs = (
@@ -324,6 +415,7 @@ def load_ground_truth(csv_path: Path, db: Session) -> tuple[int, int, list[dict]
 
             db.add(GroundTruth(
                 id=str(uuid.uuid4()),
+                source_vendor_id=record_id if record_id else None,
                 vendor_name=name,
                 is_anomaly=_parse_bool(row.get("is_anomaly", False)),
                 anomaly_type=str(row.get("anomaly_type", "")).strip() or None,
@@ -334,53 +426,12 @@ def load_ground_truth(csv_path: Path, db: Session) -> tuple[int, int, list[dict]
             rows_succeeded += 1
         except Exception as exc:
             errors.append({"row": int(row_num) + 2, "reason": str(exc)})
-            logger.warning("Ground truth row %d skipped — %s", int(row_num) + 2, exc)
 
     logger.info(
         "Ground truth: %d processed, %d succeeded, %d failed.",
         rows_processed, rows_succeeded, len(errors),
     )
     return rows_processed, rows_succeeded, errors
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Scoring run after seed (optional)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def run_initial_scoring(db: Session) -> None:
-    """Score all vendors after seeding so the portfolio view has data immediately."""
-    from app.services.scoring.engine import score_vendor_from_db
-    from app.services.extraction.narrative import generate_rationale
-
-    vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
-    logger.info("Running initial scoring on %d vendors …", len(vendors))
-
-    scored = 0
-    for vendor in vendors:
-        try:
-            score_row = score_vendor_from_db(
-                vendor_id=vendor.id,
-                db=db,
-                triggered_by="scheduled_sweep",
-            )
-            # Generate narrative after scoring
-            narrative = generate_rationale(
-                vendor_name=vendor.name,
-                composite_score=score_row.composite_score,
-                tier=score_row.tier,
-                breach_subscore=score_row.breach_subscore,
-                access_subscore=score_row.access_subscore,
-                compliance_subscore=score_row.compliance_subscore,
-                financial_subscore=score_row.financial_subscore,
-                anomaly_types=score_row.anomaly_types or [],
-            )
-            score_row.rationale = narrative
-            scored += 1
-        except Exception as exc:
-            logger.warning("Scoring failed for vendor %s (%s): %s", vendor.id, vendor.name, exc)
-
-    logger.info("Scoring complete: %d/%d vendors scored.", scored, len(vendors))
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Entry point
@@ -396,7 +447,7 @@ def main() -> None:
     parser.add_argument(
         "--skip-scoring",
         action="store_true",
-        help="Load CSV data only, skip initial scoring run",
+        help="Load CSV data only, skip initial scoring run (not used in historical mode)",
     )
     args = parser.parse_args()
     data_dir = Path(args.data_dir)
@@ -408,38 +459,23 @@ def main() -> None:
         logger.error("vendor_registry.csv not found at %s", registry_csv)
         sys.exit(1)
 
-    # Ensure tables exist (create if running outside Docker Compose)
     logger.info("Ensuring DB tables exist …")
     Base.metadata.create_all(bind=engine)
 
     with get_db_context() as db:
-        # 1 — Vendor registry
         reg_processed, reg_ok, reg_errors = load_vendor_registry(registry_csv, db)
 
-        # 2 — Ground truth (if file exists)
         gt_processed = gt_ok = 0
         gt_errors: list[dict] = []
         if labels_csv.exists():
             gt_processed, gt_ok, gt_errors = load_ground_truth(labels_csv, db)
-        else:
-            logger.warning("vendor_labels.csv not found — skipping ground truth load")
 
-        # 3 — Initial scoring
-        if not args.skip_scoring:
-            run_initial_scoring(db)
-
-    # Summary
     print("\n" + "=" * 60)
     print("SEED COMPLETE")
     print(f"  Registry : {reg_ok}/{reg_processed} rows loaded  ({len(reg_errors)} errors)")
     if gt_processed:
         print(f"  Labels   : {gt_ok}/{gt_processed} rows loaded  ({len(gt_errors)} errors)")
-    if reg_errors:
-        print("\nRegistry errors:")
-        for e in reg_errors[:20]:
-            print(f"  Row {e['row']}: {e['reason']}")
     print("=" * 60)
-
 
 if __name__ == "__main__":
     main()

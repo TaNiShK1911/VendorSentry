@@ -178,10 +178,15 @@ def get_portfolio_trend(
 
     points = []
     total_vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).count()
-    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    max_date = db.query(sa_func.max(VendorScore.computed_at)).scalar()
+    if not max_date:
+        max_date = datetime.utcnow()
+        
+    start_date = max_date - timedelta(days=days)
     current_date = start_date
 
-    while current_date <= datetime.utcnow():
+    while current_date <= max_date:
         # Get latest score for each vendor as of current_date
         subquery = (
             db.query(
