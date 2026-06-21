@@ -5,4 +5,5 @@ export { alertsApi } from './alerts';
 export { reportsApi } from './reports';
 export { extractionApi } from './extraction';
 export { evaluationApi } from './evaluation';
+export { copilotApi } from './copilot';
 export { getErrorMessage } from './client';

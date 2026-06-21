@@ -62,7 +62,7 @@ def health() -> dict:
 
 
 # ── API routers ─────────────────────────────────────────────────────────────
-from app.api import vendors, scoring, alerts, reports, extraction, auth, evaluation
+from app.api import vendors, scoring, alerts, reports, extraction, auth, evaluation, copilot
 
 app.include_router(vendors.router,    prefix="/api/v1", tags=["vendors"])
 app.include_router(scoring.router,    prefix="/api/v1", tags=["scoring"])
@@ -71,3 +71,4 @@ app.include_router(reports.router,    prefix="/api/v1", tags=["reports"])
 app.include_router(extraction.router, prefix="/api/v1", tags=["extraction"])
 app.include_router(auth.router,       prefix="/api/v1/auth", tags=["auth"])
 app.include_router(evaluation.router, prefix="/api/v1", tags=["evaluation"])
+app.include_router(copilot.router,    prefix="/api/v1", tags=["copilot"])
