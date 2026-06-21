@@ -2,15 +2,15 @@
 Compliance subscore -- based on certification health and assessment freshness.
 
 Formula (per IMPLEMENTATION_PLAN.md section 4):
-    compliance_subscore = 100
-        - (40 if any required cert is expired)
-        - (20 if any cert expires within 30 days and not yet renewed)
-        - (15 if assessment overdue > 12 months since last_assessed_at)
-    floor at 0
+    compliance_subscore = 0
+        + (40 if any required cert is expired)
+        + (20 if any cert expires within 30 days and not yet renewed)
+        + (15 if assessment overdue > 12 months since last_assessed_at)
+    cap at 100
 
 The score is a compliance-health contribution:
-  100 = all certs current, assessment fresh
-  0   = expired certs + expiring certs + overdue assessment
+  0   = all certs current, assessment fresh
+  100 = expired certs + expiring certs + overdue assessment
 
 Tier rules (in tiering.py) apply direct condition checks ON TOP of
 this subscore, e.g. "expired cert + sensitive access -> HIGH/MEDIUM".
@@ -79,7 +79,7 @@ def compute_compliance_subscore(
         last_assessed_at: Timestamp of the most recent security assessment.
 
     Returns:
-        float in [0, 100]. 100 = fully compliant. 0 = all penalties hit.
+        float in [0, 100]. 0 = fully compliant. 100 = maximum risk/penalties hit.
     """
     score = 0.0
 

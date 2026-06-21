@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from app.services.extraction.contract_parser import extract_contract
-from app.models import Vendor, VendorScore, Certification
+from app.models import Vendor, VendorScore, Certification, ExtractionJob
 
 def test_extract_contract_merges_and_scores(db_session, setup_test_vendor):
     vendor = db_session.query(Vendor).first()
@@ -25,7 +25,10 @@ def test_extract_contract_merges_and_scores(db_session, setup_test_vendor):
     }
     
     with patch("app.services.extraction.llm_client.LLMClient.complete_json", return_value=mock_output):
-        job = extract_contract(vendor, "fake text", db_session)
+        job = ExtractionJob(vendor_id=vendor.id, source_type="contract_pdf", status="pending")
+        db_session.add(job)
+        db_session.commit()
+        job = extract_contract(vendor, job, "fake text", db_session)
         
         assert job.status == "done"
         assert len(job.flagged_conflicts) == 0

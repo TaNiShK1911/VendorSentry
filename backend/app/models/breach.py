@@ -29,6 +29,8 @@ class BreachEvent(Base):
     source: Mapped[str] = mapped_column(String(50), nullable=False, default="manual")
 
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # External identifier for dedup (e.g. HIBP breach "Name" field)
+    external_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
     resolved: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

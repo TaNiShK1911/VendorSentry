@@ -75,6 +75,9 @@ class Vendor(Base):
     # Flags for monitoring
     under_investigation: Mapped[bool] = mapped_column(default=False)
 
+    # Domain for breach matching (lowercase, no scheme/path — e.g. "acmecloud.com")
+    website_domain: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
     # Assessment tracking
     last_assessed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 

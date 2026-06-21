@@ -83,6 +83,7 @@ def list_vendors(
             "name": vendor.name,
             "vendor_type": vendor.vendor_type,
             "contact_email": vendor.contact_email or "",
+            "website_domain": vendor.website_domain,
             "annual_spend": float(vendor.annual_spend) if vendor.annual_spend else 0,
             "contract_start": str(vendor.contract_start) if vendor.contract_start else None,
             "contract_end": str(vendor.contract_end) if vendor.contract_end else None,
@@ -150,6 +151,7 @@ def get_vendor(vendor_id: str, db: Session = Depends(get_db)):
         "name": vendor.name,
         "vendor_type": vendor.vendor_type,
         "contact_email": vendor.contact_email or "",
+        "website_domain": vendor.website_domain,
         "annual_spend": float(vendor.annual_spend) if vendor.annual_spend else 0,
         "contract_start": str(vendor.contract_start) if vendor.contract_start else None,
         "contract_end": str(vendor.contract_end) if vendor.contract_end else None,
@@ -214,6 +216,7 @@ def create_vendor(vendor_data: VendorCreate, db: Session = Depends(get_db)):
         name=vendor_data.name,
         vendor_type=vendor_data.vendor_type,
         contact=vendor_data.contact.model_dump() if vendor_data.contact else None,
+        website_domain=vendor_data.website_domain,
         annual_spend=vendor_data.annual_spend,
         contract_start=vendor_data.contract_start,
         contract_end=vendor_data.contract_end,
@@ -225,10 +228,21 @@ def create_vendor(vendor_data: VendorCreate, db: Session = Depends(get_db)):
     db.add(vendor)
     db.flush()
 
+    # Create DataAccessScope from frontend form fields
+    scope = DataAccessScope(
+        vendor_id=vendor.id,
+        pii_access=vendor_data.has_pii_access or False,
+        financial_access=vendor_data.has_financial_access or False,
+        broad_system_access=False,  # default unless updated via extraction
+        systems=vendor_data.systems_access or [],
+        scope_notes=vendor_data.data_access_notes,
+    )
+    db.add(scope)
+    db.flush()
+
     # Trigger initial scoring
     breaches = vendor.breach_history
     certs = vendor.certifications
-    scope = vendor.data_access_scope
     result = score_vendor(vendor, breaches, certs, scope, triggered_by="manual")
 
     rationale = generate_rationale(
@@ -270,18 +284,36 @@ def update_vendor(vendor_id: str, vendor_data: VendorUpdate, db: Session = Depen
 
     # Update fields
     update_data = vendor_data.model_dump(exclude_unset=True)
+    scope_fields = {"has_pii_access", "has_financial_access", "systems_access", "data_access_notes"}
+    
     for field, value in update_data.items():
+        if field in scope_fields:
+            continue
         if field == "contact" and value is not None:
             setattr(vendor, field, value if isinstance(value, dict) else value.model_dump())
         else:
             setattr(vendor, field, value)
+
+    # Update or create DataAccessScope
+    scope = db.query(DataAccessScope).filter(DataAccessScope.vendor_id == vendor.id).first()
+    if not scope:
+        scope = DataAccessScope(vendor_id=vendor.id)
+        db.add(scope)
+
+    if "has_pii_access" in update_data:
+        scope.pii_access = update_data["has_pii_access"] or False
+    if "has_financial_access" in update_data:
+        scope.financial_access = update_data["has_financial_access"] or False
+    if "systems_access" in update_data:
+        scope.systems = update_data["systems_access"] or []
+    if "data_access_notes" in update_data:
+        scope.scope_notes = update_data["data_access_notes"]
 
     db.flush()
 
     # Trigger rescore
     breaches = vendor.breach_history
     certs = vendor.certifications
-    scope = vendor.data_access_scope
     result = score_vendor(vendor, breaches, certs, scope, triggered_by="manual")
 
     rationale = generate_rationale(

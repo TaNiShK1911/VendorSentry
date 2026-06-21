@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     environment: Literal["development", "staging", "production"] = "development"
     log_level: str = "INFO"
 
+    # Contact email for external API User-Agent headers (HIBP, SEC EDGAR)
+    contact_email: str = "tanishkbhanage@gmail.com"
+
     # Scoring weights (must sum to 1.0 — validated in the scoring engine)
     weight_breach: float = 0.40
     weight_access: float = 0.25
