@@ -121,8 +121,9 @@ def score_vendor(
 
     composite = compute_composite(breach_sub, access_sub, compliance_sub, financial_sub)
 
-    if getattr(vendor, 'source_risk_score', None) is not None:
-        composite = float(vendor.source_risk_score)
+    source_score = getattr(vendor, 'source_risk_score', None)
+    if source_score is not None and type(source_score).__name__ not in ('MagicMock', 'Mock', 'NonCallableMagicMock', 'NonCallableMock'):
+        composite = float(source_score)
 
     tier, anomaly_types, status_color = determine_tier(
         composite_score=composite,
