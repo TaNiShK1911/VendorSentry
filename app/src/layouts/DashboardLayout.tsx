@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -9,8 +10,10 @@ import {
   Settings,
   LogOut,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import CopilotPanel from '@/components/Copilot/CopilotPanel';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['ciso', 'procurement', 'auditor'] },
@@ -28,6 +31,7 @@ export default function DashboardLayout() {
   const { user, logout, hasRole, isLoading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [copilotOpen, setCopilotOpen] = useState(false);
 
   const { data: alertsSummary } = useQuery({
     queryKey: ['alerts', 'summary'],
@@ -88,6 +92,18 @@ export default function DashboardLayout() {
           })}
         </nav>
 
+        {/* Copilot button */}
+        <div className="px-3 pb-2">
+          <button
+            onClick={() => setCopilotOpen(true)}
+            className="flex w-full items-center gap-2 rounded-sm bg-gradient-to-r from-violet-600 to-indigo-600 px-3 py-2.5 text-sm font-semibold text-white transition-all hover:from-violet-500 hover:to-indigo-500 hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Copilot</span>
+            <span className="ml-auto rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">AI</span>
+          </button>
+        </div>
+
         {/* User section */}
         <div className="border-t border-sg-border-subtle px-3 py-4 bg-sg-surface">
           <div className="flex items-center gap-3">
@@ -129,6 +145,9 @@ export default function DashboardLayout() {
           </AnimatePresence>
         </main>
       </div>
+
+      {/* Copilot Panel — global overlay */}
+      <CopilotPanel isOpen={copilotOpen} onClose={() => setCopilotOpen(false)} />
     </div>
   );
 }

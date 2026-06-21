@@ -193,3 +193,182 @@
     text-wrap: balance;
   }
 }
+
+/* ── Copilot scrollbar ────────────────────────────────────────────────────── */
+.copilot-scroll::-webkit-scrollbar { width: 5px; }
+.copilot-scroll::-webkit-scrollbar-track { background: transparent; }
+.copilot-scroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 4px; }
+.copilot-scroll::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.45); }
+
+/* ── Copilot markdown prose ───────────────────────────────────────────────── */
+.copilot-markdown {
+  color: var(--sg-text-primary);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.copilot-p {
+  margin: 0.45rem 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.copilot-p:first-child { margin-top: 0; }
+.copilot-p:last-child  { margin-bottom: 0; }
+
+.copilot-ul,
+.copilot-ol {
+  padding-left: 1.4rem;
+  margin: 0.5rem 0;
+}
+
+.copilot-li {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.copilot-h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0.9rem 0 0.35rem;
+  color: var(--sg-text-primary);
+  border-bottom: 1px solid var(--sg-border-subtle);
+  padding-bottom: 0.3rem;
+}
+
+.copilot-h3 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin: 0.75rem 0 0.3rem;
+  color: var(--sg-text-primary);
+}
+
+.copilot-strong {
+  font-weight: 700;
+  color: var(--sg-text-primary);
+}
+
+.copilot-blockquote {
+  border-left: 3px solid rgba(139,92,246,0.5);
+  padding: 0.35rem 0 0.35rem 0.85rem;
+  margin: 0.5rem 0;
+  color: var(--sg-text-secondary);
+  font-style: italic;
+  font-size: 0.875rem;
+  background: rgba(139,92,246,0.04);
+  border-radius: 0 6px 6px 0;
+}
+
+.copilot-inline-code {
+  background: rgba(139,92,246,0.1);
+  color: rgb(139,92,246);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.8rem;
+  font-family: 'Fira Mono', 'Menlo', monospace;
+}
+
+.dark .copilot-inline-code {
+  background: rgba(139,92,246,0.15);
+}
+
+.copilot-code-block {
+  background: rgba(0,0,0,0.04);
+  border: 1px solid var(--sg-border-subtle);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  font-size: 0.78rem;
+}
+
+.dark .copilot-code-block {
+  background: rgba(255,255,255,0.04);
+}
+
+.copilot-code-block pre,
+.copilot-code-block code {
+  font-family: 'Fira Mono', 'Menlo', monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* ── Table: scrollable container ────────────────────────────────────────────── */
+.copilot-table-wrapper {
+  overflow-x: auto;
+  margin: 0.65rem 0;
+  border-radius: 10px;
+  border: 1px solid var(--sg-border-subtle);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  -webkit-overflow-scrolling: touch;
+}
+
+.copilot-table-wrapper::-webkit-scrollbar { height: 5px; }
+.copilot-table-wrapper::-webkit-scrollbar-track { background: transparent; }
+.copilot-table-wrapper::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 4px; }
+.copilot-table-wrapper::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.4); }
+
+.copilot-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  min-width: 400px;
+}
+
+.copilot-table-wrapper thead {
+  background: rgba(139,92,246,0.07);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.dark .copilot-table-wrapper thead {
+  background: rgba(139,92,246,0.12);
+}
+
+.copilot-table-wrapper th {
+  padding: 0.55rem 0.9rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(139,92,246);
+  border-bottom: 1px solid var(--sg-border-subtle);
+  white-space: nowrap;
+}
+
+.copilot-table-wrapper td {
+  padding: 0.5rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--sg-border-subtle);
+  font-size: 0.8rem;
+  vertical-align: middle;
+  color: var(--sg-text-primary);
+}
+
+.copilot-table-wrapper tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.copilot-table-wrapper tbody tr {
+  transition: background 0.1s;
+}
+
+.copilot-table-wrapper tbody tr:hover td {
+  background: rgba(139,92,246,0.04);
+}
+
+.dark .copilot-table-wrapper tbody tr:hover td {
+  background: rgba(139,92,246,0.08);
+}
+
+/* ── Risk color helpers inside tables ───────────────────────────────────────── */
+.copilot-table-wrapper td strong {
+  font-weight: 700;
+}
+
+/* (old copilot-markdown rules removed — replaced by explicit .copilot-* classes above) */

@@ -27,7 +27,7 @@ export interface LoginResponse {
 
 // ---- Vendors ----
 
-export type VendorType = 'Cloud Provider' | 'Data Processor' | 'IT Services' | 'Financial' | 'Consulting' | 'SaaS' | 'Infrastructure' | string;
+export type VendorType = 'cloud_provider' | 'contractor' | 'mss_provider' | 'payment_processor' | 'software_vendor' | 'other' | string;
 
 export type StatusColor = 'RED' | 'YELLOW' | 'GREEN';
 
@@ -409,14 +409,13 @@ export const VENDOR_SORT_OPTIONS: SortOption[] = [
   { value: 'created_desc', label: 'Newest' },
 ];
 
-export const VENDOR_TYPES: VendorType[] = [
-  'Cloud Provider',
-  'Data Processor',
-  'IT Services',
-  'Financial',
-  'Consulting',
-  'SaaS',
-  'Infrastructure',
+export const VENDOR_TYPES: {value: string, label: string}[] = [
+  { value: 'cloud_provider', label: 'Cloud Provider' },
+  { value: 'contractor', label: 'Contractor' },
+  { value: 'mss_provider', label: 'MSS Provider' },
+  { value: 'payment_processor', label: 'Payment Processor' },
+  { value: 'software_vendor', label: 'Software Vendor' },
+  { value: 'other', label: 'Other' },
 ];
 
 export const RISK_TIERS: RiskTier[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'CLEAR'];

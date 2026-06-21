@@ -176,7 +176,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
                     >
                       <option value="">Select type</option>
                       {VENDOR_TYPES.map((t) => (
-                        <option key={t} value={t}>{t}</option>
+                        <option key={t.value} value={t.value}>{t.label}</option>
                       ))}
                     </select>
                   </div>

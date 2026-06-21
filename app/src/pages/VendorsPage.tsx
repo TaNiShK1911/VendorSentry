@@ -316,7 +316,7 @@ export default function VendorsPage() {
               >
                 <option value="">All Types</option>
                 {VENDOR_TYPES.map((t) => (
-                  <option key={t} value={t}>{t}</option>
+                  <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
               </select>
             </div>
