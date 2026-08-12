@@ -19,7 +19,7 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
       {payload.map((entry, i) => (
         <div key={i} className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="text-xs text-sg-text-secondary">{entry.name}: {(entry.value * 100).toFixed(1)}%</span>
+          <span className="text-xs text-sg-text-secondary">{entry.name}: {entry.value}</span>
         </div>
       ))}
     </div>

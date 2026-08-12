@@ -2,7 +2,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+import logging
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, BackgroundTasks
+logger = logging.getLogger(__name__)
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -19,6 +21,7 @@ import uuid
 @router.post("/vendors/{vendor_id}/extract", status_code=status.HTTP_202_ACCEPTED)
 async def extract_document(
     vendor_id: str,
+    background_tasks: BackgroundTasks,
     document_type: str = Form(...),
     text: str = Form(None),
     file: UploadFile = File(None),
@@ -74,8 +77,20 @@ async def extract_document(
     db.add(job)
     db.commit()
 
-    # Dispatch to Celery
-    run_extraction_task.delay(job.id, vendor_id, raw_text, document_type)
+    # Dispatch task
+    from app.core.config import get_settings
+    settings = get_settings()
+
+    if settings.environment == "development":
+        logger.info("Running in development mode: dispatching extraction task via FastAPI BackgroundTasks")
+        background_tasks.add_task(run_extraction_task, job.id, vendor_id, raw_text, document_type)
+    else:
+        logger.info("Running in production/staging mode: attempting to dispatch extraction task via Celery")
+        try:
+            run_extraction_task.delay(job.id, vendor_id, raw_text, document_type)
+        except Exception as e:
+            logger.warning(f"Failed to dispatch to Celery: {e}. Falling back to BackgroundTasks.")
+            background_tasks.add_task(run_extraction_task, job.id, vendor_id, raw_text, document_type)
 
     return {
         "job_id": job.id,

@@ -142,7 +142,7 @@ def run_evaluation(db: Session) -> dict:
 
     logger.info("Loaded %d ground-truth records.", len(gt_by_id))
 
-    csv_path = Path("sample_data/vendor_registry.csv")
+    csv_path = _REPO_ROOT / "backend" / "sample_data" / "vendor_registry.csv"
     df = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
 

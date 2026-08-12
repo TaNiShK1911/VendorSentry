@@ -27,3 +27,14 @@ celerybeat-schedule
 *.db
 *.db-shm
 *.db-wal
+
+# Hackathon and Deployment docs
+GRC-Hackathon-main/
+DEPLOYMENT_PLAN.md
+AGENT.md
+
+# Unnecessary extensions
+*.bat
+*.sql
+*.txt
+*.sh

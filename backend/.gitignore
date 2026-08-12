@@ -23,3 +23,4 @@ postgres_data/
 # Celery
 celery_broker.sqlite
 celerybeat-schedule.*
+venvScriptsactivate

@@ -137,12 +137,12 @@ VendorSentry/
 │   │   ├── core/             # Config & infrastructure
 │   │   ├── models/           # SQLAlchemy models
 │   │   ├── schemas/          # Pydantic schemas
-│   │   ├── services/         # Business logic (scoring, copilot, monitoring)
-│   │   └── tests/            # pytest suite
+│   │   └── services/         # Business logic (scoring, copilot, monitoring)
+│   ├── tests/                # pytest suite
 │   ├── alembic/              # Database migrations
 │   ├── scripts/              # DB seeders and evaluators
 │   └── requirements.txt      # Python dependencies
-├── sample_data/              # Seed CSVs and ground truth labels
+├── backend/sample_data/       # Official seed CSVs and ground truth labels
 ├── docker-compose.yml        # Multi-container orchestration
 └── Makefile                  # Development task automation
 ```

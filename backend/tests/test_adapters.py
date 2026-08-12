@@ -5,7 +5,7 @@ from app.models import Vendor, EvidenceSignal, Certification
 from datetime import datetime, timedelta
 
 def test_check_public_records(db_session, setup_test_vendor):
-    vendor = db_session.query(Vendor).first()
+    vendor = setup_test_vendor
     vendor.financial_health_signal = "stable"
     db_session.commit()
     
@@ -30,7 +30,7 @@ def test_check_public_records(db_session, setup_test_vendor):
 
 
 def test_check_live_cert_status(db_session, setup_test_vendor):
-    vendor = db_session.query(Vendor).first()
+    vendor = setup_test_vendor
     
     # Add a mock cert
     cert = Certification(
@@ -43,7 +43,8 @@ def test_check_live_cert_status(db_session, setup_test_vendor):
     db_session.commit()
     
     from unittest.mock import patch
-    with patch("app.services.integrations.status_api.SessionLocal", return_value=db_session):
+    with patch("app.services.integrations.status_api.SessionLocal", return_value=db_session), \
+         patch("random.random", return_value=1.0):
         # Run the adapter. Since the API response matches the DB perfectly (because we mock it to match), 
         # there should be NO conflicts generated initially.
         result = check_live_cert_status()

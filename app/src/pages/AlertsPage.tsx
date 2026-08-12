@@ -170,7 +170,7 @@ export default function AlertsPage() {
     queryFn: () => alertsApi.list({
       page,
       per_page: 20,
-      status: statusFilter || 'all',
+      ...(statusFilter ? { status: statusFilter } : {}),
       ...(severityFilter && { severity: severityFilter }),
     }),
     refetchInterval: 5000,

@@ -133,20 +133,25 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
     df['last_audit_date_parsed'] = df.apply(lambda r: _parse_date(r.get("last_audit_date", r.get("last_assessed"))), axis=1)
     df = df.sort_values(by='last_audit_date_parsed', na_position='first')
 
-    for name, group in df.groupby("vendor_name"):
-        if not name or name == "nan":
+    for idx, row in df.iterrows():
+        record_id = str(row.get("vendor_id", "")).strip()
+        if not record_id or record_id == "nan":
+            errors.append({"row": int(idx) + 2, "reason": "missing vendor_id"})
             continue
-            
-        group = group.sort_values(by='last_audit_date_parsed', na_position='first')
-        
-        vendor = db.query(Vendor).filter(Vendor.name == name).first()
+
+        name = str(row.get("vendor_name", "")).strip()
+
+        # Match existing vendor by source_vendor_id (the real stable key), not name
+        vendor = db.query(Vendor).filter(Vendor.source_vendor_id == record_id).first()
         if not vendor:
             vendor = Vendor(id=str(uuid.uuid4()), name=name)
             db.add(vendor)
-            
+            db.flush()
+
         previous_score_id = None
-        
-        for idx, row in group.iterrows():
+
+        # Process as a single-row iteration (idx kept for error reporting)
+        if True:
             try:
                 _process_historical_row(row, db, vendor)
                 db.flush()
@@ -177,9 +182,8 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
                 db.flush()
                 previous_score_id = score_row.id
                 
-                # Check for alerts if this is the final row for the vendor
-                if row.equals(group.iloc[-1]):
-                    _generate_alerts(vendor, result, db)
+                # Generate alerts for this vendor's current state
+                _generate_alerts(vendor, result, db)
                 
                 rows_succeeded += 1
             except Exception as exc:

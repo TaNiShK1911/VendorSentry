@@ -126,24 +126,45 @@ def rescore_vendor(vendor_id: str, db: Session = Depends(get_db)):
 @router.get("/portfolio/score-distribution")
 def get_portfolio_distribution(db: Session = Depends(get_db)):
     """Portfolio summary widget - Red/Yellow/Green at a glance"""
-    vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
+    total_vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).count()
+    
+    subquery = (
+        db.query(
+            VendorScore.vendor_id,
+            sa_func.max(VendorScore.computed_at).label('max_date')
+        )
+        .group_by(VendorScore.vendor_id)
+        .subquery()
+    )
+
+    latest_scores = (
+        db.query(VendorScore)
+        .join(subquery, 
+              (VendorScore.vendor_id == subquery.c.vendor_id) & 
+              (VendorScore.computed_at == subquery.c.max_date))
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .filter(Vendor.archived_at.is_(None))
+        .all()
+    )
 
     by_tier = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "CLEAR": 0}
     by_status_color = {"RED": 0, "YELLOW": 0, "GREEN": 0}
     scores = []
 
-    for vendor in vendors:
-        latest_score = get_latest_score(vendor.id, db)
-        if latest_score:
-            tier_val = latest_score.tier if isinstance(latest_score.tier, str) else latest_score.tier.value
-            color_val = latest_score.status_color if isinstance(latest_score.status_color, str) else latest_score.status_color.value
-            by_tier[tier_val] = by_tier.get(tier_val, 0) + 1
-            by_status_color[color_val] = by_status_color.get(color_val, 0) + 1
-            scores.append(latest_score.composite_score)
-        else:
-            by_tier["CLEAR"] += 1
-            by_status_color["GREEN"] += 1
-            scores.append(0.0)
+    scored_vendors = set()
+    for s in latest_scores:
+        scored_vendors.add(s.vendor_id)
+        tier_val = s.tier if isinstance(s.tier, str) else s.tier.value
+        color_val = s.status_color if isinstance(s.status_color, str) else s.status_color.value
+        by_tier[tier_val] = by_tier.get(tier_val, 0) + 1
+        by_status_color[color_val] = by_status_color.get(color_val, 0) + 1
+        scores.append(s.composite_score)
+        
+    unscored_count = total_vendors - len(scored_vendors)
+    if unscored_count > 0:
+        by_tier["CLEAR"] += unscored_count
+        by_status_color["GREEN"] += unscored_count
+        scores.extend([0.0] * unscored_count)
 
     avg_score = sum(scores) / len(scores) if scores else 0.0
     sorted_scores = sorted(scores)
@@ -152,7 +173,7 @@ def get_portfolio_distribution(db: Session = Depends(get_db)):
     return {
         "by_tier": by_tier,
         "by_status_color": by_status_color,
-        "total_vendors": len(vendors),
+        "total_vendors": total_vendors,
         "avg_composite_score": round(avg_score, 2),
         "median_score": round(median_score, 2),
         "highest_score": max(scores) if scores else 0.0,

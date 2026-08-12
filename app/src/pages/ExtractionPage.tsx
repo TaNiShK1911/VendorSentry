@@ -79,13 +79,13 @@ export default function ExtractionPage() {
     refetchInterval: (query) => {
       const data = query?.state?.data;
       if (!data) return 2000;
-      return data.status === 'completed' || data.status === 'done' || data.status === 'failed' ? false : 2000;
+      return data.status === 'completed' || data.status === 'failed' ? false : 2000;
     },
     enabled: !!jobId,
   });
 
   useEffect(() => {
-    if (jobStatus?.status === 'completed' || jobStatus?.status === 'done') {
+    if (jobStatus?.status === 'completed') {
       // Invalidate all vendor-related queries (dashboard, list, detail) so they refetch the new score.
       queryClient.invalidateQueries({ queryKey: ['vendors'] });
     }
@@ -127,8 +127,8 @@ export default function ExtractionPage() {
 
   const hasConflicts = jobStatus?.result?.conflicts && jobStatus.result.conflicts.length > 0;
   
-  const isProcessing = jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'done' && jobStatus.status !== 'failed';
-  const isCompleted = jobStatus && (jobStatus.status === 'completed' || jobStatus.status === 'done');
+  const isProcessing = jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed';
+  const isCompleted = jobStatus && jobStatus.status === 'completed';
   const isFailed = jobStatus && jobStatus.status === 'failed';
 
   const docTypeOptions: { value: DocumentType; label: string; icon: React.ElementType }[] = [
