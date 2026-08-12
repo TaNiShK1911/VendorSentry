@@ -142,7 +142,11 @@ def run_evaluation(db: Session) -> dict:
 
     logger.info("Loaded %d ground-truth records.", len(gt_by_id))
 
-    csv_path = _REPO_ROOT / "backend" / "sample_data" / "vendor_registry.csv"
+    # In Docker, sample_data is in /app/sample_data. Locally, it's in backend/sample_data.
+    local_path = _REPO_ROOT / "backend" / "sample_data" / "vendor_registry.csv"
+    docker_path = Path("/app/sample_data/vendor_registry.csv")
+    csv_path = local_path if local_path.exists() else docker_path
+    
     df = pd.read_csv(csv_path, dtype=str, keep_default_na=False)
     df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
 

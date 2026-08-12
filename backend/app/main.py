@@ -66,6 +66,7 @@ def on_startup():
 
 # ── Health check (available immediately for Dev B to test) ──────────────────
 @app.get("/health", tags=["infra"])
+@app.get("/api/v1/health", tags=["infra"])
 def health() -> dict:
     return {"status": "ok", "service": "vendorsentry-api"}
 

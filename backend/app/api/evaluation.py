@@ -16,10 +16,10 @@ def get_evaluation_metrics(db: Session = Depends(get_db)):
     import sys
     from pathlib import Path
     
-    # Ensure backend is importable from repo root
-    _REPO_ROOT = Path(__file__).resolve().parents[3]
-    if str(_REPO_ROOT) not in sys.path:
-        sys.path.insert(0, str(_REPO_ROOT))
+    # Ensure backend is importable from backend root
+    _BACKEND_ROOT = Path(__file__).resolve().parents[2]
+    if str(_BACKEND_ROOT) not in sys.path:
+        sys.path.insert(0, str(_BACKEND_ROOT))
         
     try:
         from scripts.evaluate import run_evaluation

@@ -54,26 +54,52 @@ def list_vendors(
     # Pagination
     offset = (page - 1) * actual_page_size
     vendors = query.offset(offset).limit(actual_page_size).all()
+    
+    vendor_ids = [v.id for v in vendors]
+    
+    # Batch fetch latest scores for these vendors
+    from sqlalchemy import func
+    from sqlalchemy.orm import aliased
+    
+    # Subquery to get max computed_at per vendor
+    subq = db.query(
+        VendorScore.vendor_id,
+        func.max(VendorScore.computed_at).label("max_computed_at")
+    ).filter(VendorScore.vendor_id.in_(vendor_ids)).group_by(VendorScore.vendor_id).subquery()
+    
+    latest_scores = db.query(VendorScore).join(
+        subq,
+        (VendorScore.vendor_id == subq.c.vendor_id) & 
+        (VendorScore.computed_at == subq.c.max_computed_at)
+    ).all()
+    score_map = {s.vendor_id: s for s in latest_scores}
+    
+    # Batch fetch alert counts
+    alert_counts = db.query(
+        Alert.vendor_id,
+        func.count(Alert.id).label("count")
+    ).filter(
+        Alert.vendor_id.in_(vendor_ids),
+        Alert.resolved_at.is_(None)
+    ).group_by(Alert.vendor_id).all()
+    alert_count_map = {a.vendor_id: a.count for a in alert_counts}
+    
+    # Batch fetch scopes
+    scopes = db.query(DataAccessScope).filter(DataAccessScope.vendor_id.in_(vendor_ids)).all()
+    scope_map = {s.vendor_id: s for s in scopes}
 
     # Build response items in the format frontend expects
     items = []
     for vendor in vendors:
         # Get latest score
-        latest_score = db.query(VendorScore).filter(
-            VendorScore.vendor_id == vendor.id
-        ).order_by(VendorScore.computed_at.desc()).first()
+        latest_score = score_map.get(vendor.id)
 
         # Count active alerts
-        alert_count = db.query(Alert).filter(
-            Alert.vendor_id == vendor.id,
-            Alert.resolved_at.is_(None)
-        ).count()
+        alert_count = alert_count_map.get(vendor.id, 0)
 
         # Check PII access from DataAccessScope relationship
         has_pii_val = False
-        scope = db.query(DataAccessScope).filter(
-            DataAccessScope.vendor_id == vendor.id
-        ).first()
+        scope = scope_map.get(vendor.id)
         if scope:
             has_pii_val = scope.pii_access
 

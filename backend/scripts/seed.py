@@ -141,14 +141,17 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
 
         name = str(row.get("vendor_name", "")).strip()
 
-        # Match existing vendor by source_vendor_id (the real stable key), not name
-        vendor = db.query(Vendor).filter(Vendor.source_vendor_id == record_id).first()
+        # Match existing vendor by name, because vendor_id (record_id) is unique per row
+        vendor = db.query(Vendor).filter(Vendor.name == name).first()
         if not vendor:
             vendor = Vendor(id=str(uuid.uuid4()), name=name)
+            vendor.source_vendor_id = record_id # Keep the first record_id as the primary
             db.add(vendor)
             db.flush()
 
-        previous_score_id = None
+        # To properly link previous score, we need to find the latest score for this vendor
+        last_score = db.query(VendorScore).filter(VendorScore.vendor_id == vendor.id).order_by(VendorScore.computed_at.desc()).first()
+        previous_score_id = last_score.id if last_score else None
 
         # Process as a single-row iteration (idx kept for error reporting)
         if True:
@@ -205,8 +208,8 @@ def _generate_alerts(vendor: Vendor, result, db: Session):
         elif anomaly in ["RECENTLY_BREACHED_VENDOR"]:
             severity = "HIGH"
         
-        # Simple deduplication key based on vendor and anomaly
-        dedup_key = f"{vendor.id}:{anomaly}:{datetime.utcnow().strftime('%Y%m')}"
+        # Simple deduplication key based on vendor and anomaly (max 64 chars)
+        dedup_key = f"{vendor.id[:18]}:{anomaly[:24]}:{datetime.utcnow().strftime('%Y%m')}"
         
         # Check if active alert already exists
         existing_alert = db.query(Alert).filter(

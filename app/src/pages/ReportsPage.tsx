@@ -100,7 +100,7 @@ export default function ReportsPage() {
               className="w-full rounded-input border border-sg-border-subtle bg-sg-surface-muted border border-sg-border-subtle px-4 py-3 text-sm text-sg-text-primary outline-none transition-all focus:border-vs-accent-blue"
             >
               <option value="">Choose a vendor...</option>
-              {vendors?.vendors.map((v) => (
+              {vendors?.vendors?.map((v) => (
                 <option key={v.id} value={v.id}>{v.name}</option>
               ))}
             </select>
