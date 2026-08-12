@@ -1,0 +1,17 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.git/
+.gitignore
+*.db
+*.sqlite
+celery_broker.sqlite
+celerybeat-schedule.*
+tests/
+.env
+.env.*
+sample_contracts/
+*.md

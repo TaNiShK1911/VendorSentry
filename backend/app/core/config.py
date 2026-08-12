@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     # App
     environment: Literal["development", "staging", "production"] = "development"
     log_level: str = "INFO"
+    cors_origins: str = ""  # Comma-separated allowed origins; empty = allow all (dev mode)
 
     # Contact email for external API User-Agent headers (HIBP, SEC EDGAR)
     contact_email: str = "tanishkbhanage@gmail.com"

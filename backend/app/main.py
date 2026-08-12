@@ -33,10 +33,19 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# CORS — allow the frontend dev server during the hackathon
+# CORS — production reads from CORS_ORIGINS env var; dev allows all
+_cors_origins: list[str] = (
+    [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    if settings.cors_origins
+    else ["*"]
+)
+# Always include localhost for local dev
+if "http://localhost:5173" not in _cors_origins and "*" not in _cors_origins:
+    _cors_origins.append("http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # tighten before any real deployment
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

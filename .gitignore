@@ -38,3 +38,8 @@ AGENT.md
 *.sql
 *.txt
 *.sh
+# Temporary AWS/Build files
+backend.tar
+secret-payload.json
+task-definition.json
+trust-policy.json

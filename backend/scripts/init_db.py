@@ -322,6 +322,6 @@ def seed_data():
 
 
 if __name__ == "__main__":
-    create_tables()
+    # create_tables()  # Skip to avoid pooler DDL lock
     seed_data()
     print("Database initialization complete!")
