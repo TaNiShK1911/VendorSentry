@@ -61,12 +61,17 @@ function EvidenceCard({ source }: { source: EvidenceSource }) {
 }
 
 // ---- Custom Chart Tooltip ----
-function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: any; label?: string }) {
   if (!active || !payload?.length) return null;
+  const reason = payload[0].payload.reason;
+  
   return (
-    <div className="rounded-lg border border-sg-border-subtle bg-sg-surface p-3 shadow-lg">
+    <div className="rounded-lg border border-sg-border-subtle bg-sg-surface p-3 shadow-lg max-w-xs">
       <p className="text-xs text-sg-text-secondary">{label}</p>
       <p className="mt-1 text-sm font-bold text-sg-text-primary">Score: {payload[0].value}</p>
+      {reason && (
+        <p className="mt-1 text-xs text-sg-text-secondary line-clamp-2">Reason: {reason}</p>
+      )}
     </div>
   );
 }
@@ -153,9 +158,10 @@ export default function VendorDetailPage() {
 
   // Prepare chart data
   const chartData = score?.score_history.map((h) => ({
-    date: new Date(h.date).toLocaleDateString('en', { month: 'short', day: 'numeric' }),
+    date: new Date(h.date).toLocaleString('en', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
     score: h.score,
     fullDate: h.date,
+    reason: h.reason,
   })) || [];
 
   return (

@@ -28,7 +28,7 @@ const SEVERITY_CONFIG: Record<AlertSeverity, { color: string; icon: React.Elemen
 };
 
 // ---- Alert Card ----
-function AlertCard({ alert, index }: { alert: Alert; index: number }) {
+function AlertCard({ alert, index, hideVendorName = false, isNested = false }: { alert: Alert; index: number; hideVendorName?: boolean; isNested?: boolean }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { canAcknowledge } = useAuth();
@@ -65,10 +65,11 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className={`rounded-card border bg-sg-surface p-5 shadow-card transition-all hover:bg-sg-surface/[0.02] ${
-        isResolved ? 'border-sg-border-subtle opacity-60' : 'border-sg-border-subtle'
-      }`}
-      style={!isResolved && !isAcknowledged ? { borderLeft: `3px solid ${sevConfig.color}` } : { borderLeft: `3px solid rgba(255,255,255,0.06)` }}
+      className={isNested 
+        ? `py-4 transition-all hover:bg-sg-surface/[0.02] ${isResolved ? 'opacity-60' : ''}`
+        : `rounded-card border bg-sg-surface p-5 shadow-card transition-all hover:bg-sg-surface/[0.02] ${isResolved ? 'border-sg-border-subtle opacity-60' : 'border-sg-border-subtle'}`
+      }
+      style={!isNested ? (!isResolved && !isAcknowledged ? { borderLeft: `3px solid ${sevConfig.color}` } : { borderLeft: `3px solid rgba(255,255,255,0.06)` }) : {}}
     >
       <div className="flex items-start gap-4">
         {/* Severity icon */}
@@ -85,12 +86,14 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
             >
               {typeConfig.label}
             </span>
-            <span 
-              onClick={() => navigate(`/vendors/${alert.vendor_id}`)}
-              className="cursor-pointer text-sm font-medium text-sg-text-primary hover:underline"
-            >
-              {alert.vendor_name}
-            </span>
+            {!hideVendorName && (
+              <span 
+                onClick={() => navigate(`/vendors/${alert.vendor_id}`)}
+                className="cursor-pointer text-sm font-medium text-sg-text-primary hover:underline"
+              >
+                {alert.vendor_name}
+              </span>
+            )}
             {isAcknowledged && (
               <span className="rounded bg-vs-text-tertiary/10 px-2 py-0.5 text-[10px] text-sg-text-secondary">
                 Acknowledged
@@ -163,35 +166,64 @@ function VendorAlertGroup({ vendorName, alerts, index }: { vendorName: string, a
   const [expanded, setExpanded] = useState(false);
   const primaryAlert = alerts[0];
   const secondaryAlerts = alerts.slice(1);
+  const navigate = useNavigate();
   
   return (
-    <div className="flex flex-col gap-2">
-      <AlertCard alert={primaryAlert} index={index} />
-      {secondaryAlerts.length > 0 && (
-        <div className="ml-4 pl-4 border-l-2 border-sg-border-subtle flex flex-col gap-2">
-          {expanded ? (
-            <>
-              {secondaryAlerts.map((a, i) => (
-                <AlertCard key={a.id} alert={a} index={index + i + 1} />
-              ))}
-              <button 
-                onClick={() => setExpanded(false)}
-                className="self-start text-xs text-sg-text-secondary hover:text-sg-text-primary mt-1"
-              >
-                Hide {secondaryAlerts.length} other alert{secondaryAlerts.length > 1 ? 's' : ''}
-              </button>
-            </>
-          ) : (
-            <button 
-              onClick={() => setExpanded(true)}
-              className="self-start text-xs font-medium text-sg-text-secondary hover:text-sg-text-primary mt-1 bg-sg-surface-muted px-3 py-1.5 rounded-full border border-sg-border-subtle transition-colors"
-            >
-              + {secondaryAlerts.length} other alert{secondaryAlerts.length > 1 ? 's' : ''} for {vendorName}
-            </button>
-          )}
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.03 }}
+      className="rounded-card border border-sg-border-subtle bg-sg-surface shadow-card overflow-hidden"
+    >
+      <div className="flex flex-wrap items-center justify-between border-b border-sg-border-subtle bg-sg-surface-dim px-5 py-3">
+        <div className="flex items-center gap-3">
+          <h3 
+            onClick={() => navigate(`/vendors/${primaryAlert.vendor_id}`)}
+            className="cursor-pointer font-display text-base font-bold text-sg-text-primary hover:underline"
+          >
+            {vendorName}
+          </h3>
+          <span className="rounded-full bg-sg-surface px-2.5 py-0.5 text-[10px] font-bold text-sg-text-secondary border border-sg-border-subtle">
+            {alerts.length} Alert{alerts.length !== 1 ? 's' : ''}
+          </span>
         </div>
-      )}
-    </div>
+      </div>
+      
+      <div className="flex flex-col px-5">
+        <AlertCard alert={primaryAlert} index={0} hideVendorName isNested />
+        
+        {secondaryAlerts.length > 0 && (
+          <div className="flex flex-col border-t border-sg-border-subtle/50">
+            {expanded ? (
+              <>
+                {secondaryAlerts.map((a, i) => (
+                  <div key={a.id} className="border-b border-sg-border-subtle/20 last:border-0">
+                    <AlertCard alert={a} index={i + 1} hideVendorName isNested />
+                  </div>
+                ))}
+                <div className="py-3">
+                  <button 
+                    onClick={() => setExpanded(false)}
+                    className="text-xs font-medium text-sg-text-secondary hover:text-sg-text-primary"
+                  >
+                    Hide {secondaryAlerts.length} other alert{secondaryAlerts.length > 1 ? 's' : ''}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="py-3">
+                <button 
+                  onClick={() => setExpanded(true)}
+                  className="text-xs font-medium text-sg-text-secondary hover:text-sg-text-primary rounded-full bg-sg-surface-muted px-3 py-1.5 border border-sg-border-subtle transition-colors"
+                >
+                  + {secondaryAlerts.length} other alert{secondaryAlerts.length > 1 ? 's' : ''}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 }
 
