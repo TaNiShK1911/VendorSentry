@@ -5,6 +5,7 @@ import type {
   VendorCreateRequest,
   VendorUpdateRequest,
   VendorFilters,
+  VendorTask,
 } from '@/types';
 
 export interface VendorListParams extends VendorFilters {
@@ -51,6 +52,21 @@ export const vendorsApi = {
       params: { format },
       responseType: 'blob',
     });
+    return response.data;
+  },
+
+  async getRemediationHistory(id: string): Promise<VendorTask[]> {
+    const response = await client.get<VendorTask[]>(`/vendors/${id}/remediation-history`);
+    return response.data;
+  },
+
+  async generateOnboardingChecklist(id: string): Promise<VendorTask[]> {
+    const response = await client.post<VendorTask[]>(`/vendors/${id}/onboarding-checklist`);
+    return response.data;
+  },
+
+  async updateTaskStatus(vendorId: string, taskId: string, is_completed: boolean): Promise<VendorTask> {
+    const response = await client.patch<VendorTask>(`/vendors/${vendorId}/tasks/${taskId}`, { is_completed });
     return response.data;
   },
 };

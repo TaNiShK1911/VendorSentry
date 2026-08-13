@@ -111,6 +111,19 @@ def extract_contract(
         conflicted_fields = {c.get("field", "") for c in all_conflicts}
         _merge_extracted_facts(vendor, raw_output, db, conflicted_fields)
 
+        # Step 7.5 — Emit Recommended SLA Changes as Vendor Tasks
+        sla_changes = raw_output.pop("recommended_sla_changes", [])
+        if sla_changes:
+            from app.models.vendor_task import VendorTask
+            for change in sla_changes:
+                task = VendorTask(
+                    vendor_id=vendor.id,
+                    title="Negotiate SLA",
+                    description=change,
+                    task_type="negotiation"
+                )
+                db.add(task)
+
         # Step 8 — Always rescore after extraction so dashboard/alerts update
         from app.services.scoring.engine import score_vendor_from_db
         from app.services.extraction.narrative import generate_rationale

@@ -115,6 +115,22 @@ export default function VendorDetailPage() {
     queryFn: () => scoringApi.getVendorEvidence(vendorId),
   });
 
+  const { data: tasks = [], refetch: refetchTasks, isLoading: tasksLoading } = useQuery({
+    queryKey: ['vendors', 'tasks', vendorId],
+    queryFn: () => vendorsApi.getRemediationHistory(vendorId),
+  });
+
+  const generateTasksMutation = useMutation({
+    mutationFn: () => vendorsApi.generateOnboardingChecklist(vendorId),
+    onSuccess: () => refetchTasks(),
+  });
+
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ taskId, is_completed }: { taskId: string; is_completed: boolean }) =>
+      vendorsApi.updateTaskStatus(vendorId, taskId, is_completed),
+    onSuccess: () => refetchTasks(),
+  });
+
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: () => vendorsApi.delete(vendorId),
@@ -688,6 +704,58 @@ export default function VendorDetailPage() {
           </div>
         </motion.div>
       )}
+
+      {/* ====== SECTION J: Onboarding & Remediation Workflow ====== */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.55 }}
+        className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Onboarding & Remediation Tasks</h2>
+          <button
+            onClick={() => generateTasksMutation.mutate()}
+            disabled={generateTasksMutation.isPending}
+            className="flex items-center gap-2 rounded-button bg-sg-primary px-4 py-2 text-sm font-bold text-white hover:bg-sg-primary-hover disabled:opacity-50"
+          >
+            {generateTasksMutation.isPending ? 'Generating...' : 'Generate Tasks'}
+          </button>
+        </div>
+
+        {tasksLoading ? (
+          <div className="mt-4 flex items-center gap-2 text-sm text-sg-text-secondary">Loading tasks...</div>
+        ) : tasks.length === 0 ? (
+          <div className="mt-4 flex items-center gap-2 text-sm text-sg-text-secondary">
+            No tasks found. Click "Generate Tasks" to create an onboarding checklist based on the vendor's risk profile.
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {tasks.map((task) => (
+              <div key={task.id} className="flex items-start gap-3 rounded-lg border border-sg-border-subtle bg-sg-surface-muted p-4">
+                <input
+                  type="checkbox"
+                  checked={task.is_completed}
+                  onChange={(e) => updateTaskMutation.mutate({ taskId: task.id, is_completed: e.target.checked })}
+                  disabled={updateTaskMutation.isPending}
+                  className="mt-1 h-4 w-4 rounded border-sg-border-subtle text-sg-primary focus:ring-sg-primary"
+                />
+                <div>
+                  <h4 className={`text-sm font-bold ${task.is_completed ? 'text-sg-text-secondary line-through' : 'text-sg-text-primary'}`}>
+                    {task.title}
+                  </h4>
+                  <p className={`mt-0.5 text-xs ${task.is_completed ? 'text-sg-text-secondary/50 line-through' : 'text-sg-text-secondary'}`}>
+                    {task.description}
+                  </p>
+                  <span className="mt-2 inline-block rounded bg-sg-border-subtle/50 px-2 py-0.5 text-[10px] font-semibold uppercase text-sg-text-secondary">
+                    {task.task_type}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </motion.div>
 
       {/* Edit Dialog */}
       <VendorFormDialog

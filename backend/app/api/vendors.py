@@ -141,6 +141,129 @@ def list_vendors(
     }
 
 
+@router.post("/vendors/import")
+async def import_vendors(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """Multipart CSV upload (vendor_registry.csv shape)"""
+    from app.services.ingestion.csv_importer import import_csv_file
+
+    content = await file.read()
+    result = import_csv_file(content, db, triggered_by="csv_import")
+    db.commit()
+
+    return ImportResult(
+        rows_processed=result["rows_processed"],
+        rows_succeeded=result["rows_succeeded"],
+        rows_failed=result["rows_failed"],
+        errors=result["errors"],
+    )
+
+
+@router.get("/vendors/export.csv")
+def export_vendors(db: Session = Depends(get_db)):
+    """Export vendors as CSV for audit purposes."""
+    import csv
+    import io
+    from fastapi.responses import StreamingResponse
+    from sqlalchemy import func
+
+    vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
+    vendor_ids = [v.id for v in vendors]
+
+    subq = db.query(
+        VendorScore.vendor_id,
+        func.max(VendorScore.computed_at).label("max_computed_at")
+    ).filter(VendorScore.vendor_id.in_(vendor_ids)).group_by(VendorScore.vendor_id).subquery()
+
+    latest_scores = db.query(VendorScore).join(
+        subq,
+        (VendorScore.vendor_id == subq.c.vendor_id) &
+        (VendorScore.computed_at == subq.c.max_computed_at)
+    ).all()
+    score_map = {s.vendor_id: s for s in latest_scores}
+
+    from app.models.certification import Certification
+    all_certs = db.query(Certification).filter(Certification.vendor_id.in_(vendor_ids)).all()
+    cert_map: dict[str, list] = {}
+    for c in all_certs:
+        cert_map.setdefault(c.vendor_id, []).append(c)
+
+    scopes = db.query(DataAccessScope).filter(DataAccessScope.vendor_id.in_(vendor_ids)).all()
+    scope_map = {s.vendor_id: s for s in scopes}
+
+    def generate():
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        writer.writerow([
+            "vendor_id", "vendor_name", "vendor_type",
+            "composite_score", "tier", "status_color",
+            "anomaly_types", "breach_status",
+            "certifications", "contract_end_date", "last_audit_date",
+            "data_access_scope", "financial_health", "risk_score",
+        ])
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate(0)
+
+        for vendor in vendors:
+            score = score_map.get(vendor.id)
+            scope = scope_map.get(vendor.id)
+            certs = cert_map.get(vendor.id, [])
+
+            cert_strs = []
+            for c in certs:
+                if c.expiry_date:
+                    cert_strs.append(f"{c.cert_type}:{c.expiry_date.isoformat()}")
+                else:
+                    cert_strs.append(c.cert_type)
+            cert_str = "|".join(cert_strs)
+
+            anomaly_types = score.anomaly_types if score else []
+            if "BREACHED_VENDOR_HIGH_ACCESS" in anomaly_types:
+                breach_status = "Recent_Breach_12mo"
+            elif "RECENTLY_BREACHED_VENDOR" in anomaly_types:
+                breach_status = "Recent_Breach_12mo"
+            elif vendor.under_investigation:
+                breach_status = "Under_Investigation"
+            else:
+                breach_status = "No_Known_Breach"
+
+            if scope and scope.broad_system_access:
+                access_label = "All_Systems"
+            elif scope and scope.pii_access:
+                access_label = "Customer_PII"
+            elif scope and scope.financial_access:
+                access_label = "Financial_Data"
+            else:
+                access_label = "Internal_Data"
+
+            writer.writerow([
+                vendor.source_vendor_id or vendor.id,
+                vendor.name,
+                vendor.vendor_type,
+                score.composite_score if score else "",
+                score.tier if score else "",
+                score.status_color if score else "",
+                "|".join(anomaly_types),
+                breach_status,
+                cert_str,
+                vendor.contract_end.isoformat() if vendor.contract_end else "",
+                vendor.last_assessed_at.date().isoformat() if vendor.last_assessed_at else "",
+                access_label,
+                vendor.financial_health_signal,
+                vendor.source_risk_score if vendor.source_risk_score else "",
+            ])
+            yield output.getvalue()
+            output.seek(0)
+            output.truncate(0)
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=vendor_export.csv"},
+    )
+
+
 @router.get("/vendors/{vendor_id}")
 def get_vendor(vendor_id: str, db: Session = Depends(get_db)):
     """Get full vendor profile - drill-down view"""
@@ -384,19 +507,85 @@ def delete_vendor(vendor_id: str, db: Session = Depends(get_db)):
     vendor.archived_at = datetime.utcnow()
     return None
 
+@router.post("/vendors/{vendor_id}/onboarding-checklist")
+def generate_onboarding(vendor_id: str, db: Session = Depends(get_db)):
+    """Generate dynamic onboarding checklist using LLM."""
+    from app.models.vendor_task import VendorTask
+    from app.services.generation.onboarding import generate_onboarding_tasks
 
-@router.post("/vendors/import")
-async def import_vendors(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    """Multipart CSV upload (vendor_registry.csv shape)"""
-    return ImportResult(
-        rows_processed=0,
-        rows_succeeded=0,
-        rows_failed=0,
-        errors=[]
-    )
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
 
+    latest_score = db.query(VendorScore).filter(VendorScore.vendor_id == vendor_id).order_by(VendorScore.computed_at.desc()).first()
 
-@router.get("/vendors/export.csv")
-def export_vendors(db: Session = Depends(get_db)):
-    """Export vendors as CSV"""
-    return {"message": "CSV export not yet implemented"}
+    # Generate tasks
+    tasks = generate_onboarding_tasks(vendor, latest_score)
+
+    # Save to DB
+    created_tasks = []
+    for t in tasks:
+        vt = VendorTask(
+            vendor_id=vendor_id,
+            title=t.get("title", "Untitled Task"),
+            description=t.get("description", ""),
+            task_type="onboarding"
+        )
+        db.add(vt)
+        created_tasks.append(vt)
+
+    db.commit()
+    
+    return [
+        {
+            "id": vt.id,
+            "title": vt.title,
+            "description": vt.description,
+            "is_completed": vt.is_completed,
+            "task_type": vt.task_type,
+            "created_at": vt.created_at.isoformat() if vt.created_at else None
+        } for vt in created_tasks
+    ]
+
+@router.get("/vendors/{vendor_id}/remediation-history")
+def get_remediation_history(vendor_id: str, db: Session = Depends(get_db)):
+    """Get all tasks (onboarding/remediation) for a vendor."""
+    from app.models.vendor_task import VendorTask
+    
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+
+    tasks = db.query(VendorTask).filter(VendorTask.vendor_id == vendor_id).order_by(VendorTask.created_at.asc()).all()
+    
+    return [
+        {
+            "id": vt.id,
+            "title": vt.title,
+            "description": vt.description,
+            "is_completed": vt.is_completed,
+            "task_type": vt.task_type,
+            "created_at": vt.created_at.isoformat() if vt.created_at else None,
+            "updated_at": vt.updated_at.isoformat() if vt.updated_at else None
+        } for vt in tasks
+    ]
+
+@router.patch("/vendors/{vendor_id}/tasks/{task_id}")
+def update_task_status(vendor_id: str, task_id: str, payload: dict, db: Session = Depends(get_db)):
+    """Update a task (e.g., mark complete)."""
+    from app.models.vendor_task import VendorTask
+    
+    task = db.query(VendorTask).filter(VendorTask.vendor_id == vendor_id, VendorTask.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if "is_completed" in payload:
+        task.is_completed = payload["is_completed"]
+
+    db.commit()
+    
+    return {
+        "id": task.id,
+        "title": task.title,
+        "is_completed": task.is_completed
+    }

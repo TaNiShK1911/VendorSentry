@@ -67,6 +67,9 @@ Required output schema:
       "actual_on_record": <value from existing_vendor_data>,
       "note": "plain English explanation"
     }
+  ],
+  "recommended_sla_changes": [
+    "string descriptions of recommended SLA improvements"
   ]
 }"""
 
@@ -82,6 +85,7 @@ Focus on:
 - Which internal systems are named as in-scope?
 - SLA terms: uptime guarantees, breach notification timelines
 - Compliance obligations: any SOC 2, ISO 27001, PCI-DSS, or GDPR requirements the vendor commits to
+- Contract Negotiation: identify sub-optimal SLA terms (e.g. breach notification >24h or uptime <99.9%) and suggest specific negotiation points in `recommended_sla_changes`.
 
 Existing vendor data on record (use this to detect conflicts):
 $existing_vendor_data

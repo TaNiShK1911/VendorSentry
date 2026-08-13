@@ -13,6 +13,7 @@ from app.models.audit_log import AuditLogEntry
 from app.models.ground_truth import GroundTruth
 from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.enums import RiskTier, StatusColor
+from app.models.vendor_task import VendorTask
 
 __all__ = [
     "Vendor",
@@ -31,4 +32,5 @@ __all__ = [
     "AlertSeverity",
     "RiskTier",
     "StatusColor",
+    "VendorTask",
 ]

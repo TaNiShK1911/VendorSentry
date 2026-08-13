@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import sys
 import uuid
 from datetime import date, datetime
@@ -35,15 +34,23 @@ sys.path.insert(0, str(_REPO_ROOT / "backend"))
 from app.db.session import get_db_context
 from app.models.vendor import Vendor
 from app.models.vendor_score import VendorScore
-from app.models.certification import Certification
-from app.models.breach import BreachEvent
 from app.models.data_access import DataAccessScope
 from app.models.ground_truth import GroundTruth
 from app.models.base import Base
 from app.db.session import engine
-from app.models.alert import Alert
 
 from app.services.scoring.engine import score_vendor
+
+# Import shared helpers from the ingestion module
+from app.services.ingestion.csv_importer import (
+    parse_date as _parse_date,
+    parse_bool as _parse_bool,
+    normalize_vendor_type as _normalize_vendor_type,
+    normalize_financial_health as _normalize_financial_health,
+    normalize_cert_type as _normalize_cert_type,
+    process_vendor_row,
+    _generate_alerts,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -52,69 +59,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger("seed")
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Helpers
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _parse_date(value) -> Optional[date]:
-    """Try multiple common date formats; return None if unparseable."""
-    if pd.isna(value) or value is None or str(value).strip() == "":
-        return None
-    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d"):
-        try:
-            return datetime.strptime(str(value).strip(), fmt).date()
-        except ValueError:
-            continue
-    return None
-
-def _parse_bool(value) -> bool:
-    """Parse various boolean representations from CSV."""
-    if pd.isna(value):
-        return False
-    v = str(value).strip().lower()
-    return v in ("true", "1", "yes", "y")
-
-def _normalize_vendor_type(raw: str) -> str:
-    mapping = {
-        "cloud": "cloud_provider",
-        "cloud_provider": "cloud_provider",
-        "contractor": "contractor",
-        "mss": "mss_provider",
-        "mss_provider": "mss_provider",
-        "managed security": "mss_provider",
-        "payment": "payment_processor",
-        "payment_processor": "payment_processor",
-        "software": "software_vendor",
-        "software_vendor": "software_vendor",
-        "saas": "saas_provider",
-        "saas_provider": "saas_provider",
-        "hardware_vendor": "hardware_vendor",
-        "security_vendor": "security_vendor",
-        "consulting": "consulting",
-        "data_provider": "data_provider",
-        "msp": "msp",
-    }
-    return mapping.get(str(raw).strip().lower(), "other")
-
-def _normalize_financial_health(raw: str) -> str:
-    mapping = {
-        "stable": "stable", "good": "stable", "healthy": "stable",
-        "watch": "watch", "concern": "watch", "moderate": "watch",
-        "distressed": "distressed", "poor": "distressed", "critical": "distressed",
-    }
-    return mapping.get(str(raw).strip().lower(), "unknown")
-
-def _normalize_cert_type(raw: str) -> str:
-    mapping = {
-        "soc2": "SOC2_TYPE2", "soc 2": "SOC2_TYPE2",
-        "soc2_type1": "SOC2_TYPE1", "soc2_type2": "SOC2_TYPE2",
-        "iso27001": "ISO_27001", "iso 27001": "ISO_27001",
-        "pci": "PCI_DSS", "pci_dss": "PCI_DSS",
-        "gdpr": "GDPR_COMPLIANCE",
-        "hipaa": "HIPAA",
-    }
-    return mapping.get(str(raw).strip().lower(), "OTHER")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Registry loader
@@ -134,265 +78,55 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
     df = df.sort_values(by='last_audit_date_parsed', na_position='first')
 
     for idx, row in df.iterrows():
-        record_id = str(row.get("vendor_id", "")).strip()
-        if not record_id or record_id == "nan":
-            errors.append({"row": int(idx) + 2, "reason": "missing vendor_id"})
-            continue
+        try:
+            # Use the shared process_vendor_row from csv_importer
+            vendor = process_vendor_row(row, db)
 
-        name = str(row.get("vendor_name", "")).strip()
+            # To properly link previous score, find the latest score for this vendor
+            last_score = db.query(VendorScore).filter(VendorScore.vendor_id == vendor.id).order_by(VendorScore.computed_at.desc()).first()
+            previous_score_id = last_score.id if last_score else None
 
-        # The CSV gives a unique vendor_id per row (acting like an event ID), 
-        # so we must deduplicate by vendor_name to build the historical timeline.
-        vendor = db.query(Vendor).filter(Vendor.name == name).first()
-        if not vendor:
-            vendor = Vendor(id=str(uuid.uuid4()), name=name, source_vendor_id=record_id)
-            db.add(vendor)
+            # Re-score vendor for this point in time
+            breaches = vendor.breach_history
+            certs = vendor.certifications
+            scope = db.query(DataAccessScope).filter(DataAccessScope.vendor_id == vendor.id).first()
+            result = score_vendor(vendor, breaches, certs, scope, triggered_by="scheduled_sweep")
+
+            score_row = VendorScore(
+                id=str(uuid.uuid4()),
+                vendor_id=vendor.id,
+                breach_subscore=result.breach_subscore,
+                access_subscore=result.access_subscore,
+                compliance_subscore=result.compliance_subscore,
+                financial_subscore=result.financial_subscore,
+                composite_score=result.composite_score,
+                tier=result.tier,
+                status_color=result.status_color,
+                anomaly_types=result.anomaly_types,
+                triggered_by=result.triggered_by,
+                rationale=f"Historical score update for {vendor.name}.",
+                computed_at=vendor.last_assessed_at or datetime.utcnow(),
+                previous_score_id=previous_score_id
+            )
+            db.add(score_row)
             db.flush()
 
-        # To properly link previous score, we need to find the latest score for this vendor
-        last_score = db.query(VendorScore).filter(VendorScore.vendor_id == vendor.id).order_by(VendorScore.computed_at.desc()).first()
-        previous_score_id = last_score.id if last_score else None
+            # Generate alerts for this vendor's current state
+            _generate_alerts(vendor, result, db)
 
-        # Process as a single-row iteration (idx kept for error reporting)
-        if True:
-            try:
-                _process_historical_row(row, db, vendor)
-                db.flush()
-                
-                # Re-score vendor for this point in time
-                breaches = vendor.breach_history
-                certs = vendor.certifications
-                scope = db.query(DataAccessScope).filter(DataAccessScope.vendor_id == vendor.id).first()
-                result = score_vendor(vendor, breaches, certs, scope, triggered_by="scheduled_sweep")
-                
-                score_row = VendorScore(
-                    id=str(uuid.uuid4()),
-                    vendor_id=vendor.id,
-                    breach_subscore=result.breach_subscore,
-                    access_subscore=result.access_subscore,
-                    compliance_subscore=result.compliance_subscore,
-                    financial_subscore=result.financial_subscore,
-                    composite_score=result.composite_score,
-                    tier=result.tier,
-                    status_color=result.status_color,
-                    anomaly_types=result.anomaly_types,
-                    triggered_by=result.triggered_by,
-                    rationale=f"Historical score update for {vendor.name}.",
-                    computed_at=vendor.last_assessed_at or datetime.utcnow(),
-                    previous_score_id=previous_score_id
-                )
-                db.add(score_row)
-                db.flush()
-                previous_score_id = score_row.id
-                
-                # Generate alerts for this vendor's current state
-                _generate_alerts(vendor, result, db)
-                
-                rows_succeeded += 1
-            except Exception as exc:
-                error_detail = {"row": int(idx) + 2, "reason": str(exc)}
-                errors.append(error_detail)
-                logger.warning("Row %d skipped — %s", int(idx) + 2, exc)
+            rows_succeeded += 1
+        except Exception as exc:
+            error_detail = {"row": int(idx) + 2, "reason": str(exc)}
+            errors.append(error_detail)
+            logger.warning("Row %d skipped — %s", int(idx) + 2, exc)
 
     logger.info(
         "Registry: %d processed, %d succeeded, %d failed.",
         rows_processed, rows_succeeded, len(errors),
     )
+    db.commit()
     return rows_processed, rows_succeeded, errors
 
-def _generate_alerts(vendor: Vendor, result, db: Session):
-    for anomaly in result.anomaly_types:
-        severity = "HIGH"
-        if anomaly in ["BREACHED_VENDOR_HIGH_ACCESS", "VENDOR_UNDER_INVESTIGATION"]:
-            severity = "CRITICAL"
-        elif anomaly in ["RECENTLY_BREACHED_VENDOR"]:
-            severity = "HIGH"
-        
-        # Simple deduplication key based on vendor and anomaly (max 64 chars)
-        dedup_key = f"{vendor.id[:18]}:{anomaly[:24]}:{datetime.utcnow().strftime('%Y%m')}"
-        
-        # Check if active alert already exists
-        existing_alert = db.query(Alert).filter(
-            Alert.vendor_id == vendor.id,
-            Alert.type == anomaly,
-            Alert.resolved_at.is_(None)
-        ).first()
-        
-        if not existing_alert:
-            # Use historical date for created_at if available
-            alert_date = vendor.last_assessed_at or datetime.utcnow()
-            alert = Alert(
-                id=str(uuid.uuid4()),
-                vendor_id=vendor.id,
-                type=anomaly,
-                severity=severity,
-                message=f"Vendor {vendor.name} flagged for {anomaly}",
-                dedup_key=dedup_key,
-                created_at=alert_date
-            )
-            db.add(alert)
-
-def _process_historical_row(row: pd.Series, db: Session, vendor: Vendor) -> None:
-    vendor_type = _normalize_vendor_type(row.get("vendor_type", "other"))
-    contract_end = _parse_date(row.get("contract_end_date", row.get("contract_end")))
-    last_assessed = _parse_date(row.get("last_audit_date", row.get("last_assessed")))
-    eval_date = last_assessed if last_assessed else date.today()
-    
-    if contract_end and contract_end < eval_date:
-        contract_status = "expired"
-    else:
-        contract_status = "active"
-
-    annual_spend = None
-    raw_spend = row.get("annual_spend", "")
-    if raw_spend and raw_spend != "":
-        try:
-            annual_spend = float(str(raw_spend).replace(",", "").replace("$", ""))
-        except ValueError:
-            pass
-
-    financial_signal = _normalize_financial_health(
-        row.get("financial_health", row.get("financial_health_signal", "stable"))
-    )
-    breach_status = str(row.get("breach_status", "")).strip()
-    under_investigation = breach_status == "Under_Investigation"
-    last_assessed_dt = datetime.combine(last_assessed, datetime.min.time()) if last_assessed else None
-
-    vendor_id_val = str(row.get("vendor_id", "")).strip()
-    vendor.source_vendor_id = vendor_id_val # update to the latest source_vendor_id
-    
-    vendor.vendor_type = vendor_type
-    
-    contact_name = str(row.get("contact_name", "")).strip()
-    contact_email = str(row.get("contact_email", "")).strip()
-    if contact_name or contact_email:
-        vendor.contact = {
-            "liaison_name": contact_name,
-            "email": contact_email
-        }
-        
-    vendor.contract_end = contract_end
-    vendor.contract_status = contract_status
-    vendor.annual_spend = annual_spend
-    vendor.financial_health_signal = financial_signal
-    vendor.financial_health_source = "csv_import"
-    vendor.under_investigation = under_investigation
-    vendor.last_assessed_at = last_assessed_dt
-    
-    try:
-        raw_score = row.get("risk_score")
-        if raw_score and str(raw_score).strip():
-            vendor.source_risk_score = int(float(str(raw_score).strip()))
-    except ValueError:
-        pass
-
-    db.flush()
-
-    data_access_scope = str(row.get("data_access_scope", "")).strip()
-    
-    pii = False
-    financial_access = False
-    broad = False
-    
-    if data_access_scope == "Customer_PII":
-        pii = True
-    elif data_access_scope == "Financial_Data":
-        financial_access = True
-    elif data_access_scope == "All_Systems":
-        broad = True
-        pii = True
-        financial_access = True
-
-    systems_raw = str(row.get("systems", row.get("accessible_systems", ""))).strip()
-    systems = [s.strip() for s in systems_raw.split(",") if s.strip()] if systems_raw else []
-
-    scope = db.query(DataAccessScope).filter(DataAccessScope.vendor_id == vendor.id).first()
-    if not scope:
-        scope = DataAccessScope(id=str(uuid.uuid4()), vendor_id=vendor.id)
-        db.add(scope)
-    scope.pii_access = pii
-    scope.financial_access = financial_access
-    scope.broad_system_access = broad
-    scope.systems = systems
-
-    cert_raw = str(row.get("compliance_certifications", row.get("certifications", ""))).strip()
-
-    if cert_raw and cert_raw not in ("", "none", "nan"):
-        cert_pairs = [c.strip() for c in cert_raw.split("|") if c.strip()]
-
-        for pair in cert_pairs:
-            parts = pair.split(":")
-            raw_cert = parts[0].strip()
-            cert_type = _normalize_cert_type(raw_cert)
-            expiry_date = _parse_date(parts[1].strip()) if len(parts) > 1 else None
-
-            c_status = "expired" if (expiry_date and expiry_date < eval_date) else "current"
-
-            existing_cert = (
-                db.query(Certification)
-                .filter(
-                    Certification.vendor_id == vendor.id,
-                    Certification.cert_type == cert_type,
-                )
-                .first()
-            )
-            if not existing_cert:
-                existing_cert = Certification(
-                    id=str(uuid.uuid4()),
-                    vendor_id=vendor.id,
-                    cert_type=cert_type,
-                    source="csv_import",
-                )
-                db.add(existing_cert)
-            existing_cert.status = c_status
-            existing_cert.expiry_date = expiry_date
-
-    breach_status = str(row.get("breach_status", "")).strip()
-    breached = False
-    breach_date = None
-    breach_severity = "MEDIUM"
-    
-    if breach_status == "Recent_Breach_12mo":
-        breached = True
-        base_date = last_assessed or date.today()
-        try:
-            m = base_date.month - 6
-            y = base_date.year
-            if m <= 0:
-                m += 12
-                y -= 1
-            breach_date = base_date.replace(year=y, month=m)
-        except ValueError:
-            breach_date = base_date
-        breach_severity = "HIGH"
-    elif breach_status == "Historical_Breach":
-        breached = True
-        base_date = last_assessed or date.today()
-        try:
-            breach_date = base_date.replace(year=base_date.year - 2)
-        except ValueError:
-            breach_date = base_date
-        breach_severity = "MEDIUM"
-
-    if breached and breach_date:
-        existing_breach = (
-            db.query(BreachEvent)
-            .filter(
-                BreachEvent.vendor_id == vendor.id,
-                BreachEvent.breach_date == breach_date,
-            )
-            .first()
-        )
-        if not existing_breach:
-            db.add(BreachEvent(
-                id=str(uuid.uuid4()),
-                vendor_id=vendor.id,
-                breach_date=breach_date,
-                severity=breach_severity,
-                source="csv_import",
-                description=f"Imported from registry CSV ({breach_status})",
-                resolved=(breach_status == "Historical_Breach"),
-            ))
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Ground truth loader
@@ -441,6 +175,7 @@ def load_ground_truth(csv_path: Path, db: Session) -> tuple[int, int, list[dict]
         "Ground truth: %d processed, %d succeeded, %d failed.",
         rows_processed, rows_succeeded, len(errors),
     )
+    db.commit()
     return rows_processed, rows_succeeded, errors
 
 # ─────────────────────────────────────────────────────────────────────────────

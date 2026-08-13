@@ -75,6 +75,7 @@ def compute_composite(
     access_subscore: float,
     compliance_subscore: float,
     financial_subscore: float,
+    source_risk_score: Optional[int] = None,
 ) -> float:
     """
     Apply the weighted formula and return a score in [0, 100].
@@ -88,6 +89,9 @@ def compute_composite(
         + settings.weight_compliance * compliance_subscore
         + settings.weight_financial  * financial_subscore
     )
+    if source_risk_score is not None:
+        composite = max(composite, float(source_risk_score))
+        
     return round(min(100.0, max(0.0, composite)), 2)
 
 
@@ -119,7 +123,7 @@ def score_vendor(
     compliance_sub = compute_compliance_subscore(certs, vendor.last_assessed_at)
     financial_sub  = compute_financial_subscore(vendor.financial_health_signal)
 
-    composite = compute_composite(breach_sub, access_sub, compliance_sub, financial_sub)
+    composite = compute_composite(breach_sub, access_sub, compliance_sub, financial_sub, vendor.source_risk_score)
 
 
 

@@ -57,6 +57,16 @@ export interface Vendor {
   contract_days_remaining?: number;
 }
 
+export interface VendorTask {
+  id: string;
+  title: string;
+  description: string;
+  is_completed: boolean;
+  task_type: string;
+  created_at: string;
+  updated_at?: string;
+}
+
 export interface VendorCreateRequest {
   name: string;
   vendor_type: VendorType | string;
