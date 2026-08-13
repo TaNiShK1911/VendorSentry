@@ -141,7 +141,9 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
 
         name = str(row.get("vendor_name", "")).strip()
 
-        vendor = db.query(Vendor).filter(Vendor.source_vendor_id == record_id).first()
+        # The CSV gives a unique vendor_id per row (acting like an event ID), 
+        # so we must deduplicate by vendor_name to build the historical timeline.
+        vendor = db.query(Vendor).filter(Vendor.name == name).first()
         if not vendor:
             vendor = Vendor(id=str(uuid.uuid4()), name=name, source_vendor_id=record_id)
             db.add(vendor)
@@ -217,13 +219,16 @@ def _generate_alerts(vendor: Vendor, result, db: Session):
         ).first()
         
         if not existing_alert:
+            # Use historical date for created_at if available
+            alert_date = vendor.last_assessed_at or datetime.utcnow()
             alert = Alert(
                 id=str(uuid.uuid4()),
                 vendor_id=vendor.id,
                 type=anomaly,
                 severity=severity,
                 message=f"Vendor {vendor.name} flagged for {anomaly}",
-                dedup_key=dedup_key
+                dedup_key=dedup_key,
+                created_at=alert_date
             )
             db.add(alert)
 
