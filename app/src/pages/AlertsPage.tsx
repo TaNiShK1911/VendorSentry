@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { alertsApi } from '@/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,6 +29,7 @@ const SEVERITY_CONFIG: Record<AlertSeverity, { color: string; icon: React.Elemen
 
 // ---- Alert Card ----
 function AlertCard({ alert, index }: { alert: Alert; index: number }) {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { canAcknowledge } = useAuth();
   const [expanded, setExpanded] = useState(false);
@@ -83,7 +85,10 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
             >
               {typeConfig.label}
             </span>
-            <span className="cursor-pointer text-sm font-medium text-sg-text-primary hover:underline">
+            <span 
+              onClick={() => navigate(`/vendors/${alert.vendor_id}`)}
+              className="cursor-pointer text-sm font-medium text-sg-text-primary hover:underline"
+            >
               {alert.vendor_name}
             </span>
             {isAcknowledged && (
