@@ -130,18 +130,19 @@ def get_portfolio_distribution(db: Session = Depends(get_db)):
     
     subquery = (
         db.query(
-            VendorScore.vendor_id,
-            sa_func.max(VendorScore.computed_at).label('max_date')
+            VendorScore.id,
+            sa_func.row_number().over(
+                partition_by=VendorScore.vendor_id,
+                order_by=VendorScore.computed_at.desc()
+            ).label('rn')
         )
-        .group_by(VendorScore.vendor_id)
         .subquery()
     )
 
     latest_scores = (
         db.query(VendorScore)
-        .join(subquery, 
-              (VendorScore.vendor_id == subquery.c.vendor_id) & 
-              (VendorScore.computed_at == subquery.c.max_date))
+        .join(subquery, VendorScore.id == subquery.c.id)
+        .filter(subquery.c.rn == 1)
         .join(Vendor, Vendor.id == VendorScore.vendor_id)
         .filter(Vendor.archived_at.is_(None))
         .all()
@@ -211,19 +212,20 @@ def get_portfolio_trend(
         # Get latest score for each vendor as of current_date
         subquery = (
             db.query(
-                VendorScore.vendor_id,
-                sa_func.max(VendorScore.computed_at).label('max_date')
+                VendorScore.id,
+                sa_func.row_number().over(
+                    partition_by=VendorScore.vendor_id,
+                    order_by=VendorScore.computed_at.desc()
+                ).label('rn')
             )
             .filter(VendorScore.computed_at <= current_date)
-            .group_by(VendorScore.vendor_id)
             .subquery()
         )
         
         scores_at_date = (
             db.query(VendorScore)
-            .join(subquery, 
-                  (VendorScore.vendor_id == subquery.c.vendor_id) & 
-                  (VendorScore.computed_at == subquery.c.max_date))
+            .join(subquery, VendorScore.id == subquery.c.id)
+            .filter(subquery.c.rn == 1)
             .all()
         )
         
