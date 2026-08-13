@@ -29,7 +29,27 @@ def list_alerts(
     # Accept both 'type' and 'alert_type'
     type_filter = type or alert_type
 
-    query = db.query(Alert).join(Vendor)
+    from sqlalchemy import func as sa_func
+
+    # Subquery to get only the latest vendor record for each unique vendor name
+    latest_vendor_subq = (
+        db.query(
+            Vendor.id,
+            sa_func.row_number().over(
+                partition_by=Vendor.name,
+                order_by=Vendor.last_assessed_at.desc().nulls_last()
+            ).label('rn')
+        )
+        .filter(Vendor.archived_at.is_(None))
+        .subquery()
+    )
+
+    query = (
+        db.query(Alert)
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+        .join(latest_vendor_subq, Vendor.id == latest_vendor_subq.c.id)
+        .filter(latest_vendor_subq.c.rn == 1)
+    )
 
     # Apply status filter
     if status_filter == "open":
@@ -159,37 +179,41 @@ def resolve_alert(alert_id: str, db: Session = Depends(get_db)):
 
 @router.get("/alerts/summary")
 def get_alert_summary(db: Session = Depends(get_db)):
-    """Badge/counter widget for nav bar — returns full summary matching frontend AlertSummary type"""
+    from sqlalchemy import func as sa_func
+
+    # Subquery to get only the latest vendor record for each unique vendor name
+    latest_vendor_subq = (
+        db.query(
+            Vendor.id,
+            sa_func.row_number().over(
+                partition_by=Vendor.name,
+                order_by=Vendor.last_assessed_at.desc().nulls_last()
+            ).label('rn')
+        )
+        .filter(Vendor.archived_at.is_(None))
+        .subquery()
+    )
+
+    # Base query for deduplicated alerts
+    base_query = (
+        db.query(Alert)
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+        .join(latest_vendor_subq, Vendor.id == latest_vendor_subq.c.id)
+        .filter(latest_vendor_subq.c.rn == 1, Alert.resolved_at.is_(None))
+    )
+
     # Count by severity
-    open_critical = db.query(Alert).filter(
-        Alert.resolved_at.is_(None),
-        Alert.severity == "CRITICAL"
-    ).count()
-
-    open_high = db.query(Alert).filter(
-        Alert.resolved_at.is_(None),
-        Alert.severity == "HIGH"
-    ).count()
-
-    open_medium = db.query(Alert).filter(
-        Alert.resolved_at.is_(None),
-        Alert.severity == "MEDIUM"
-    ).count()
-
-    open_low = db.query(Alert).filter(
-        Alert.resolved_at.is_(None),
-        Alert.severity == "LOW"
-    ).count()
+    open_critical = base_query.filter(Alert.severity == "CRITICAL").count()
+    open_high = base_query.filter(Alert.severity == "HIGH").count()
+    open_medium = base_query.filter(Alert.severity == "MEDIUM").count()
+    open_low = base_query.filter(Alert.severity == "LOW").count()
 
     open_total = open_critical + open_high + open_medium + open_low
 
     # Count by type
     by_type = {}
     for at in ["CERT_EXPIRING", "CONTRACT_EXPIRING", "ASSESSMENT_OVERDUE", "NEW_BREACH", "SCORE_TIER_CHANGED"]:
-        by_type[at] = db.query(Alert).filter(
-            Alert.resolved_at.is_(None),
-            Alert.type == at
-        ).count()
+        by_type[at] = base_query.filter(Alert.type == at).count()
 
     return {
         "total_open": open_total,

@@ -32,10 +32,15 @@ def get_vendor_score(vendor_id: str, db: Session = Depends(get_db)):
         if prev:
             previous_score_val = prev.composite_score
 
-    # Get score history
-    score_history = db.query(VendorScore).filter(
-        VendorScore.vendor_id == vendor_id
-    ).order_by(VendorScore.computed_at.desc()).limit(10).all()
+    # Get score history across all vendors with the same name (for historical merging)
+    score_history = (
+        db.query(VendorScore)
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .filter(Vendor.name == vendor.name)
+        .order_by(VendorScore.computed_at.desc())
+        .limit(20)
+        .all()
+    )
 
     return {
         "vendor_id": vendor_id,
@@ -126,16 +131,17 @@ def rescore_vendor(vendor_id: str, db: Session = Depends(get_db)):
 @router.get("/portfolio/score-distribution")
 def get_portfolio_distribution(db: Session = Depends(get_db)):
     """Portfolio summary widget - Red/Yellow/Green at a glance"""
-    total_vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).count()
+    total_vendors = db.query(Vendor.name).filter(Vendor.archived_at.is_(None)).distinct().count()
     
     subquery = (
         db.query(
             VendorScore.id,
             sa_func.row_number().over(
-                partition_by=VendorScore.vendor_id,
+                partition_by=Vendor.name,
                 order_by=VendorScore.computed_at.desc()
             ).label('rn')
         )
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
         .subquery()
     )
 
@@ -199,7 +205,7 @@ def get_portfolio_trend(
         step_days = 30
 
     points = []
-    total_vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).count()
+    total_vendors = db.query(Vendor.name).filter(Vendor.archived_at.is_(None)).distinct().count()
     
     max_date = db.query(sa_func.max(VendorScore.computed_at)).scalar()
     if not max_date:
@@ -209,15 +215,16 @@ def get_portfolio_trend(
     current_date = start_date
 
     while current_date <= max_date:
-        # Get latest score for each vendor as of current_date
+        # Get latest score for each vendor (grouped by name) as of current_date
         subquery = (
             db.query(
                 VendorScore.id,
                 sa_func.row_number().over(
-                    partition_by=VendorScore.vendor_id,
+                    partition_by=Vendor.name,
                     order_by=VendorScore.computed_at.desc()
                 ).label('rn')
             )
+            .join(Vendor, Vendor.id == VendorScore.vendor_id)
             .filter(VendorScore.computed_at <= current_date)
             .subquery()
         )

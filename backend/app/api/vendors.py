@@ -39,7 +39,26 @@ def list_vendors(
     # Accept both 'has_pii_access' and 'has_pii'
     pii_filter = has_pii_access if has_pii_access is not None else has_pii
 
-    query = db.query(Vendor).filter(Vendor.archived_at.is_(None))
+    from sqlalchemy import func as sa_func
+
+    # Subquery to get only the latest vendor record for each unique vendor name
+    latest_vendor_subq = (
+        db.query(
+            Vendor.id,
+            sa_func.row_number().over(
+                partition_by=Vendor.name,
+                order_by=Vendor.last_assessed_at.desc().nulls_last()
+            ).label('rn')
+        )
+        .filter(Vendor.archived_at.is_(None))
+        .subquery()
+    )
+
+    query = (
+        db.query(Vendor)
+        .join(latest_vendor_subq, Vendor.id == latest_vendor_subq.c.id)
+        .filter(latest_vendor_subq.c.rn == 1)
+    )
 
     # Apply filters
     if search_term:
@@ -56,33 +75,42 @@ def list_vendors(
     vendors = query.offset(offset).limit(actual_page_size).all()
     
     vendor_ids = [v.id for v in vendors]
+    vendor_names = [v.name for v in vendors]
     
-    # Batch fetch latest scores for these vendors
+    # Find ALL vendor_ids that share these names (including historical duplicates)
+    all_vendor_ids_query = db.query(Vendor.id).filter(Vendor.name.in_(vendor_names)).all()
+    all_vendor_ids = [v.id for v in all_vendor_ids_query]
+    
+    # Batch fetch latest scores for these vendors (grouped by name)
     from sqlalchemy import func
     from sqlalchemy.orm import aliased
     
-    # Subquery to get max computed_at per vendor
     subq = db.query(
-        VendorScore.vendor_id,
-        func.max(VendorScore.computed_at).label("max_computed_at")
-    ).filter(VendorScore.vendor_id.in_(vendor_ids)).group_by(VendorScore.vendor_id).subquery()
+        VendorScore.id,
+        sa_func.row_number().over(
+            partition_by=Vendor.name,
+            order_by=VendorScore.computed_at.desc()
+        ).label("rn")
+    ).join(Vendor, Vendor.id == VendorScore.vendor_id).filter(Vendor.name.in_(vendor_names)).subquery()
     
-    latest_scores = db.query(VendorScore).join(
-        subq,
-        (VendorScore.vendor_id == subq.c.vendor_id) & 
-        (VendorScore.computed_at == subq.c.max_computed_at)
-    ).all()
-    score_map = {s.vendor_id: s for s in latest_scores}
+    latest_scores = (
+        db.query(VendorScore, Vendor.name)
+        .join(subq, VendorScore.id == subq.c.id)
+        .filter(subq.c.rn == 1)
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .all()
+    )
+    score_map = {name: score for score, name in latest_scores}
     
-    # Batch fetch alert counts
+    # Batch fetch alert counts across all vendor IDs for each name
     alert_counts = db.query(
-        Alert.vendor_id,
+        Vendor.name,
         func.count(Alert.id).label("count")
-    ).filter(
-        Alert.vendor_id.in_(vendor_ids),
+    ).join(Alert, Alert.vendor_id == Vendor.id).filter(
+        Vendor.name.in_(vendor_names),
         Alert.resolved_at.is_(None)
-    ).group_by(Alert.vendor_id).all()
-    alert_count_map = {a.vendor_id: a.count for a in alert_counts}
+    ).group_by(Vendor.name).all()
+    alert_count_map = {name: count for name, count in alert_counts}
     
     # Batch fetch scopes
     scopes = db.query(DataAccessScope).filter(DataAccessScope.vendor_id.in_(vendor_ids)).all()
@@ -92,10 +120,10 @@ def list_vendors(
     items = []
     for vendor in vendors:
         # Get latest score
-        latest_score = score_map.get(vendor.id)
+        latest_score = score_map.get(vendor.name)
 
         # Count active alerts
-        alert_count = alert_count_map.get(vendor.id, 0)
+        alert_count = alert_count_map.get(vendor.name, 0)
 
         # Check PII access from DataAccessScope relationship
         has_pii_val = False
@@ -274,26 +302,37 @@ def get_vendor(vendor_id: str, db: Session = Depends(get_db)):
             detail=f"Vendor {vendor_id} not found"
         )
 
-    # Get latest score
-    latest_score = db.query(VendorScore).filter(
-        VendorScore.vendor_id == vendor.id
-    ).order_by(VendorScore.computed_at.desc()).first()
+    # Get latest score across all vendors with the same name
+    latest_score = (
+        db.query(VendorScore)
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .filter(Vendor.name == vendor.name)
+        .order_by(VendorScore.computed_at.desc())
+        .first()
+    )
 
-    # Get score history (last 10)
-    score_history = db.query(VendorScore).filter(
-        VendorScore.vendor_id == vendor.id
-    ).order_by(VendorScore.computed_at.desc()).limit(10).all()
+    # Get score history (last 10) across all vendors with the same name
+    score_history = (
+        db.query(VendorScore)
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .filter(Vendor.name == vendor.name)
+        .order_by(VendorScore.computed_at.desc())
+        .limit(10)
+        .all()
+    )
 
     # Get data access scope
     scope = db.query(DataAccessScope).filter(
         DataAccessScope.vendor_id == vendor.id
     ).first()
 
-    # Get alerts count
-    alert_count = db.query(Alert).filter(
-        Alert.vendor_id == vendor.id,
-        Alert.resolved_at.is_(None)
-    ).count()
+    # Get alerts count across all vendors with the same name
+    alert_count = (
+        db.query(Alert)
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+        .filter(Vendor.name == vendor.name, Alert.resolved_at.is_(None))
+        .count()
+    )
 
     return {
         "id": vendor.id,
