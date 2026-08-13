@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { alertsApi } from '@/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -151,6 +151,46 @@ function AlertCard({ alert, index }: { alert: Alert; index: number }) {
 }
 
 // ============================================================
+// Vendor Alert Group
+// ============================================================
+
+function VendorAlertGroup({ vendorName, alerts, index }: { vendorName: string, alerts: Alert[], index: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const primaryAlert = alerts[0];
+  const secondaryAlerts = alerts.slice(1);
+  
+  return (
+    <div className="flex flex-col gap-2">
+      <AlertCard alert={primaryAlert} index={index} />
+      {secondaryAlerts.length > 0 && (
+        <div className="ml-4 pl-4 border-l-2 border-sg-border-subtle flex flex-col gap-2">
+          {expanded ? (
+            <>
+              {secondaryAlerts.map((a, i) => (
+                <AlertCard key={a.id} alert={a} index={index + i + 1} />
+              ))}
+              <button 
+                onClick={() => setExpanded(false)}
+                className="self-start text-xs text-sg-text-secondary hover:text-sg-text-primary mt-1"
+              >
+                Hide {secondaryAlerts.length} other alert{secondaryAlerts.length > 1 ? 's' : ''}
+              </button>
+            </>
+          ) : (
+            <button 
+              onClick={() => setExpanded(true)}
+              className="self-start text-xs font-medium text-sg-text-secondary hover:text-sg-text-primary mt-1 bg-sg-surface-muted px-3 py-1.5 rounded-full border border-sg-border-subtle transition-colors"
+            >
+              + {secondaryAlerts.length} other alert{secondaryAlerts.length > 1 ? 's' : ''} for {vendorName}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
 // Alerts Page
 // ============================================================
 
@@ -169,12 +209,29 @@ export default function AlertsPage() {
     queryKey: ['alerts', 'list', { page, status: statusFilter, severity: severityFilter }],
     queryFn: () => alertsApi.list({
       page,
-      per_page: 20,
+      per_page: 50,
       ...(statusFilter ? { status: statusFilter } : {}),
       ...(severityFilter && { severity: severityFilter }),
     }),
     refetchInterval: 5000,
   });
+
+  const groupedAlerts = useMemo(() => {
+    if (!data?.alerts) return [];
+    const groups: Record<string, Alert[]> = {};
+    for (const alert of data.alerts) {
+      if (!groups[alert.vendor_name]) {
+        groups[alert.vendor_name] = [];
+      }
+      groups[alert.vendor_name].push(alert);
+    }
+    
+    // Sort groups by the created_at of their most recent alert
+    return Object.entries(groups).map(([vendorName, alerts]) => {
+      alerts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return { vendorName, alerts };
+    }).sort((a, b) => new Date(b.alerts[0].created_at).getTime() - new Date(a.alerts[0].created_at).getTime());
+  }, [data?.alerts]);
 
   return (
     <div className="p-8">
@@ -236,15 +293,20 @@ export default function AlertsPage() {
               <div className="skeleton-shimmer h-full w-full rounded-lg" />
             </div>
           ))
-        ) : data?.alerts.length === 0 ? (
+        ) : groupedAlerts.length === 0 ? (
           <div className="flex flex-col items-center py-16">
             <CheckCircle2 className="h-12 w-12 text-sg-risk-green" />
             <p className="mt-4 text-lg font-medium text-sg-text-secondary">All caught up!</p>
             <p className="text-sm text-sg-text-secondary">No alerts match your filters.</p>
           </div>
         ) : (
-          data?.alerts.map((alert, i) => (
-            <AlertCard key={alert.id} alert={alert} index={i} />
+          groupedAlerts.map((group, i) => (
+            <VendorAlertGroup 
+              key={group.vendorName} 
+              vendorName={group.vendorName} 
+              alerts={group.alerts} 
+              index={i} 
+            />
           ))
         )}
       </div>
