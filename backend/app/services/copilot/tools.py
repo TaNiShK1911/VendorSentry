@@ -176,9 +176,13 @@ def _list_alerts(params: dict, db: Session) -> dict:
     limit = min(int(params.get("limit", 30)), 100)
     alerts = query.order_by(Alert.created_at.desc()).limit(limit).all()
 
+    vendor_ids = list({a.vendor_id for a in alerts})
+    vendors = db.query(Vendor).filter(Vendor.id.in_(vendor_ids)).all()
+    vendors_by_id = {v.id: v for v in vendors}
+
     items = []
     for alert in alerts:
-        vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
+        vendor = vendors_by_id.get(alert.vendor_id)
         items.append({
             "id": str(alert.id),
             "vendor_id": str(alert.vendor_id),
@@ -200,16 +204,33 @@ def _list_vendors(params: dict, db: Session) -> dict:
         query = query.filter(Vendor.name.ilike(f"%{search}%"))
 
     vendors = query.all()
+    vendor_ids = [v.id for v in vendors]
+
+    # Batch fetch scores
+    scores = db.query(VendorScore).filter(VendorScore.vendor_id.in_(vendor_ids)).all()
+    scores_by_vid = {}
+    for s in scores:
+        if s.vendor_id not in scores_by_vid or s.computed_at > scores_by_vid[s.vendor_id].computed_at:
+            scores_by_vid[s.vendor_id] = s
+
+    # Batch fetch scopes
+    scopes = db.query(DataAccessScope).filter(DataAccessScope.vendor_id.in_(vendor_ids)).all()
+    scopes_by_vid = {s.vendor_id: s for s in scopes}
+
+    # Batch fetch alerts
+    from sqlalchemy import func
+    alert_counts = db.query(Alert.vendor_id, func.count(Alert.id)).filter(
+        Alert.vendor_id.in_(vendor_ids),
+        Alert.resolved_at.is_(None)
+    ).group_by(Alert.vendor_id).all()
+    counts_by_vid = {vid: count for vid, count in alert_counts}
 
     # Get scores for all vendors
     items = []
     for vendor in vendors:
-        score = get_latest_score(str(vendor.id), db)
-        scope = db.query(DataAccessScope).filter(DataAccessScope.vendor_id == vendor.id).first()
-        alert_count = db.query(Alert).filter(
-            Alert.vendor_id == vendor.id,
-            Alert.resolved_at.is_(None)
-        ).count()
+        score = scores_by_vid.get(vendor.id)
+        scope = scopes_by_vid.get(vendor.id)
+        alert_count = counts_by_vid.get(vendor.id, 0)
 
         tier = score.tier if score else "CLEAR"
 
@@ -310,31 +331,39 @@ def _get_vendor_detail(params: dict, db: Session) -> dict:
 
 def _get_portfolio_distribution(db: Session) -> dict:
     vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
+    vendor_ids = [v.id for v in vendors]
+    
+    scores = db.query(VendorScore).filter(VendorScore.vendor_id.in_(vendor_ids)).all()
+    scores_by_vid = {}
+    for s in scores:
+        if s.vendor_id not in scores_by_vid or s.computed_at > scores_by_vid[s.vendor_id].computed_at:
+            scores_by_vid[s.vendor_id] = s
+
     by_tier = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "CLEAR": 0}
     by_color = {"RED": 0, "YELLOW": 0, "GREEN": 0}
-    scores = []
+    scores_list = []
 
     for vendor in vendors:
-        score = get_latest_score(str(vendor.id), db)
+        score = scores_by_vid.get(vendor.id)
         if score:
             tier = str(score.tier)
             color = str(score.status_color)
             by_tier[tier] = by_tier.get(tier, 0) + 1
             by_color[color] = by_color.get(color, 0) + 1
-            scores.append(score.composite_score)
+            scores_list.append(score.composite_score)
         else:
             by_tier["CLEAR"] += 1
             by_color["GREEN"] += 1
-            scores.append(0.0)
+            scores_list.append(0.0)
 
-    avg = round(sum(scores) / len(scores), 2) if scores else 0.0
+    avg = round(sum(scores_list) / len(scores_list), 2) if scores_list else 0.0
     return {
         "total_vendors": len(vendors),
         "by_tier": by_tier,
         "by_status_color": by_color,
         "avg_composite_score": avg,
-        "highest_score": max(scores) if scores else 0.0,
-        "lowest_score": min(scores) if scores else 0.0,
+        "highest_score": max(scores_list) if scores_list else 0.0,
+        "lowest_score": min(scores_list) if scores_list else 0.0,
     }
 
 
