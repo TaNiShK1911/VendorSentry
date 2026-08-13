@@ -26,8 +26,8 @@ from app.services.copilot.followups import generate_followups
 logger = logging.getLogger(__name__)
 
 # Best model for reliable tool-use on Groq.
-_PREFERRED_MODEL = "llama3-groq-70b-8192-tool-use-preview"
-_FALLBACK_MODEL  = "llama-3.3-70b-versatile"
+_PREFERRED_MODEL = "llama-3.3-70b-versatile"
+_FALLBACK_MODEL  = "llama3-70b-8192"
 
 SYSTEM_PROMPT = """\
 You are VendorSentry Copilot — a vendor risk analyst AI.
