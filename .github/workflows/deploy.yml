@@ -33,10 +33,18 @@ jobs:
       - name: Force new ECS deployments
         run: |
           for svc in vendorsentry-api vendorsentry-worker vendorsentry-beat; do
-            aws ecs update-service \
+            if aws ecs describe-services \
               --cluster vendorsentry \
-              --service $svc \
-              --force-new-deployment
+              --services $svc \
+              --query 'services[0].serviceName' \
+              --output text | grep -q "$svc"; then
+              aws ecs update-service \
+                --cluster vendorsentry \
+                --service $svc \
+                --force-new-deployment
+            else
+              echo "Service $svc not found, skipping..."
+            fi
           done
 
   # ── Frontend: Vercel handles this automatically via its GitHub integration ──
