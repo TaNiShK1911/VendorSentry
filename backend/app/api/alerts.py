@@ -31,24 +31,25 @@ def list_alerts(
 
     from sqlalchemy import func as sa_func
 
-    # Subquery to get only the latest vendor record for each unique vendor name
-    latest_vendor_subq = (
+    # Subquery to deduplicate alerts by Vendor.name and Alert.type
+    latest_alert_subq = (
         db.query(
-            Vendor.id,
+            Alert.id,
             sa_func.row_number().over(
-                partition_by=Vendor.name,
-                order_by=Vendor.last_assessed_at.desc().nulls_last()
+                partition_by=(Vendor.name, Alert.type),
+                order_by=Alert.created_at.desc()
             ).label('rn')
         )
+        .join(Vendor, Vendor.id == Alert.vendor_id)
         .filter(Vendor.archived_at.is_(None))
         .subquery()
     )
 
     query = (
         db.query(Alert)
+        .join(latest_alert_subq, Alert.id == latest_alert_subq.c.id)
+        .filter(latest_alert_subq.c.rn == 1)
         .join(Vendor, Vendor.id == Alert.vendor_id)
-        .join(latest_vendor_subq, Vendor.id == latest_vendor_subq.c.id)
-        .filter(latest_vendor_subq.c.rn == 1)
     )
 
     # Apply status filter
@@ -181,15 +182,16 @@ def resolve_alert(alert_id: str, db: Session = Depends(get_db)):
 def get_alert_summary(db: Session = Depends(get_db)):
     from sqlalchemy import func as sa_func
 
-    # Subquery to get only the latest vendor record for each unique vendor name
-    latest_vendor_subq = (
+    # Subquery to deduplicate alerts by Vendor.name and Alert.type
+    latest_alert_subq = (
         db.query(
-            Vendor.id,
+            Alert.id,
             sa_func.row_number().over(
-                partition_by=Vendor.name,
-                order_by=Vendor.last_assessed_at.desc().nulls_last()
+                partition_by=(Vendor.name, Alert.type),
+                order_by=Alert.created_at.desc()
             ).label('rn')
         )
+        .join(Vendor, Vendor.id == Alert.vendor_id)
         .filter(Vendor.archived_at.is_(None))
         .subquery()
     )
@@ -197,9 +199,9 @@ def get_alert_summary(db: Session = Depends(get_db)):
     # Base query for deduplicated alerts
     base_query = (
         db.query(Alert)
+        .join(latest_alert_subq, Alert.id == latest_alert_subq.c.id)
+        .filter(latest_alert_subq.c.rn == 1, Alert.resolved_at.is_(None))
         .join(Vendor, Vendor.id == Alert.vendor_id)
-        .join(latest_vendor_subq, Vendor.id == latest_vendor_subq.c.id)
-        .filter(latest_vendor_subq.c.rn == 1, Alert.resolved_at.is_(None))
     )
 
     # Count by severity
