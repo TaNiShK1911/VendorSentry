@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "http://vendorsentry-alb-1100618599.us-east-1.elb.amazonaws.com/api/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
