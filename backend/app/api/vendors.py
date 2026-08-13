@@ -311,11 +311,26 @@ def get_vendor(vendor_id: str, db: Session = Depends(get_db)):
         .first()
     )
 
-    # Get score history (last 10) across all vendors with the same name
-    score_history = (
-        db.query(VendorScore)
+    from sqlalchemy import func as sa_func
+
+    # Get score history (last 10) across all vendors with the same name, deduplicated by date
+    hist_subq = (
+        db.query(
+            VendorScore.id,
+            sa_func.row_number().over(
+                partition_by=(Vendor.name, sa_func.date(VendorScore.computed_at)),
+                order_by=VendorScore.id.desc()
+            ).label('rn')
+        )
         .join(Vendor, Vendor.id == VendorScore.vendor_id)
         .filter(Vendor.name == vendor.name)
+        .subquery()
+    )
+
+    score_history = (
+        db.query(VendorScore)
+        .join(hist_subq, VendorScore.id == hist_subq.c.id)
+        .filter(hist_subq.c.rn == 1)
         .order_by(VendorScore.computed_at.desc())
         .limit(10)
         .all()

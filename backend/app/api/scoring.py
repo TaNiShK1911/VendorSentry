@@ -32,11 +32,24 @@ def get_vendor_score(vendor_id: str, db: Session = Depends(get_db)):
         if prev:
             previous_score_val = prev.composite_score
 
-    # Get score history across all vendors with the same name (for historical merging)
-    score_history = (
-        db.query(VendorScore)
+    # Deduplicate score history by timestamp across all historical vendors of the same name
+    hist_subq = (
+        db.query(
+            VendorScore.id,
+            sa_func.row_number().over(
+                partition_by=(Vendor.name, sa_func.date(VendorScore.computed_at)),
+                order_by=VendorScore.id.desc()
+            ).label('rn')
+        )
         .join(Vendor, Vendor.id == VendorScore.vendor_id)
         .filter(Vendor.name == vendor.name)
+        .subquery()
+    )
+
+    score_history = (
+        db.query(VendorScore)
+        .join(hist_subq, VendorScore.id == hist_subq.c.id)
+        .filter(hist_subq.c.rn == 1)
         .order_by(VendorScore.computed_at.desc())
         .limit(20)
         .all()
