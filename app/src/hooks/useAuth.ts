@@ -70,7 +70,7 @@ export function useAuth() {
   const canDelete = isCiso;
   const canAcknowledge = isCiso || isProcurement;
   const canExtract = isCiso || isProcurement;
-  const canViewEvaluation = isCiso;
+
 
   return {
     user: user || null,
@@ -89,6 +89,6 @@ export function useAuth() {
     canDelete,
     canAcknowledge,
     canExtract,
-    canViewEvaluation,
+
   };
 }

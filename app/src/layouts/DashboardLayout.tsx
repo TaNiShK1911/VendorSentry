@@ -6,7 +6,7 @@ import {
   Building2,
   Bell,
   FileBarChart,
-  BrainCircuit,
+
   Settings,
   LogOut,
   ShieldCheck,
@@ -20,7 +20,7 @@ const navItems = [
   { path: '/vendors', label: 'Vendors', icon: Building2, roles: ['ciso', 'procurement', 'auditor'] },
   { path: '/alerts', label: 'Alerts', icon: Bell, roles: ['ciso', 'procurement', 'auditor'] },
   { path: '/reports', label: 'Reports', icon: FileBarChart, roles: ['ciso', 'procurement'] },
-  { path: '/evaluation', label: 'Evaluation', icon: BrainCircuit, roles: ['ciso'] },
+
   { path: '/settings', label: 'Settings', icon: Settings, roles: ['ciso', 'procurement', 'auditor'] },
 ];
 

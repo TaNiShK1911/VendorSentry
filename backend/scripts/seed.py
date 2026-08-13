@@ -141,11 +141,9 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
 
         name = str(row.get("vendor_name", "")).strip()
 
-        # Match existing vendor by name, because vendor_id (record_id) is unique per row
-        vendor = db.query(Vendor).filter(Vendor.name == name).first()
+        vendor = db.query(Vendor).filter(Vendor.source_vendor_id == record_id).first()
         if not vendor:
-            vendor = Vendor(id=str(uuid.uuid4()), name=name)
-            vendor.source_vendor_id = record_id # Keep the first record_id as the primary
+            vendor = Vendor(id=str(uuid.uuid4()), name=name, source_vendor_id=record_id)
             db.add(vendor)
             db.flush()
 

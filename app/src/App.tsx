@@ -11,7 +11,7 @@ import VendorDetailPage from '@/pages/VendorDetailPage';
 import ExtractionPage from '@/pages/ExtractionPage';
 import AlertsPage from '@/pages/AlertsPage';
 import ReportsPage from '@/pages/ReportsPage';
-import EvaluationPage from '@/pages/EvaluationPage';
+
 import SettingsPage from '@/pages/SettingsPage';
 
 // Create QueryClient
@@ -135,14 +135,7 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/evaluation"
-          element={
-            <ProtectedRoute requiredRoles={['ciso']}>
-              <EvaluationPage />
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/settings"
           element={
