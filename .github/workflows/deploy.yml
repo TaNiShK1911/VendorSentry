@@ -8,7 +8,6 @@ jobs:
   # ── Backend: build + push to ECR + force new ECS deployment ──────────────
   deploy-backend:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'backend/') || contains(github.event.head_commit.added, 'backend/')
     steps:
       - uses: actions/checkout@v4
 
