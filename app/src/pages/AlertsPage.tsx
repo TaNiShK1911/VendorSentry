@@ -18,6 +18,13 @@ const ALERT_TYPE_CONFIG: Record<string, { label: string; color: string; bg: stri
   ASSESSMENT_OVERDUE: { label: 'Assessment Overdue', color: '#7C5CFC', bg: 'rgba(124, 92, 252, 0.08)', icon: Bell },
   NEW_BREACH: { label: 'New Breach', color: '#F85151', bg: 'rgba(248, 81, 81, 0.08)', icon: Database },
   SCORE_TIER_CHANGED: { label: 'Tier Changed', color: '#E8A838', bg: 'rgba(232, 168, 56, 0.08)', icon: TrendingUp },
+  BREACHED_VENDOR_HIGH_ACCESS: { label: 'Breach + High Access', color: '#F85151', bg: 'rgba(248, 81, 81, 0.08)', icon: AlertOctagon },
+  VENDOR_UNDER_INVESTIGATION: { label: 'Under Investigation', color: '#F85151', bg: 'rgba(248, 81, 81, 0.08)', icon: AlertOctagon },
+  HIGH_RISK_SCORE: { label: 'High Risk Score', color: '#E8A838', bg: 'rgba(232, 168, 56, 0.08)', icon: TrendingUp },
+  EXPIRED_CERTIFICATION: { label: 'Expired Cert', color: '#E8A838', bg: 'rgba(232, 168, 56, 0.08)', icon: FileClock },
+  RECENTLY_BREACHED_VENDOR: { label: 'Recent Breach', color: '#365DE5', bg: 'rgba(54, 93, 229, 0.08)', icon: Database },
+  CONTRACT_EXPIRED_ACTIVE_ACCESS: { label: 'Contract Expired', color: '#365DE5', bg: 'rgba(54, 93, 229, 0.08)', icon: AlertCircle },
+  ELEVATED_RISK_VENDOR: { label: 'Elevated Risk', color: '#5A5E72', bg: 'rgba(90, 94, 114, 0.08)', icon: Info },
 };
 
 const SEVERITY_CONFIG: Record<AlertSeverity, { color: string; icon: React.ElementType }> = {
