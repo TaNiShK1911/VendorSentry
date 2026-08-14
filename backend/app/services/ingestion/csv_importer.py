@@ -296,35 +296,7 @@ def process_vendor_row(row: pd.Series, db: Session) -> Vendor:
     return vendor
 
 
-def _generate_alerts(vendor: Vendor, result, db: Session) -> None:
-    """Generate alerts for anomaly types found during scoring."""
-    for anomaly in result.anomaly_types:
-        severity = "HIGH"
-        if anomaly in ["BREACHED_VENDOR_HIGH_ACCESS", "VENDOR_UNDER_INVESTIGATION"]:
-            severity = "CRITICAL"
-        elif anomaly in ["RECENTLY_BREACHED_VENDOR"]:
-            severity = "HIGH"
-
-        dedup_key = f"{vendor.id[:18]}:{anomaly[:24]}:{datetime.utcnow().strftime('%Y%m')}"
-
-        existing_alert = db.query(Alert).filter(
-            Alert.vendor_id == vendor.id,
-            Alert.type == anomaly,
-            Alert.resolved_at.is_(None)
-        ).first()
-
-        if not existing_alert:
-            alert_date = vendor.last_assessed_at or datetime.utcnow()
-            alert = Alert(
-                id=str(uuid.uuid4()),
-                vendor_id=vendor.id,
-                type=anomaly,
-                severity=severity,
-                message=f"Vendor {vendor.name} flagged for {anomaly}",
-                dedup_key=dedup_key,
-                created_at=alert_date
-            )
-            db.add(alert)
+# Alert generation is now routed through app.services.alerts.generator.create_alert
 
 
 def score_and_alert_vendor(vendor: Vendor, db: Session, triggered_by: str = "csv_import") -> VendorScore:
@@ -361,7 +333,21 @@ def score_and_alert_vendor(vendor: Vendor, db: Session, triggered_by: str = "csv
     db.add(score_row)
     db.flush()
 
-    _generate_alerts(vendor, result, db)
+    from app.services.alerts.generator import create_alert
+    from app.models.alert import AlertType, AlertSeverity
+
+    for anomaly, severity in result.anomalies_with_severity:
+        # We pass the current month as the trigger_value to allow month-based re-alerting
+        # while using the standard SHA-256 deduplication mechanism.
+        create_alert(
+            db=db,
+            vendor_id=vendor.id,
+            vendor_name=vendor.name,
+            alert_type=AlertType(anomaly),
+            severity=AlertSeverity(severity),
+            message=f"Vendor {vendor.name} flagged for {anomaly}",
+            trigger_value=datetime.utcnow().strftime('%Y%m')
+        )
     return score_row
 
 

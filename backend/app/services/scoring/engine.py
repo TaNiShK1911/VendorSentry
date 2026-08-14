@@ -62,6 +62,7 @@ class VendorScoreResult:
     tier: str
     status_color: str
     anomaly_types: list[str]
+    anomalies_with_severity: list[tuple[str, str]]
     triggered_by: str
     rationale: Optional[str] = None   # filled in by narrative.py after scoring
 
@@ -127,13 +128,15 @@ def score_vendor(
 
 
 
-    tier, anomaly_types, status_color = determine_tier(
+    tier, anomalies_with_severity, status_color = determine_tier(
         composite_score=composite,
         vendor=vendor,
         breaches=breaches,
         certs=certs,
         scope=scope,
     )
+    
+    anomaly_types = [a[0] for a in anomalies_with_severity]
 
     return VendorScoreResult(
         vendor_id=vendor.id,
@@ -145,6 +148,7 @@ def score_vendor(
         tier=tier,
         status_color=status_color,
         anomaly_types=anomaly_types,
+        anomalies_with_severity=anomalies_with_severity,
         triggered_by=triggered_by,
         rationale=None,
     )
@@ -170,6 +174,7 @@ def score_vendor_stub(vendor: Vendor) -> VendorScoreResult:
         tier="MEDIUM",
         status_color="YELLOW",
         anomaly_types=[],
+        anomalies_with_severity=[],
         triggered_by="manual",
         rationale="Stub — real scoring not yet computed.",
     )

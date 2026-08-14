@@ -284,13 +284,14 @@ class TestComputeComposite:
 class TestTiering:
     def _tier(self, composite, vendor=None, breaches=None, certs=None, scope=None):
         v = vendor or make_vendor()
-        tier, anomalies, color = determine_tier(
+        tier, anomalies_with_severity, color = determine_tier(
             composite_score=composite,
             vendor=v,
             breaches=breaches or [],
             certs=certs or [],
             scope=scope,
         )
+        anomalies = [a for a, s in anomalies_with_severity]
         return tier, anomalies, color
 
     # ── CRITICAL ─────────────────────────────────────────────────────────────

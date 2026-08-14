@@ -212,10 +212,14 @@ def get_alert_summary(db: Session = Depends(get_db)):
 
     open_total = open_critical + open_high + open_medium + open_low
 
-    # Count by type
-    by_type = {}
-    for at in ["CERT_EXPIRING", "CONTRACT_EXPIRING", "ASSESSMENT_OVERDUE", "NEW_BREACH", "SCORE_TIER_CHANGED"]:
-        by_type[at] = base_query.filter(Alert.type == at).count()
+    # Count by type (dynamic)
+    by_type_rows = (
+        base_query
+        .with_entities(Alert.type, sa_func.count())
+        .group_by(Alert.type)
+        .all()
+    )
+    by_type = {t: c for t, c in by_type_rows}
 
     return {
         "total_open": open_total,

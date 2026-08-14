@@ -276,13 +276,7 @@ export interface AlertSummary {
     medium: number;
     low: number;
   };
-  by_type: {
-    CERT_EXPIRING: number;
-    CONTRACT_EXPIRING: number;
-    ASSESSMENT_OVERDUE: number;
-    NEW_BREACH: number;
-    SCORE_TIER_CHANGED: number;
-  };
+  by_type: Record<string, number>;
   recent_alerts: number;
   trend: 'increasing' | 'decreasing' | 'stable';
 }

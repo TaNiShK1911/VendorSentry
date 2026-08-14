@@ -49,8 +49,9 @@ from app.services.ingestion.csv_importer import (
     normalize_financial_health as _normalize_financial_health,
     normalize_cert_type as _normalize_cert_type,
     process_vendor_row,
-    _generate_alerts,
 )
+from app.services.alerts.generator import create_alert
+from app.models.alert import AlertType, AlertSeverity
 
 logging.basicConfig(
     level=logging.INFO,
@@ -112,7 +113,16 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
             db.flush()
 
             # Generate alerts for this vendor's current state
-            _generate_alerts(vendor, result, db)
+            for anomaly, severity in result.anomalies_with_severity:
+                create_alert(
+                    db=db,
+                    vendor_id=vendor.id,
+                    vendor_name=vendor.name,
+                    alert_type=AlertType(anomaly),
+                    severity=AlertSeverity(severity),
+                    message=f"Vendor {vendor.name} flagged for {anomaly}",
+                    trigger_value=datetime.utcnow().strftime('%Y%m')
+                )
 
             rows_succeeded += 1
         except Exception as exc:

@@ -90,7 +90,7 @@ def determine_tier(
     breaches: Sequence[BreachEvent],
     certs: Sequence[Certification],
     scope: Optional[DataAccessScope],
-) -> tuple[str, list[str], str]:
+) -> tuple[str, list[tuple[str, str]], str]:
     """
     Determine the risk tier, anomaly types, and status colour for a vendor.
 
@@ -107,10 +107,10 @@ def determine_tier(
     Returns:
         (tier, anomaly_types, status_color)
         tier        → "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "CLEAR"
-        anomaly_types → list of anomaly type strings (may be empty)
+        anomaly_types → list of (anomaly_type, severity) tuples
         status_color → "RED" | "YELLOW" | "GREEN"
     """
-    anomaly_types: list[str] = []
+    anomaly_types: list[tuple[str, str]] = []
     tier_priority = ["CLEAR", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
     current_tier = "CLEAR"
 
@@ -123,42 +123,43 @@ def determine_tier(
 
     # ── CRITICAL conditions ─────────────────────────────────────────────────
     if vendor.under_investigation:
-        anomaly_types.append("VENDOR_UNDER_INVESTIGATION")
+        anomaly_types.append(("VENDOR_UNDER_INVESTIGATION", "CRITICAL"))
         _upgrade("CRITICAL")
 
     if _has_recent_breach(breaches, eval_date) and _has_sensitive_access(scope):
-        if "BREACHED_VENDOR_HIGH_ACCESS" not in anomaly_types:
-            anomaly_types.append("BREACHED_VENDOR_HIGH_ACCESS")
+        if "BREACHED_VENDOR_HIGH_ACCESS" not in [a[0] for a in anomaly_types]:
+            anomaly_types.append(("BREACHED_VENDOR_HIGH_ACCESS", "CRITICAL"))
         _upgrade("CRITICAL")
 
     # ── HIGH conditions ─────────────────────────────────────────────────────
     if composite_score > _HIGH_RISK_THRESHOLD:
-        anomaly_types.append("HIGH_RISK_SCORE")
+        anomaly_types.append(("HIGH_RISK_SCORE", "HIGH"))
         _upgrade("HIGH")
 
     if _has_expired_cert(certs, eval_date):
-        anomaly_types.append("EXPIRED_CERTIFICATION")
         # HIGH if sensitive access, otherwise MEDIUM
         if _has_sensitive_access(scope):
+            anomaly_types.append(("EXPIRED_CERTIFICATION", "HIGH"))
             _upgrade("HIGH")
         else:
+            anomaly_types.append(("EXPIRED_CERTIFICATION", "MEDIUM"))
             _upgrade("MEDIUM")
 
     # ── MEDIUM conditions ───────────────────────────────────────────────────
     if _has_recent_breach(breaches, eval_date) and not _has_sensitive_access(scope):
         # Recent breach but not high-access → MEDIUM (already CRITICAL if high-access)
-        if "RECENTLY_BREACHED_VENDOR" not in anomaly_types:
-            anomaly_types.append("RECENTLY_BREACHED_VENDOR")
+        if "RECENTLY_BREACHED_VENDOR" not in [a[0] for a in anomaly_types]:
+            anomaly_types.append(("RECENTLY_BREACHED_VENDOR", "MEDIUM"))
         _upgrade("MEDIUM")
 
     if _contract_expired_with_access(vendor.contract_end, vendor.contract_status, eval_date):
-        anomaly_types.append("CONTRACT_EXPIRED_ACTIVE_ACCESS")
+        anomaly_types.append(("CONTRACT_EXPIRED_ACTIVE_ACCESS", "MEDIUM"))
         _upgrade("MEDIUM")
 
     # ── LOW conditions ──────────────────────────────────────────────────────
     if _ELEVATED_RISK_LOWER <= composite_score <= _ELEVATED_RISK_UPPER:
-        if "ELEVATED_RISK_VENDOR" not in anomaly_types:
-            anomaly_types.append("ELEVATED_RISK_VENDOR")
+        if "ELEVATED_RISK_VENDOR" not in [a[0] for a in anomaly_types]:
+            anomaly_types.append(("ELEVATED_RISK_VENDOR", "LOW"))
         _upgrade("LOW")
 
     status_color = _TIER_TO_COLOR[current_tier]
