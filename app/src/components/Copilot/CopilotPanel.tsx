@@ -350,10 +350,19 @@ export default function CopilotPanel({ isOpen, onClose }: CopilotPanelProps) {
   const [isExpanded, setIsExpanded]   = useState(false);      // fullscreen toggle
   const [panelWidth, setPanelWidth]   = useState(PANEL_WIDTH_NORMAL);
   const [isDragging, setIsDragging]   = useState(false);
+  const [isMobile, setIsMobile]       = useState(false);
   const dragStartX   = useRef(0);
   const dragStartW   = useRef(PANEL_WIDTH_NORMAL);
 
   const { messages, isLoading, sendQuery, sendFollowUp, clearMessages } = useCopilot();
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1023px)');
+    setIsMobile(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
 
@@ -452,11 +461,11 @@ export default function CopilotPanel({ isOpen, onClose }: CopilotPanelProps) {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-            style={{ width: isExpanded ? '100vw' : panelWidth }}
+            style={{ width: (isExpanded || isMobile) ? '100vw' : panelWidth }}
             className={`fixed right-0 top-0 z-50 flex h-full flex-col border-l border-sg-border-subtle bg-sg-surface shadow-2xl ${widthClass}`}
           >
             {/* Drag handle (left edge) */}
-            {!isExpanded && (
+            {!(isExpanded || isMobile) && (
               <div
                 onMouseDown={onDragStart}
                 className={`absolute left-0 top-0 h-full w-1 cursor-ew-resize transition-colors ${
@@ -496,7 +505,7 @@ export default function CopilotPanel({ isOpen, onClose }: CopilotPanelProps) {
                 )}
 
                 {/* Wide preset toggle */}
-                {!isExpanded && (
+                {!(isExpanded || isMobile) && (
                   <button
                     onClick={() => setPanelWidth(panelWidth === PANEL_WIDTH_NORMAL ? PANEL_WIDTH_WIDE : PANEL_WIDTH_NORMAL)}
                     title={panelWidth === PANEL_WIDTH_WIDE ? 'Compact view' : 'Wide view'}
@@ -512,16 +521,18 @@ export default function CopilotPanel({ isOpen, onClose }: CopilotPanelProps) {
                 )}
 
                 {/* Fullscreen toggle */}
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  title={isExpanded ? 'Exit fullscreen' : 'Fullscreen'}
-                  className="rounded-lg p-1.5 text-sg-text-secondary transition-colors hover:bg-sg-surface-muted hover:text-violet-400"
-                >
-                  {isExpanded
-                    ? <Minimize2 className="h-4 w-4" />
-                    : <Maximize2 className="h-4 w-4" />
-                  }
-                </button>
+                {!isMobile && (
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    title={isExpanded ? 'Exit fullscreen' : 'Fullscreen'}
+                    className="rounded-lg p-1.5 text-sg-text-secondary transition-colors hover:bg-sg-surface-muted hover:text-violet-400"
+                  >
+                    {isExpanded
+                      ? <Minimize2 className="h-4 w-4" />
+                      : <Maximize2 className="h-4 w-4" />
+                    }
+                  </button>
+                )}
 
                 <button
                   onClick={onClose}

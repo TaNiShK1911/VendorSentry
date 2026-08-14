@@ -285,7 +285,7 @@ export default function AlertsPage() {
       </div>
 
       {/* Severity cards */}
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4">
         {([
           { label: 'Critical', severity: 'critical' as AlertSeverity, color: '#F85151', icon: AlertOctagon },
           { label: 'High', severity: 'high' as AlertSeverity, color: '#E8A838', icon: AlertTriangle },

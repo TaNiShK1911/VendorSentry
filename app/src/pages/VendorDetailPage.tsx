@@ -241,7 +241,7 @@ export default function VendorDetailPage() {
         </div>
 
         {/* Info grid */}
-        <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-sg-text-secondary">Type</p>
             <p className="mt-1 text-sm font-medium text-sg-text-primary">{vendor.vendor_type}</p>
@@ -527,7 +527,7 @@ export default function VendorDetailPage() {
         className="mt-6 rounded-card border border-sg-border-subtle bg-sg-surface p-6 shadow-card"
       >
         <h2 className="font-display text-lg font-bold uppercase tracking-wider text-sg-text-primary">Data Access Scope</h2>
-        <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4">
           <div className="rounded-lg border border-sg-border-subtle bg-sg-surface-muted p-4">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-sg-text-secondary">PII Access</p>
             <div className="mt-2 flex items-center gap-2">

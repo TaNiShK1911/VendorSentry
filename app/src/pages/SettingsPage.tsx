@@ -203,7 +203,7 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-sg-text-secondary">Requests Today</p>
                   <p className="mt-1 text-lg font-semibold text-sg-text-primary">1,247</p>

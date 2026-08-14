@@ -8,7 +8,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-sg-surface-muted font-sans text-sg-text-primary">
       {/* Header */}
-      <header className="flex h-20 items-center justify-between border-b border-sg-border-subtle bg-sg-surface px-8">
+      <header className="flex h-20 items-center justify-between border-b border-sg-border-subtle bg-sg-surface px-4 sm:px-8">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center bg-sg-secondary">
             <ShieldCheck className="h-6 w-6 text-sg-text-inverse" />
@@ -18,10 +18,10 @@ export default function LandingPage() {
           </span>
         </div>
         <nav className="flex items-center gap-6">
-          <a href="#features" className="text-sm font-semibold uppercase tracking-wider text-sg-text-secondary transition-colors hover:text-sg-primary">
+          <a href="#features" className="hidden sm:inline-block text-sm font-semibold uppercase tracking-wider text-sg-text-secondary transition-colors hover:text-sg-primary">
             Features
           </a>
-          <a href="#platform" className="text-sm font-semibold uppercase tracking-wider text-sg-text-secondary transition-colors hover:text-sg-primary">
+          <a href="#platform" className="hidden sm:inline-block text-sm font-semibold uppercase tracking-wider text-sg-text-secondary transition-colors hover:text-sg-primary">
             Platform
           </a>
           <button
@@ -36,7 +36,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main>
-        <section className="relative flex min-h-[80vh] flex-col justify-center overflow-hidden border-b border-sg-border-subtle bg-sg-surface px-8 py-20">
+        <section className="relative flex min-h-[80vh] flex-col justify-center overflow-hidden border-b border-sg-border-subtle bg-sg-surface px-4 sm:px-8 py-20">
           <div className="absolute top-0 right-0 h-[600px] w-[600px] -translate-y-1/4 translate-x-1/4 bg-sg-surface-muted opacity-50"></div>
           <div className="absolute bottom-0 left-0 h-4 w-1/3 bg-sg-primary"></div>
           
@@ -53,13 +53,13 @@ export default function LandingPage() {
                   Institutional Risk Intelligence
                 </span>
               </div>
-              <h1 className="font-display text-6xl font-bold leading-tight tracking-tight text-sg-text-primary md:text-7xl">
+              <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-sg-text-primary sm:text-6xl md:text-7xl">
                 Securing the <br /> Third-Party Perimeter.
               </h1>
               <p className="mt-8 text-xl leading-relaxed text-sg-text-secondary max-w-2xl">
                 VendorSentry is an AI-powered compliance and risk engine designed for global financial institutions. Monitor vendors, automate document extraction, and resolve operational conflicts with uncompromising precision.
               </p>
-              <div className="mt-12 flex gap-4">
+              <div className="mt-12 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => navigate('/login')}
                   className="rounded bg-sg-primary px-8 py-4 text-base font-bold uppercase tracking-wider text-sg-text-inverse transition-all hover:bg-sg-primary-hover shadow-lift"
@@ -78,7 +78,7 @@ export default function LandingPage() {
         </section>
 
         {/* Modular Features Section */}
-        <section id="features" className="bg-sg-surface-muted px-8 py-24">
+        <section id="features" className="bg-sg-surface-muted px-4 sm:px-8 py-24">
           <div className="mx-auto max-w-6xl">
             <div className="mb-16">
               <h2 className="font-display text-4xl font-bold text-sg-text-primary">Core Infrastructure</h2>
@@ -123,7 +123,7 @@ export default function LandingPage() {
         </section>
 
         {/* Call to Action */}
-        <section className="bg-sg-secondary px-8 py-24 text-sg-text-inverse">
+        <section className="bg-sg-secondary px-4 sm:px-8 py-24 text-sg-text-inverse">
           <div className="mx-auto max-w-6xl text-center">
             <h2 className="font-display text-4xl font-bold text-sg-text-inverse">Ready to secure your vendor ecosystem?</h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-sg-text-secondary">
@@ -140,7 +140,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-sg-border-subtle bg-sg-surface px-8 py-12">
+      <footer className="border-t border-sg-border-subtle bg-sg-surface px-4 sm:px-8 py-12">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-sg-primary" />

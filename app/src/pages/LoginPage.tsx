@@ -105,7 +105,7 @@ export default function LoginPage() {
                 <label className="text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
                   Demo Login Roles
                 </label>
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {ROLES.map((role) => {
                     const RoleIcon = role.icon;
                     const isSelected = selectedRole === role.id;

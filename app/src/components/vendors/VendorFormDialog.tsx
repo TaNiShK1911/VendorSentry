@@ -163,7 +163,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
                 </div>
 
                 {/* Type + Email */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
                       Type *
@@ -224,7 +224,7 @@ export function VendorFormDialog({ open, onOpenChange, vendor, onSuccess }: Vend
                 </div>
 
                 {/* Contract dates */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-sg-text-secondary">
                       Contract Start
