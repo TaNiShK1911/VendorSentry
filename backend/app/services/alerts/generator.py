@@ -16,7 +16,8 @@ def create_alert(
     alert_type: AlertType,
     severity: AlertSeverity,
     message: str,
-    trigger_value: str = ""
+    trigger_value: str = "",
+    created_at: Optional[datetime] = None
 ) -> Optional[Alert]:
     """
     Create an alert if it doesn't already exist (dedup check).
@@ -34,7 +35,7 @@ def create_alert(
         severity=severity,
         message=message,
         dedup_key=dedup_key,
-        created_at=datetime.utcnow()
+        created_at=created_at or datetime.utcnow()
     )
 
     db.add(alert)

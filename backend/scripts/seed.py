@@ -121,7 +121,8 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
                     alert_type=AlertType(anomaly),
                     severity=AlertSeverity(severity),
                     message=f"Vendor {vendor.name} flagged for {anomaly}",
-                    trigger_value=datetime.utcnow().strftime('%Y%m')
+                    trigger_value=datetime.utcnow().strftime('%Y%m'),
+                    created_at=vendor.last_assessed_at
                 )
 
             rows_succeeded += 1
