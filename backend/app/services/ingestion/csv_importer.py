@@ -122,8 +122,8 @@ def process_vendor_row(row: pd.Series, db: Session) -> Vendor:
     if not name or name == "nan":
         raise ValueError("missing vendor_name")
 
-    # Deduplicate by vendor_name
-    vendor = db.query(Vendor).filter(Vendor.name == name).first()
+    # Deduplicate by vendor_id
+    vendor = db.query(Vendor).filter(Vendor.source_vendor_id == record_id).first()
     if not vendor:
         vendor = Vendor(id=str(uuid.uuid4()), name=name, source_vendor_id=record_id)
         db.add(vendor)

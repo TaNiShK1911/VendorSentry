@@ -31,12 +31,12 @@ def list_alerts(
 
     from sqlalchemy import func as sa_func
 
-    # Subquery to deduplicate alerts by Vendor.name and Alert.type
+    # Subquery to deduplicate alerts by Alert.vendor_id and Alert.type
     latest_alert_subq = (
         db.query(
             Alert.id,
             sa_func.row_number().over(
-                partition_by=(Vendor.name, Alert.type),
+                partition_by=(Alert.vendor_id, Alert.type),
                 order_by=Alert.created_at.desc()
             ).label('rn')
         )
@@ -182,12 +182,12 @@ def resolve_alert(alert_id: str, db: Session = Depends(get_db)):
 def get_alert_summary(db: Session = Depends(get_db)):
     from sqlalchemy import func as sa_func
 
-    # Subquery to deduplicate alerts by Vendor.name and Alert.type
+    # Subquery to deduplicate alerts by Alert.vendor_id and Alert.type
     latest_alert_subq = (
         db.query(
             Alert.id,
             sa_func.row_number().over(
-                partition_by=(Vendor.name, Alert.type),
+                partition_by=(Alert.vendor_id, Alert.type),
                 order_by=Alert.created_at.desc()
             ).label('rn')
         )

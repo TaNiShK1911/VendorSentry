@@ -107,6 +107,24 @@ class TestCsvImport:
         # Should not create duplicates
         assert count2 == count1
 
+    def test_import_preserves_distinct_vendors_with_same_name(self, db_session):
+        """Importing distinct vendors that happen to share a name should create separate records."""
+        from app.services.ingestion.csv_importer import import_csv_file
+
+        csv_data = """\
+vendor_id,vendor_name,vendor_type,contact_name,contact_email,compliance_certifications,data_access_scope,risk_score,breach_status,annual_spend,contract_end_date,last_audit_date
+VND-001,Global Ltd,Cloud_Provider,John Doe,john@alpha.com,,Customer_PII,45,No_Known_Breach,500000,2027-12-31,2026-06-01
+VND-002,Global Ltd,Software_Vendor,Jane Doe,jane@beta.com,,Financial_Data,88,Recent_Breach_12mo,200000,2026-03-15,2026-01-15
+"""
+        result = import_csv_file(csv_data.encode("utf-8"), db_session, triggered_by="test")
+        assert result["rows_succeeded"] == 2
+
+        # Verify two vendors exist with the same name
+        vendors = db_session.query(Vendor).filter(Vendor.name == "Global Ltd").all()
+        assert len(vendors) == 2
+        vendor_ids = {v.source_vendor_id for v in vendors}
+        assert vendor_ids == {"VND-001", "VND-002"}
+
     def test_import_creates_certifications(self, db_session):
         """Import should create Certification records."""
         from app.services.ingestion.csv_importer import import_csv_file
@@ -211,7 +229,7 @@ class TestCsvExportRoundTrip:
         # Step 3: Re-import the exported CSV
         result2 = import_csv_file(export_csv, db_session, triggered_by="test_roundtrip")
 
-        # Should succeed without errors (names deduplicate, so no new vendors)
+        # Should succeed without errors (IDs deduplicate, so no new vendors)
         assert result2["rows_succeeded"] == 3
         assert result2["rows_failed"] == 0
 
