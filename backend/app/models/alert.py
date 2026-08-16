@@ -48,7 +48,7 @@ class Alert(Base):
 
     message: Mapped[str] = mapped_column(Text, nullable=False)
 
-    dedup_key: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
+    dedup_key: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False

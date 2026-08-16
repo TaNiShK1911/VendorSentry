@@ -441,7 +441,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="VendorSentry seed script")
     parser.add_argument(
         "--data-dir",
-        default=str(_REPO_ROOT / "backend" / "sample_data"),
+        default=str(Path(__file__).resolve().parent.parent / "sample_data"),
         help="Directory containing vendor_registry.csv and vendor_labels.csv",
     )
     parser.add_argument(
