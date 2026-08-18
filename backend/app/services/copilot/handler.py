@@ -26,8 +26,8 @@ from app.services.copilot.followups import generate_followups
 logger = logging.getLogger(__name__)
 
 # Best model for reliable tool-use on Groq.
-_PREFERRED_MODEL = "openai/gpt-oss-20b"
-_FALLBACK_MODEL  = "openai/gpt-oss-20b"
+_PREFERRED_MODEL = "openai/gpt-oss-120b"
+_FALLBACK_MODEL  = "openai/gpt-oss-120b"
 
 SYSTEM_PROMPT = """\
 You are VendorSentry Copilot — a vendor risk analyst AI.
