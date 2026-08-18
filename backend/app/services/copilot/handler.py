@@ -219,6 +219,7 @@ def run_copilot_query(
                 messages.append({
                     "role":         "tool",
                     "tool_call_id": tc.id,
+                    "name":         fn_name,
                     "content":      json.dumps(result, default=str),
                 })
 
