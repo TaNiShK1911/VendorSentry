@@ -44,7 +44,7 @@ Rules (STRICT):
 Today UTC: {now_utc}
 """
 
-_MAX_TOOL_ITERATIONS = 6
+_MAX_TOOL_ITERATIONS = 3
 
 
 def _get_groq_client() -> tuple[Any | None, str]:

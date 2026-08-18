@@ -195,7 +195,7 @@ def _list_alerts(params: dict, db: Session) -> dict:
         except ValueError:
             pass
 
-    limit = min(int(params.get("limit", 30)), 100)
+    limit = min(int(params.get("limit", 10)), 50)
     alerts = query.order_by(Alert.created_at.desc()).limit(limit).all()
 
     vendor_ids = list({a.vendor_id for a in alerts})
@@ -301,8 +301,8 @@ def _list_vendors(params: dict, db: Session) -> dict:
     key = "composite_score" if "score" in sort else "name"
     items.sort(key=lambda x: x.get(key, 0), reverse=reverse)
 
-    # Cap at 20 results — hardcoded, not from LLM (avoids integer type errors)
-    items = items[:20]
+    # Cap at 10 results — avoids context window limits and speeds up 120B model
+    items = items[:10]
 
     return {"count": len(items), "vendors": items}
 
