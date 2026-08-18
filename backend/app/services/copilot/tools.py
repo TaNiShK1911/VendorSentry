@@ -147,7 +147,29 @@ def execute_tool(tool_name: str, tool_input: dict, db: Session) -> dict[str, Any
 # ---------------------------------------------------------------------------
 
 def _list_alerts(params: dict, db: Session) -> dict:
-    query = db.query(Alert)
+    from sqlalchemy import func as sa_func
+
+    # Subquery to deduplicate alerts by Vendor.name and Alert.type
+    latest_alert_subq = (
+        db.query(
+            Alert.id,
+            sa_func.row_number().over(
+                partition_by=(Vendor.name, Alert.type),
+                order_by=Alert.created_at.desc()
+            ).label('rn')
+        )
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+        .filter(Vendor.archived_at.is_(None))
+        .subquery()
+    )
+
+    query = (
+        db.query(Alert)
+        .join(latest_alert_subq, Alert.id == latest_alert_subq.c.id)
+        .filter(latest_alert_subq.c.rn == 1)
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+    )
+    
     query = query.filter(Alert.resolved_at.is_(None))
 
     if at := params.get("alert_type"):
@@ -198,7 +220,26 @@ def _list_alerts(params: dict, db: Session) -> dict:
 
 
 def _list_vendors(params: dict, db: Session) -> dict:
-    query = db.query(Vendor).filter(Vendor.archived_at.is_(None))
+    from sqlalchemy import func as sa_func
+
+    # Subquery to deduplicate by name
+    latest_vendor_subq = (
+        db.query(
+            Vendor.id,
+            sa_func.row_number().over(
+                partition_by=Vendor.name,
+                order_by=Vendor.last_assessed_at.desc().nulls_last()
+            ).label('rn')
+        )
+        .filter(Vendor.archived_at.is_(None))
+        .subquery()
+    )
+
+    query = (
+        db.query(Vendor)
+        .join(latest_vendor_subq, Vendor.id == latest_vendor_subq.c.id)
+        .filter(latest_vendor_subq.c.rn == 1)
+    )
 
     if search := params.get("search"):
         query = query.filter(Vendor.name.ilike(f"%{search}%"))
@@ -330,31 +371,49 @@ def _get_vendor_detail(params: dict, db: Session) -> dict:
 
 
 def _get_portfolio_distribution(db: Session) -> dict:
-    vendors = db.query(Vendor).filter(Vendor.archived_at.is_(None)).all()
-    vendor_ids = [v.id for v in vendors]
+    from sqlalchemy import func as sa_func
     
-    scores = db.query(VendorScore).filter(VendorScore.vendor_id.in_(vendor_ids)).all()
-    scores_by_vid = {}
-    for s in scores:
-        if s.vendor_id not in scores_by_vid or s.computed_at > scores_by_vid[s.vendor_id].computed_at:
-            scores_by_vid[s.vendor_id] = s
+    total_vendors = db.query(Vendor.name).filter(Vendor.archived_at.is_(None)).distinct().count()
+    
+    subquery = (
+        db.query(
+            VendorScore.id,
+            sa_func.row_number().over(
+                partition_by=Vendor.name,
+                order_by=VendorScore.computed_at.desc()
+            ).label('rn')
+        )
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .subquery()
+    )
+
+    latest_scores = (
+        db.query(VendorScore)
+        .join(subquery, VendorScore.id == subquery.c.id)
+        .filter(subquery.c.rn == 1)
+        .join(Vendor, Vendor.id == VendorScore.vendor_id)
+        .filter(Vendor.archived_at.is_(None))
+        .all()
+    )
 
     by_tier = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "CLEAR": 0}
     by_color = {"RED": 0, "YELLOW": 0, "GREEN": 0}
     scores_list = []
 
-    for vendor in vendors:
-        score = scores_by_vid.get(vendor.id)
-        if score:
-            tier = str(score.tier)
-            color = str(score.status_color)
-            by_tier[tier] = by_tier.get(tier, 0) + 1
-            by_color[color] = by_color.get(color, 0) + 1
-            scores_list.append(score.composite_score)
-        else:
-            by_tier["CLEAR"] += 1
-            by_color["GREEN"] += 1
-            scores_list.append(0.0)
+    scored_vendors = set()
+    for s in latest_scores:
+        scored_vendors.add(s.vendor_id)
+        tier_val = s.tier if isinstance(s.tier, str) else s.tier.value
+        color_val = s.status_color if isinstance(s.status_color, str) else s.status_color.value
+        by_tier[tier_val] = by_tier.get(tier_val, 0) + 1
+        by_color[color_val] = by_color.get(color_val, 0) + 1
+        scores_list.append(s.composite_score)
+        
+    unscored_count = total_vendors - len(scored_vendors)
+    if unscored_count > 0:
+        by_tier["CLEAR"] += unscored_count
+        by_color["GREEN"] += unscored_count
+        scores_list.extend([0.0] * unscored_count)
 
     avg = round(sum(scores_list) / len(scores_list), 2) if scores_list else 0.0
     return {
@@ -368,8 +427,31 @@ def _get_portfolio_distribution(db: Session) -> dict:
 
 
 def _get_alerts_summary(db: Session) -> dict:
+    from sqlalchemy import func as sa_func
+
+    # Subquery to deduplicate alerts by Vendor.name and Alert.type
+    latest_alert_subq = (
+        db.query(
+            Alert.id,
+            sa_func.row_number().over(
+                partition_by=(Vendor.name, Alert.type),
+                order_by=Alert.created_at.desc()
+            ).label('rn')
+        )
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+        .filter(Vendor.archived_at.is_(None))
+        .subquery()
+    )
+
+    base_query = (
+        db.query(Alert)
+        .join(latest_alert_subq, Alert.id == latest_alert_subq.c.id)
+        .filter(latest_alert_subq.c.rn == 1, Alert.resolved_at.is_(None))
+        .join(Vendor, Vendor.id == Alert.vendor_id)
+    )
+
     def count(severity=None, alert_type=None):
-        q = db.query(Alert).filter(Alert.resolved_at.is_(None))
+        q = base_query
         if severity:
             q = q.filter(Alert.severity == severity)
         if alert_type:
