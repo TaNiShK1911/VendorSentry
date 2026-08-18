@@ -26,7 +26,7 @@ from app.services.copilot.followups import generate_followups
 logger = logging.getLogger(__name__)
 
 # Best model for reliable tool-use on Groq.
-_PREFERRED_MODEL = "qwen/qwen3.6-27b"
+_PREFERRED_MODEL = "openai/gpt-oss-20b"
 _FALLBACK_MODEL  = "openai/gpt-oss-20b"
 
 SYSTEM_PROMPT = """\
