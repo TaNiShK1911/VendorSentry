@@ -35,18 +35,18 @@ _SEVERITY_WEIGHTS: dict[str, float] = {
 _DECAY_MONTHS: float = 12.0
 
 
-def _months_since(breach_date: date | None) -> float:
-    """Return fractional months from breach_date to today. Unknown dates → 0 (max impact)."""
+def _months_since(breach_date: date | None, eval_date: date) -> float:
+    """Return fractional months from breach_date to eval_date. Unknown dates → 0 (max impact)."""
     if breach_date is None:
         return 0.0
-    today = datetime.utcnow().date()
-    delta_days = (today - breach_date).days
+    delta_days = (eval_date - breach_date).days
     # Clamp to 0 in case breach_date is in the future (data error)
     return max(0.0, delta_days / 30.44)
 
 
 def compute_breach_subscore(
     breaches: Sequence[BreachEvent],
+    eval_date: date,
     under_investigation: bool = False,
 ) -> float:
     """
@@ -54,6 +54,7 @@ def compute_breach_subscore(
 
     Args:
         breaches: All BreachEvent rows for this vendor.
+        eval_date: Date to evaluate the breach decay from.
         under_investigation: If True, returns 100 immediately.
 
     Returns:
@@ -69,7 +70,7 @@ def compute_breach_subscore(
     total = 0.0
     for breach in breaches:
         weight = _SEVERITY_WEIGHTS.get(breach.severity, 0.2)
-        months = _months_since(breach.breach_date)
+        months = _months_since(breach.breach_date, eval_date)
         contribution = weight * math.exp(-months / _DECAY_MONTHS)
         total += contribution
 

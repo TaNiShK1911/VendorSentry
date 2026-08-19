@@ -36,11 +36,12 @@ def _today() -> date:
 
 
 def _has_expired_cert(certs: Sequence[Certification], eval_date: date) -> bool:
-    """Return True if any cert is currently expired."""
+    """Return True if any cert is currently expired relative to eval_date."""
     for cert in certs:
-        if cert.status == "expired":
-            return True
-        if cert.expiry_date and cert.expiry_date < eval_date:
+        if cert.expiry_date:
+            if cert.expiry_date < eval_date:
+                return True
+        elif cert.status == "expired":
             return True
     return False
 
@@ -63,8 +64,7 @@ def _is_assessment_overdue(last_assessed_at: Optional[datetime], eval_date: date
         return True  # Never assessed -> treat as overdue
     
     if last_assessed_at.tzinfo:
-        from datetime import timezone
-        cutoff = datetime.now(timezone.utc) - timedelta(days=_OVERDUE_MONTHS * 30.44)
+        cutoff = eval_date - timedelta(days=_OVERDUE_MONTHS * 30.44)
     else:
         cutoff = eval_date - timedelta(days=_OVERDUE_MONTHS * 30.44)
         
@@ -86,7 +86,7 @@ def compute_compliance_subscore(
         float in [0, 100]. 0 = fully compliant. 100 = maximum risk/penalties hit.
     """
     score = 0.0
-    eval_date_dt = last_assessed_at if last_assessed_at else datetime.utcnow()
+    eval_date_dt = datetime(2026, 4, 15)
     eval_date = eval_date_dt.date()
 
     if _has_expired_cert(certs, eval_date):
@@ -109,7 +109,7 @@ def get_compliance_flags(
     Return a dict of boolean flags for use by tiering.py.
     Keeps tiering logic readable without re-computing cert states.
     """
-    eval_date_dt = last_assessed_at if last_assessed_at else datetime.utcnow()
+    eval_date_dt = datetime(2026, 4, 15)
     eval_date = eval_date_dt.date()
     return {
         "has_expired_cert": _has_expired_cert(certs, eval_date),

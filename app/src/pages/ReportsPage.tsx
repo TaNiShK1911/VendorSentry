@@ -23,9 +23,25 @@ export default function ReportsPage() {
       
       const element = document.createElement('div');
       // Set explicit black text and white background for PDF rendering
-      element.innerHTML = `<div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; color: black; background: white;">
-        ${await marked.parse(markdownText)}
-      </div>`;
+      element.innerHTML = `
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; padding: 40px; color: #333; background: white;">
+          <style>
+            h1 { color: #1a1a1a; border-bottom: 2px solid #ea580c; padding-bottom: 8px; margin-top: 0; }
+            h2 { color: #2d3748; margin-top: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+            h3 { color: #4a5568; margin-top: 20px; }
+            p { margin-bottom: 16px; color: #4a5568; }
+            table { width: 100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 24px; font-size: 14px; }
+            th { background-color: #f7fafc; text-align: left; padding: 12px; border: 1px solid #e2e8f0; color: #2d3748; font-weight: 600; }
+            td { padding: 12px; border: 1px solid #e2e8f0; color: #4a5568; }
+            tr:nth-child(even) { background-color: #f8fafc; }
+            blockquote { border-left: 4px solid #ea580c; margin: 0; padding: 8px 16px; background-color: #fffaf5; color: #7c2d12; font-style: italic; }
+            ul, ol { margin-bottom: 16px; padding-left: 24px; color: #4a5568; }
+            strong { color: #1a1a1a; }
+            code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+          </style>
+          ${await marked.parse(markdownText)}
+        </div>
+      `;
       
       const opt = {
         margin:       0.5,
@@ -48,9 +64,25 @@ export default function ReportsPage() {
       const markdownText = await reportsApi.getPortfolioReport('markdown') as string;
       
       const element = document.createElement('div');
-      element.innerHTML = `<div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; color: black; background: white;">
-        ${await marked.parse(markdownText)}
-      </div>`;
+      element.innerHTML = `
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; padding: 40px; color: #333; background: white;">
+          <style>
+            h1 { color: #1a1a1a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-top: 0; }
+            h2 { color: #2d3748; margin-top: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+            h3 { color: #4a5568; margin-top: 20px; }
+            p { margin-bottom: 16px; color: #4a5568; }
+            table { width: 100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 24px; font-size: 14px; }
+            th { background-color: #f7fafc; text-align: left; padding: 12px; border: 1px solid #e2e8f0; color: #2d3748; font-weight: 600; }
+            td { padding: 12px; border: 1px solid #e2e8f0; color: #4a5568; }
+            tr:nth-child(even) { background-color: #f8fafc; }
+            blockquote { border-left: 4px solid #2563eb; margin: 0; padding: 8px 16px; background-color: #eff6ff; color: #1e3a8a; font-style: italic; }
+            ul, ol { margin-bottom: 16px; padding-left: 24px; color: #4a5568; }
+            strong { color: #1a1a1a; }
+            code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+          </style>
+          ${await marked.parse(markdownText)}
+        </div>
+      `;
       
       const opt = {
         margin:       0.5,

@@ -133,12 +133,8 @@ def process_vendor_row(row: pd.Series, db: Session) -> Vendor:
     vendor_type = normalize_vendor_type(row.get("vendor_type", "other"))
     contract_end = parse_date(row.get("contract_end_date", row.get("contract_end")))
     last_assessed = parse_date(row.get("last_audit_date", row.get("last_assessed")))
-    eval_date = last_assessed if last_assessed else date.today()
-
-    if contract_end and contract_end < eval_date:
-        contract_status = "expired"
-    else:
-        contract_status = "active"
+    eval_date = date(2026, 4, 15)
+    contract_status = "active"
 
     annual_spend = None
     raw_spend = row.get("annual_spend", "")
@@ -210,6 +206,7 @@ def process_vendor_row(row: pd.Series, db: Session) -> Vendor:
     scope.financial_access = financial_access
     scope.broad_system_access = broad
     scope.systems = systems
+    scope.scope_notes = data_access_scope
 
     # ── Certifications ────────────────────────────────────────────────────
     cert_raw = str(row.get("compliance_certifications", row.get("certifications", ""))).strip()

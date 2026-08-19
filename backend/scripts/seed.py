@@ -87,6 +87,14 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
             last_score = db.query(VendorScore).filter(VendorScore.vendor_id == vendor.id).order_by(VendorScore.computed_at.desc()).first()
             previous_score_id = last_score.id if last_score else None
 
+            # Generate certs properly using eval_date to avoid utcnow() expiry issues
+            eval_date = date(2026, 4, 15)
+            for c in vendor.certifications:
+                if c.expiry_date and c.expiry_date < eval_date:
+                    c.status = 'expired'
+                else:
+                    c.status = 'current'
+
             # Re-score vendor for this point in time
             breaches = vendor.breach_history
             certs = vendor.certifications

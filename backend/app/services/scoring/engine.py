@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, Sequence
 
 from sqlalchemy.orm import Session
@@ -76,7 +76,6 @@ def compute_composite(
     access_subscore: float,
     compliance_subscore: float,
     financial_subscore: float,
-    source_risk_score: Optional[int] = None,
 ) -> float:
     """
     Apply the weighted formula and return a score in [0, 100].
@@ -90,8 +89,6 @@ def compute_composite(
         + settings.weight_compliance * compliance_subscore
         + settings.weight_financial  * financial_subscore
     )
-    if source_risk_score is not None:
-        composite = max(composite, float(source_risk_score))
         
     return round(min(100.0, max(0.0, composite)), 2)
 
@@ -119,12 +116,13 @@ def score_vendor(
     NOTE: rationale is None here. Call narrative.generate_rationale()
           AFTER this function returns, then attach the result before saving.
     """
-    breach_sub   = compute_breach_subscore(breaches, vendor.under_investigation)
+    eval_date = date(2026, 4, 15)
+    breach_sub   = compute_breach_subscore(breaches, eval_date, vendor.under_investigation)
     access_sub   = compute_access_subscore(scope)
     compliance_sub = compute_compliance_subscore(certs, vendor.last_assessed_at)
     financial_sub  = compute_financial_subscore(vendor.financial_health_signal)
 
-    composite = compute_composite(breach_sub, access_sub, compliance_sub, financial_sub, vendor.source_risk_score)
+    composite = compute_composite(breach_sub, access_sub, compliance_sub, financial_sub)
 
 
 

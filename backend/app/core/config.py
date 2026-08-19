@@ -47,10 +47,10 @@ class Settings(BaseSettings):
     contact_email: str = "tanishkbhanage@gmail.com"
 
     # Scoring weights (must sum to 1.0 — validated in the scoring engine)
-    weight_breach: float = 0.40
+    weight_breach: float = 0.45
     weight_access: float = 0.25
     weight_compliance: float = 0.20
-    weight_financial: float = 0.15
+    weight_financial: float = 0.10
 
     # Monitoring thresholds (days)
     cert_alert_days_critical: int = 7

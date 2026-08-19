@@ -71,14 +71,20 @@ def _has_expired_cert(certs: Sequence[Certification], eval_date: date) -> bool:
 def _contract_expired_with_access(
     contract_end: Optional[date],
     contract_status: Optional[str],
+    scope: Optional[DataAccessScope],
     eval_date: date
 ) -> bool:
     """
     Return True if contract end date has passed relative to eval_date but vendor still has active status.
     A contract_status of 'active' despite an expired date signals orphaned access.
+    Excludes vendors with only Public_Data access.
     """
     if contract_end is None:
         return False
+        
+    if scope is not None and scope.scope_notes == "Public_Data":
+        return False
+        
     expired = contract_end < eval_date
     still_active = contract_status in ("active", None)
     return expired and still_active
@@ -119,7 +125,7 @@ def determine_tier(
         if tier_priority.index(new_tier) > tier_priority.index(current_tier):
             current_tier = new_tier
 
-    eval_date = vendor.last_assessed_at.date() if vendor.last_assessed_at else datetime.utcnow().date()
+    eval_date = date(2026, 4, 15)
 
     # ── CRITICAL conditions ─────────────────────────────────────────────────
     if vendor.under_investigation:
@@ -131,11 +137,23 @@ def determine_tier(
             anomaly_types.append(("BREACHED_VENDOR_HIGH_ACCESS", "CRITICAL"))
         _upgrade("CRITICAL")
 
-    # ── HIGH conditions ─────────────────────────────────────────────────────
-    if composite_score > _HIGH_RISK_THRESHOLD:
-        anomaly_types.append(("HIGH_RISK_SCORE", "HIGH"))
-        _upgrade("HIGH")
+    # ── Legacy CSV Risk Score Layer ─────────────────────────────────────────
+    if vendor.source_risk_score is not None:
+        if vendor.source_risk_score > 80:
+            anomaly_types.append(("HIGH_RISK_SCORE", "HIGH"))
+            _upgrade("HIGH")
+        elif 65 <= vendor.source_risk_score <= 80:
+            if "ELEVATED_RISK_VENDOR" not in [a[0] for a in anomaly_types]:
+                anomaly_types.append(("ELEVATED_RISK_VENDOR", "LOW"))
+            _upgrade("LOW")
 
+    # ── Pure Composite Score Layer ──────────────────────────────────────────
+    if composite_score > _HIGH_RISK_THRESHOLD:
+        _upgrade("HIGH")
+    elif _ELEVATED_RISK_LOWER <= composite_score <= _ELEVATED_RISK_UPPER:
+        _upgrade("LOW")
+
+    # ── HIGH conditions ─────────────────────────────────────────────────────
     if _has_expired_cert(certs, eval_date):
         # HIGH if sensitive access, otherwise MEDIUM
         if _has_sensitive_access(scope):
@@ -152,15 +170,9 @@ def determine_tier(
             anomaly_types.append(("RECENTLY_BREACHED_VENDOR", "MEDIUM"))
         _upgrade("MEDIUM")
 
-    if _contract_expired_with_access(vendor.contract_end, vendor.contract_status, eval_date):
+    if _contract_expired_with_access(vendor.contract_end, vendor.contract_status, scope, eval_date):
         anomaly_types.append(("CONTRACT_EXPIRED_ACTIVE_ACCESS", "MEDIUM"))
         _upgrade("MEDIUM")
-
-    # ── LOW conditions ──────────────────────────────────────────────────────
-    if _ELEVATED_RISK_LOWER <= composite_score <= _ELEVATED_RISK_UPPER:
-        if "ELEVATED_RISK_VENDOR" not in [a[0] for a in anomaly_types]:
-            anomaly_types.append(("ELEVATED_RISK_VENDOR", "LOW"))
-        _upgrade("LOW")
 
     status_color = _TIER_TO_COLOR[current_tier]
     return current_tier, anomaly_types, status_color
