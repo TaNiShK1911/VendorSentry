@@ -114,7 +114,7 @@ def load_vendor_registry(csv_path: Path, db: Session) -> tuple[int, int, list[di
                 anomaly_types=result.anomaly_types,
                 triggered_by=result.triggered_by,
                 rationale=f"Historical score update for {vendor.name}.",
-                computed_at=vendor.last_assessed_at or datetime.utcnow(),
+                computed_at=datetime.utcnow(),
                 previous_score_id=previous_score_id
             )
             db.add(score_row)

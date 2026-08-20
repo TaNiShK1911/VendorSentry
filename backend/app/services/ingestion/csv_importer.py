@@ -324,7 +324,7 @@ def score_and_alert_vendor(vendor: Vendor, db: Session, triggered_by: str = "csv
         anomaly_types=result.anomaly_types,
         triggered_by=result.triggered_by,
         rationale=f"Score update for {vendor.name} via {triggered_by}.",
-        computed_at=vendor.last_assessed_at or datetime.utcnow(),
+        computed_at=datetime.utcnow(),
         previous_score_id=previous_score_id,
     )
     db.add(score_row)

@@ -316,7 +316,7 @@ export default function DashboardPage() {
   });
 
   const { data: alertSummary } = useQuery({
-    queryKey: ['alerts', 'summary'],
+    queryKey: ['alerts', 'summary', 'v2'],
     queryFn: () => alertsApi.getSummary(),
     refetchInterval: 5000,
   });
@@ -334,10 +334,12 @@ export default function DashboardPage() {
   // Prepare donut chart data
   const donutData = distribution
     ? [
-        { name: 'HIGH', value: distribution.by_status_color.RED, color: '#F85151' },
-        { name: 'MEDIUM', value: distribution.by_status_color.YELLOW, color: '#E8A838' },
-        { name: 'LOW', value: distribution.by_status_color.GREEN, color: '#1DB954' },
-      ]
+        { name: 'CRITICAL', value: distribution.by_tier.CRITICAL, color: '#bb0507' },
+        { name: 'HIGH', value: distribution.by_tier.HIGH, color: '#F85151' },
+        { name: 'MEDIUM', value: distribution.by_tier.MEDIUM, color: '#E8A838' },
+        { name: 'LOW', value: distribution.by_tier.LOW, color: '#1DB954' },
+        { name: 'CLEAR', value: distribution.by_tier.CLEAR, color: '#9A9DB0' },
+      ].filter(d => d.value > 0)
     : [];
 
   // Prepare trend data
@@ -369,21 +371,21 @@ export default function DashboardPage() {
           delay={0}
         />
         <MetricCard
-          label="Open Critical Alerts"
-          value={alertSummary?.by_severity.critical || 0}
+          label="Critical Risk Vendors"
+          value={distribution?.by_tier.CRITICAL || 0}
           icon={AlertTriangle}
-          color="#F85151"
+          color="#bb0507"
           delay={0.05}
         />
         <MetricCard
-          label="Open High Alerts"
-          value={alertSummary?.by_severity.high || 0}
+          label="High Risk Vendors"
+          value={distribution?.by_tier.HIGH || 0}
           icon={AlertOctagon}
-          color="#E8A838"
+          color="#F85151"
           delay={0.1}
         />
         <MetricCard
-          label="Total Open Alerts"
+          label="Unique Vendor Open Alerts"
           value={alertSummary?.total_open || 0}
           icon={Bell}
           color="#9A9DB0"
@@ -409,3 +411,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+// force update

@@ -35,7 +35,7 @@ export default function DashboardLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { data: alertsSummary } = useQuery({
-    queryKey: ['alerts', 'summary'],
+    queryKey: ['alerts', 'summary', 'v2'],
     queryFn: () => alertsApi.getSummary(),
     refetchInterval: 5000,
   });
@@ -185,3 +185,4 @@ export default function DashboardLayout() {
   );
 }
 
+// force update

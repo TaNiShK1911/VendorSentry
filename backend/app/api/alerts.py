@@ -29,21 +29,37 @@ def list_alerts(
     # Accept both 'type' and 'alert_type'
     type_filter = type or alert_type
 
-    from sqlalchemy import func as sa_func
+    from sqlalchemy import func as sa_func, case as sa_case
 
-    # Subquery to deduplicate alerts by Alert.vendor_id and Alert.type
-    latest_alert_subq = (
-        db.query(
-            Alert.id,
-            sa_func.row_number().over(
-                partition_by=(Alert.vendor_id, Alert.type),
-                order_by=Alert.created_at.desc()
-            ).label('rn')
+    # Build base subquery with status filter so we rank the correct alerts
+    subq_base = db.query(
+        Alert.id,
+        sa_func.row_number().over(
+            partition_by=Alert.vendor_id,
+            order_by=(
+                sa_case(
+                    (Alert.severity == "CRITICAL", 1),
+                    (Alert.severity == "HIGH", 2),
+                    (Alert.severity == "MEDIUM", 3),
+                    (Alert.severity == "LOW", 4),
+                    else_=5
+                ).asc(),
+                Alert.created_at.desc()
+            )
+        ).label('rn')
+    ).join(Vendor, Vendor.id == Alert.vendor_id).filter(Vendor.archived_at.is_(None))
+
+    if status_filter == "open":
+        subq_base = subq_base.filter(Alert.resolved_at.is_(None))
+    elif status_filter == "acknowledged":
+        subq_base = subq_base.filter(
+            Alert.acknowledged_at.isnot(None),
+            Alert.resolved_at.is_(None)
         )
-        .join(Vendor, Vendor.id == Alert.vendor_id)
-        .filter(Vendor.archived_at.is_(None))
-        .subquery()
-    )
+    elif status_filter == "resolved":
+        subq_base = subq_base.filter(Alert.resolved_at.isnot(None))
+
+    latest_alert_subq = subq_base.subquery()
 
     query = (
         db.query(Alert)
@@ -51,17 +67,6 @@ def list_alerts(
         .filter(latest_alert_subq.c.rn == 1)
         .join(Vendor, Vendor.id == Alert.vendor_id)
     )
-
-    # Apply status filter
-    if status_filter == "open":
-        query = query.filter(Alert.resolved_at.is_(None))
-    elif status_filter == "acknowledged":
-        query = query.filter(
-            Alert.acknowledged_at.isnot(None),
-            Alert.resolved_at.is_(None)
-        )
-    elif status_filter == "resolved":
-        query = query.filter(Alert.resolved_at.isnot(None))
 
     # Apply other filters
     if severity:
@@ -76,15 +81,15 @@ def list_alerts(
     # Get total count
     total_items = query.count()
 
+    from sqlalchemy.orm import joinedload
+    
     # Pagination
     offset = (page - 1) * actual_page_size
-    alerts = query.order_by(Alert.created_at.desc()).offset(offset).limit(actual_page_size).all()
+    alerts = query.options(joinedload(Alert.vendor)).order_by(Alert.created_at.desc()).offset(offset).limit(actual_page_size).all()
 
     # Build response items matching frontend Alert interface
     items = []
     for alert in alerts:
-        vendor = db.query(Vendor).filter(Vendor.id == alert.vendor_id).first()
-
         # Derive status from timestamps
         if alert.resolved_at:
             alert_status = "resolved"
@@ -96,7 +101,7 @@ def list_alerts(
         items.append({
             "id": alert.id,
             "vendor_id": alert.vendor_id,
-            "vendor_name": vendor.name if vendor else "Unknown",
+            "vendor_name": alert.vendor.name if alert.vendor else "Unknown",
             "alert_type": alert.type,
             "severity": alert.severity.lower() if alert.severity else "medium",
             "status": alert_status,
@@ -180,19 +185,28 @@ def resolve_alert(alert_id: str, db: Session = Depends(get_db)):
 
 @router.get("/alerts/summary")
 def get_alert_summary(db: Session = Depends(get_db)):
-    from sqlalchemy import func as sa_func
+    from sqlalchemy import func as sa_func, case as sa_case
 
-    # Subquery to deduplicate alerts by Alert.vendor_id and Alert.type
+    # Subquery to deduplicate alerts by Alert.vendor_id only, picking highest severity OPEN alert
     latest_alert_subq = (
         db.query(
             Alert.id,
             sa_func.row_number().over(
-                partition_by=(Alert.vendor_id, Alert.type),
-                order_by=Alert.created_at.desc()
+                partition_by=Alert.vendor_id,
+                order_by=(
+                    sa_case(
+                        (Alert.severity == "CRITICAL", 1),
+                        (Alert.severity == "HIGH", 2),
+                        (Alert.severity == "MEDIUM", 3),
+                        (Alert.severity == "LOW", 4),
+                        else_=5
+                    ).asc(),
+                    Alert.created_at.desc()
+                )
             ).label('rn')
         )
         .join(Vendor, Vendor.id == Alert.vendor_id)
-        .filter(Vendor.archived_at.is_(None))
+        .filter(Vendor.archived_at.is_(None), Alert.resolved_at.is_(None))
         .subquery()
     )
 
@@ -200,7 +214,7 @@ def get_alert_summary(db: Session = Depends(get_db)):
     base_query = (
         db.query(Alert)
         .join(latest_alert_subq, Alert.id == latest_alert_subq.c.id)
-        .filter(latest_alert_subq.c.rn == 1, Alert.resolved_at.is_(None))
+        .filter(latest_alert_subq.c.rn == 1)
         .join(Vendor, Vendor.id == Alert.vendor_id)
     )
 
